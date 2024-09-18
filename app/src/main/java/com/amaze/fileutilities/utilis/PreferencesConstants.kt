@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import com.amaze.fileutilities.audio_player.AudioPlayerService
@@ -37,7 +17,7 @@ class PreferencesConstants {
         const val KEY_AUDIO_PLAYER_REPEAT_MODE = "audio_player_repeat_mode"
         const val KEY_ENABLE_WAVEFORM = "pref_enable_waveform"
         const val KEY_SUBTITLE_LANGUAGE_CODE = "subtitle_language_code"
-        const val KEY_UPDATE_APP_LAST_SHOWN_DATE = "update_app_last_show_date"
+
         const val KEY_DEVICE_UNIQUE_ID = "device_unique_id"
         const val KEY_NOT_CONNECTED_TRIAL_COUNT = "not_connected_trial"
         const val KEY_NOT_CONNECTED_SUBSCRIBED_COUNT = "not_connected_subscribed"
@@ -60,8 +40,8 @@ class PreferencesConstants {
         const val KEY_CONFIRM_BEFORE_EXIT = "pref_confirm_before_exit"
 
         const val VAL_SEARCH_DUPLICATES_MEDIA_STORE = 0
-        const val VAL_SEARCH_DUPLICATES_INTERNAL_SHALLOW = 1
         const val VAL_SEARCH_DUPLICATES_INTERNAL_DEEP = 2
+
         // increment this if add new default paths for analysis
         const val VAL_PATH_PREFS_MIGRATION = 4
 

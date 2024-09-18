@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui
 
 import androidx.lifecycle.LifecycleOwner
@@ -50,7 +30,7 @@ interface AggregatedMediaFileInfoObserver {
             aggregatedFiles: AggregatedMediaFiles?
         ) -> Unit,
         imagesPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>?
     ) {
         if (imagesPair?.second != null) {
@@ -72,10 +52,10 @@ interface AggregatedMediaFileInfoObserver {
             aggregatedFiles: AggregatedMediaFiles?
         ) -> Unit,
         videosPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>?,
         imagesPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>
     ) {
         if (videosPair?.second != null) {
@@ -100,13 +80,13 @@ interface AggregatedMediaFileInfoObserver {
             aggregatedFiles: AggregatedMediaFiles?
         ) -> Unit,
         audiosPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>?,
         videosPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>,
         imagesPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>
     ) {
         if (audiosPair?.second != null) {
@@ -131,16 +111,16 @@ interface AggregatedMediaFileInfoObserver {
             aggregatedFiles: AggregatedMediaFiles?
         ) -> Unit,
         docsPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>?,
         audiosPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>,
         videosPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>,
         imagesPair:
-            Pair<FilesViewModel.StorageSummary,
+        Pair<FilesViewModel.StorageSummary,
                 List<MediaFileInfo>>
     ) {
         if (docsPair?.second != null) {
@@ -173,7 +153,7 @@ interface AggregatedMediaFileInfoObserver {
     ) {
         fun mediaListsLoaded(): Boolean {
             return imagesMediaFilesList != null && videosMediaFilesList != null &&
-                audiosMediaFilesList != null && docsMediaFilesList != null
+                    audiosMediaFilesList != null && docsMediaFilesList != null
         }
     }
 }

@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.options
 
 import android.content.Intent
@@ -95,7 +75,7 @@ class AboutFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickLi
                         trial.subscriptionStatus == Trial.SUBSCRIPTION_STATUS_DEFAULT
                     ) {
                         trial.getTrialStatusName() +
-                            " (${trial.trialDaysLeft} days left)"
+                                " (${trial.trialDaysLeft} days left)"
                     } else if (trial.subscriptionStatus != Trial.SUBSCRIPTION_STATUS_DEFAULT) {
                         TrialValidationApi.TrialResponse.SUBSCRIPTION
                     } else {
@@ -123,22 +103,26 @@ class AboutFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickLi
             KEY_VERSION -> {
                 // do nothing
             }
+
             KEY_ABOUT -> {
                 startActivity(Intent(requireContext(), AboutActivity::class.java))
             }
+
             KEY_LICENSE -> {
                 Utils.openURL(Utils.URL_LICENSE_AGREEMENT, requireContext())
             }
+
             KEY_PRIVACY_POLICY -> {
                 Utils.openURL(Utils.URL_PRIVACY_POLICY, requireContext())
             }
+
             KEY_SUBMIT_ISSUE -> {
                 Utils.openURL(Utils.URL_GITHUB_ISSUES, requireContext())
             }
+
             KEY_LOGS -> {
                 var processed = false
-                filesViewModel.getShareLogsAdapter().observe(this) {
-                    shareAdapter ->
+                filesViewModel.getShareLogsAdapter().observe(this) { shareAdapter ->
                     if (shareAdapter == null) {
                         if (processed) {
                             requireContext().showToastInCenter(
@@ -155,23 +139,26 @@ class AboutFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickLi
                     }
                 }
             }
+
             KEY_DEVICE_ID -> {
                 val deviceId = requireActivity().getAppCommonSharedPreferences()
                     .getString(PreferencesConstants.KEY_DEVICE_UNIQUE_ID, null)
                 if (deviceId != null) {
                     Utils.copyToClipboard(
-                        requireContext(), deviceId,
-                        getString(R.string.device_id_copied)
+                        requireContext(), deviceId
                     )
                     requireContext().showToastOnBottom(getString(R.string.device_id_copied))
                 }
             }
+
             KEY_CONTACT -> {
                 Utils.openTelegramURL(requireContext())
             }
+
             KEY_TRANSLATE -> {
                 Utils.openTranslateURL(this.requireContext())
             }
+
             KEY_OPEN_SOURCE -> {
                 val libsBuilder = LibsBuilder()
                     .withActivityTitle(getString(R.string.app_name))
@@ -184,11 +171,12 @@ class AboutFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickLi
                     .withLicenseShown(true)
                 libsBuilder.start(requireContext())
             }
+
             KEY_SUBSCRIPTION_STATUS -> {
                 log.info("purchase subscription for device")
                 Billing.getInstance(
                     requireActivity()
-                        as PreferenceActivity
+                            as PreferenceActivity
                 )?.initiatePurchaseFlow()
             }
         }

@@ -1,24 +1,14 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
-//import android.content.Context;
-//import android.content.res.TypedArray;
-//import android.graphics.Canvas;
-//import android.graphics.Color;
-//import android.graphics.Paint;
-//import android.graphics.Point;
-//import android.support.v4.view.ViewPager;
-//import android.util.AttributeSet;
-//import android.view.View;
-
+import android.content.res.TypedArray;
 import android.view.View;
 import androidx.viewpager.widget.ViewPager;
 import com.amaze.fileutilities.R;
 
 /**
- * Created by stephentuso on 11/16/15.
  * A quick and dirty ViewPager indicator.
  */
-/* package */ class SimpleViewPagerIndicator extends View implements ViewPager.OnPageChangeListener {
+class SimpleViewPagerIndicator extends View implements ViewPager.OnPageChangeListener {
 
     public enum Animation {
         NONE, SLIDE, FADE
@@ -30,7 +20,6 @@ import com.amaze.fileutilities.R;
     private int otherPageColor = 0x22000000;
 
     private float currentMaxAlpha;
-    private float otherMaxAlpha;
 
     private int totalPages = 0;
     private int currentPage = 0;
@@ -58,8 +47,7 @@ import com.amaze.fileutilities.R;
         super(context, attrs, defStyleAttr);
 
         if (attrs != null) {
-            android.content.res.TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SimpleViewPagerIndicator, defStyleAttr, 0);
-
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SimpleViewPagerIndicator, defStyleAttr, 0);
             currentPageColor = a.getColor(R.styleable.SimpleViewPagerIndicator_currentPageColor, currentPageColor);
             otherPageColor = a.getColor(R.styleable.SimpleViewPagerIndicator_indicatorColor, otherPageColor);
             int animationInt = a.getInt(R.styleable.SimpleViewPagerIndicator_animation, animation.ordinal());
@@ -76,11 +64,10 @@ import com.amaze.fileutilities.R;
         paint.setAntiAlias(true);
 
         float density = context.getResources().getDisplayMetrics().density;
-        spacing *= density;
-        size *= density;
+        spacing *= (int) density;
+        size *= (int) density;
 
         currentMaxAlpha = android.graphics.Color.alpha(currentPageColor);
-        otherMaxAlpha = android.graphics.Color.alpha(otherPageColor);
     }
 
     @Override
@@ -133,17 +120,10 @@ import com.amaze.fileutilities.R;
         return currentPage;
     }
 
-    public int getDisplayedPosition() {
-        return displayedPage;
-    }
 
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
         invalidate();
-    }
-
-    public int getTotalPages() {
-        return totalPages;
     }
 
     public void setRtl(boolean rtl) {
@@ -156,18 +136,6 @@ import com.amaze.fileutilities.R;
 
     public void setPageIndexOffset(int offset) {
         this.pageIndexOffset = offset;
-    }
-
-    public int getPageIndexOffset() {
-        return pageIndexOffset;
-    }
-
-    public void setIndicatorAnimation(com.amaze.fileutilities.home_page.welcome_helper.SimpleViewPagerIndicator.Animation animation) {
-        this.animation = animation;
-    }
-
-    public com.amaze.fileutilities.home_page.welcome_helper.SimpleViewPagerIndicator.Animation getIndicatorAnimation() {
-        return animation;
     }
 
     @Override
@@ -196,10 +164,10 @@ import com.amaze.fileutilities.R;
     }
 
     private float getFirstDotPosition(float centerX) {
-        float centerIndex = totalPages % 2 == 0 ? (totalPages - 1) / 2 : totalPages / 2;
+        float centerIndex = totalPages % 2 == 0 ? (totalPages - 1) / 2F : totalPages / 2F;
         float spacingMult = (float) Math.floor(centerIndex);
         if (totalPages % 2 == 0)
-            spacingMult += 0.5;
+            spacingMult += 0.5F;
         return centerX - (spacing * spacingMult);
     }
 

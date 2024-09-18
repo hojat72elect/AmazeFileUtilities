@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 @file:Suppress("unused")
 
 package com.amaze.fileutilities.utilis.dialog_picker
@@ -46,6 +26,7 @@ typealias FileFilter = ((File) -> Boolean)?
 typealias FileCallback = ((dialog: MaterialDialog, file: File) -> Unit)?
 
 /** Gets the selected file for the current file chooser dialog. */
+@SuppressLint("RestrictedApi")
 @CheckResult
 fun MaterialDialog.selectedFile(): File? {
     val customView = getCustomView()
@@ -64,7 +45,7 @@ fun MaterialDialog.selectedFile(): File? {
  *    empty. Defaults to "This folder's empty!".
  * @param selection A callback invoked when a file is selected.
  */
-@SuppressLint("CheckResult")
+@SuppressLint("CheckResult", "PrivateResource", "RestrictedApi")
 fun MaterialDialog.fileChooser(
     context: Context,
     initialDirectory: File? = context.getExternalFilesDir(),
@@ -78,18 +59,12 @@ fun MaterialDialog.fileChooser(
     var actualFilter: FileFilter = filter
 
     if (allowFolderCreation) {
-        // we already have permissions at app startup
-//        check(hasWriteStoragePermission()) {
-//            "You must have the WRITE_EXTERNAL_STORAGE permission first."
-//        }
+
         if (filter == null) {
             actualFilter = { !it.isHidden && it.canWrite() }
         }
     } else {
-        // we already have permissions at app startup
-//        check(hasWriteStoragePermission()) {
-//            "You must have the WRITE_EXTERNAL_STORAGE permission first."
-//        }
+
         if (filter == null) {
             actualFilter = { !it.isHidden && it.canRead() }
         }
@@ -136,6 +111,7 @@ fun MaterialDialog.fileChooser(
     return this
 }
 
+@SuppressLint("CheckResult", "PrivateResource")
 internal fun MaterialDialog.showNewFolderCreator(
     parent: File,
     @StringRes folderCreationLabel: Int?,

@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.analyse
 
 import android.content.Context
@@ -35,7 +15,7 @@ import java.lang.ref.WeakReference
 
 class ReviewAnalysisAdapter(
     val context: Context,
-    val analysisType: Int?,
+    private val analysisType: Int?,
     private val preloader: MediaAdapterPreloader<MediaFileInfo>,
     private val mediaFileInfoList: MutableList<MediaFileInfo>,
     toggleCheckCallback: (
@@ -89,8 +69,9 @@ class ReviewAnalysisAdapter(
                         val totalSize = this.mediaFileInfo?.getFormattedSize(context)
                         if (sizeDiff != null) {
                             val summary =
-                                "${context.getString(R.string.size_diff)}: ${FileUtils
-                                    .formatStorageLength(context, sizeDiff)
+                                "${context.getString(R.string.size_diff)}: ${
+                                    FileUtils
+                                        .formatStorageLength(context, sizeDiff)
                                 }"
                             val extra = "${context.getString(R.string.size_total)}: $totalSize"
                             // Show the size increase in `infoSummary`
@@ -107,9 +88,13 @@ class ReviewAnalysisAdapter(
                                     ?.apkMetaData?.timeForeground ?: 0L
                             )
                         val size = this.mediaFileInfo?.getFormattedSize(context)
-                        holder.infoSummary.text = "${context.getString(R.string.size)}: $size"
-                        holder.extraInfo.text = "${context.getString(R.string.usage)}: " +
-                            "$timeForeground"
+                        "${context.getString(R.string.size)}: $size".also {
+                            holder.infoSummary.text = it
+                        }
+                        holder.extraInfo.text = buildString {
+                            append("${context.getString(R.string.usage)}: ")
+                            append(timeForeground)
+                        }
                     } else {
                         holder.infoSummary.text = this.mediaFileInfo?.getFormattedSize(context)
                     }
@@ -159,21 +144,8 @@ class ReviewAnalysisAdapter(
     override fun removeChecked(): Boolean {
         val toRemove = getMediaFilesListItems().filter { it.isChecked && it.mediaFileInfo != null }
             .map { it.mediaFileInfo }
-        val didRemove = mediaFileInfoList.removeAll(toRemove)
+        val didRemove = mediaFileInfoList.removeAll(toRemove.toSet())
         return super.removeChecked() && didRemove
     }
 
-    /**
-     * Set list elements
-     */
-    fun setData(data: List<MediaFileInfo>) {
-        mediaFileInfoList.run {
-            clear()
-            preloader.clear()
-            addAll(data)
-            // triggers set call
-            mediaFileListItems = mutableListOf()
-//            notifyDataSetChanged()
-        }
-    }
 }

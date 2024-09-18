@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.content.Context
@@ -41,22 +21,35 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.amaze.fileutilities.R
-import com.amaze.fileutilities.audio_player.*
+import com.amaze.fileutilities.audio_player.AudioPlaybackServiceConnection
+import com.amaze.fileutilities.audio_player.AudioPlayerInterfaceHandlerViewModel
+import com.amaze.fileutilities.audio_player.AudioPlayerService
+import com.amaze.fileutilities.audio_player.AudioProgressHandler
+import com.amaze.fileutilities.audio_player.IAudioPlayerInterfaceHandler
+import com.amaze.fileutilities.audio_player.ServiceOperationCallback
 import com.amaze.fileutilities.databinding.FragmentAudiosListBinding
 import com.amaze.fileutilities.home_page.MainActivity
-import com.amaze.fileutilities.utilis.*
+import com.amaze.fileutilities.utilis.PreferencesConstants
+import com.amaze.fileutilities.utilis.Utils
+import com.amaze.fileutilities.utilis.getAppCommonSharedPreferences
+import com.amaze.fileutilities.utilis.hideFade
+import com.amaze.fileutilities.utilis.hideTranslateY
+import com.amaze.fileutilities.utilis.px
+import com.amaze.fileutilities.utilis.setTextAnimation
+import com.amaze.fileutilities.utilis.showFade
+import com.amaze.fileutilities.utilis.showToastInCenter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.slider.Slider
 import com.masoudss.lib.WaveformSeekBar
+import java.lang.ref.WeakReference
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import me.tankery.lib.circularseekbar.CircularSeekBar
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import me.zhanghai.android.fastscroll.PopupStyles
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.lang.ref.WeakReference
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfaceHandler {
 
@@ -67,9 +60,9 @@ class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfac
     private var _binding: FragmentAudiosListBinding? = null
     private var isBottomFragmentVisible = false
     private var fileStorageSummaryAndMediaFileInfo:
-        Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>? = null
+            Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>? = null
     private var playListStorageSummaryAndMediaFileInfo:
-        Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>? = null
+            Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>? = null
 
     private lateinit var audioPlaybackServiceConnection: AudioPlaybackServiceConnection
     private var filesPreloader: MediaAdapterPreloader<MediaFileInfo>? = null
@@ -297,16 +290,15 @@ class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfac
                 searchLyricsButton.setOnClickListener {
                     val songName = handler?.audioPlaybackInfo?.title
                     val artist = handler?.audioPlaybackInfo?.artistName
-                    Utils.buildPickLyricsTypeDialog(requireContext()) {
-                        which ->
+                    Utils.buildPickLyricsTypeDialog(requireContext()) { which ->
                         songName?.let {
                             val encodedSongName = URLEncoder
                                 .encode(
                                     if (artist != null &&
                                         !artist.equals(
-                                                getString(R.string.unknown_artist),
-                                                true
-                                            )
+                                            getString(R.string.unknown_artist),
+                                            true
+                                        )
                                     ) {
                                         "$artist $songName"
                                     } else songName,
@@ -325,8 +317,7 @@ class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfac
                 }
                 loadLyricsButton.setOnClickListener {
                     Utils.buildPickLyricsTypeDialog(requireContext()) { which ->
-                        Utils.buildPasteLyricsDialog(requireContext()) {
-                            pastedLyrics ->
+                        Utils.buildPasteLyricsDialog(requireContext()) { pastedLyrics ->
                             val audioInfo =
                                 audioService.getAudioProgressHandlerCallback()?.audioPlaybackInfo
                             val uri = audioInfo?.audioModel?.getUri()
@@ -355,7 +346,7 @@ class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfac
     }
 
     override fun getFileStorageSummaryAndMediaFileInfoPair(): Pair<FilesViewModel.StorageSummary,
-        List<MediaFileInfo>?>? {
+            List<MediaFileInfo>?>? {
         val sharedPrefs = requireContext().getAppCommonSharedPreferences()
         val groupByPref = sharedPrefs.getInt(
             MediaFileListSorter.SortingPreference.getGroupByKey(MediaFileAdapter.MEDIA_TYPE_AUDIO),
@@ -654,8 +645,7 @@ class AudiosListFragment : AbstractMediaInfoListFragment(), IAudioPlayerInterfac
     }
 
     private fun invalidateActionButtons(progressHandler: AudioProgressHandler?) {
-        progressHandler?.audioPlaybackInfo?.let {
-            info ->
+        progressHandler?.audioPlaybackInfo?.let { info ->
             _binding?.let {
                 if (progressHandler.isCancelled || !info.isPlaying) {
                     binding.playButtonSmall.setImageResource(R.drawable.ic_round_play_arrow_32)

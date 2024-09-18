@@ -1,17 +1,14 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
-import android.os.Build;
 import android.view.View;
 
-/**
- * Created by stephentuso on 11/16/15.
- */
-/* package */ class WelcomeViewHider implements OnWelcomeScreenPageChangeListener {
 
-    private android.view.View view;
+class WelcomeViewHider implements OnWelcomeScreenPageChangeListener {
+
+    private final View view;
     private Integer lastPage = null;
     private boolean isRtl = false;
-    private com.amaze.fileutilities.home_page.welcome_helper.WelcomeViewHider.OnViewHiddenListener listener = null;
+    private WelcomeViewHider.OnViewHiddenListener listener = null;
     private boolean enabled = false;
 
     public WelcomeViewHider(android.view.View viewToHide) {
@@ -22,7 +19,7 @@ import android.view.View;
         void onViewHidden();
     }
 
-    public void setOnViewHiddenListener(com.amaze.fileutilities.home_page.welcome_helper.WelcomeViewHider.OnViewHiddenListener listener) {
+    public void setOnViewHiddenListener(WelcomeViewHider.OnViewHiddenListener listener) {
         this.listener = listener;
     }
 
@@ -42,10 +39,6 @@ import android.view.View;
 
         if (position == lastPage && positionOffset == 0 && listener != null) {
             listener.onViewHidden();
-        }
-
-        if (android.os.Build.VERSION.SDK_INT < 11) {
-            return;
         }
 
         boolean shouldSetAlpha = position == (isRtl ? lastPage : lastPage - 1);

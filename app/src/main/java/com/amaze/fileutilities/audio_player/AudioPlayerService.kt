@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.audio_player
 
 import android.app.PendingIntent
@@ -32,7 +12,6 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.net.Uri
 import android.os.Build
-import android.os.CountDownTimer
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
@@ -55,10 +34,10 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.audio.AudioAttributes
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatingCallback {
 
@@ -67,8 +46,6 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
     companion object {
         const val TAG_BROADCAST_AUDIO_SERVICE_CANCEL = "audio_service_cancel_broadcast"
         const val TAG_BROADCAST_AUDIO_SERVICE_PLAY = "audio_service_play_broadcast"
-        const val TAG_BROADCAST_AUDIO_SERVICE_PREVIOUS = "audio_service_previous_broadcast"
-        const val TAG_BROADCAST_AUDIO_SERVICE_NEXT = "audio_service_next_broadcast"
         const val ACTION_PLAY_PAUSE = "audio_action_play_pause"
         const val ACTION_CANCEL = "audio_action_cancel"
         const val ACTION_PREVIOUS = "audio_action_previous"
@@ -154,9 +131,11 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                         ACTION_CANCEL -> {
                             triggerStopEverything()
                         }
+
                         ACTION_PLAY_PAUSE -> {
                             playMediaItem()
                         }
+
                         ACTION_NEXT -> {
                             uriList?.let {
                                 audioProgressHandler?.let { handler ->
@@ -178,6 +157,7 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                                 }
                             }
                         }
+
                         ACTION_PREVIOUS -> {
                             uriList?.let {
                                 audioProgressHandler?.let { handler ->
@@ -205,6 +185,7 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                                 }
                             }
                         }
+
                         ACTION_SHUFFLE -> {
                             log.info("cycling shuffle")
                             initCurrentUriAndPlayer(intentUri!!, true)
@@ -214,15 +195,18 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                                 // do nothing
                             }
                         }
+
                         ACTION_REPEAT -> {
                             log.info("cycling repeat")
                             cycleRepeat()
                         }
+
                         else -> {
                             initCurrentUriAndPlayer(intentUri!!, true)
                         }
                     }
                 }
+
                 else -> {
                     initCurrentUriAndPlayer(intentUri!!, true)
                 }
@@ -261,7 +245,7 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
         if (audioProgressHandler != null) {
             // TODO validate following condition
             if (audioProgressHandler!!.audioPlaybackInfo.audioModel.getUri()
-                .path.equals(uri.path)
+                    .path.equals(uri.path)
             ) {
                 playMediaItem()
             } else {
@@ -314,10 +298,12 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                         pausedByTransientLossOfFocus = false
                     }
                 }
+
                 AudioManager.AUDIOFOCUS_LOSS ->
                     // Lost focus for an unbounded amount of time:
                     // stop playback and release media playback
                     pausePlayer()
+
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                     // Lost focus for a short time, but we have to stop
                     // playback. We don't release the media playback because playback
@@ -326,6 +312,7 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                     pausePlayer()
                     pausedByTransientLossOfFocus = wasPlaying
                 }
+
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                     // Lost focus for a short time, but it's ok to keep playing
                     // at an attenuated level
@@ -349,31 +336,15 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
         }
     }
 
-    private fun getCancelPendingIntent(): PendingIntent {
-        val stopIntent = Intent(TAG_BROADCAST_AUDIO_SERVICE_CANCEL)
-        return PendingIntent.getBroadcast(
-            this, 1234, stopIntent,
-            Utils.getPendingIntentFlag(PendingIntent.FLAG_ONE_SHOT)
-        )
-    }
-
-    private fun getPlayPendingIntent(): PendingIntent {
-        val intent = Intent(TAG_BROADCAST_AUDIO_SERVICE_PLAY)
-        return PendingIntent.getBroadcast(
-            this, 1235, intent,
-            Utils.getPendingIntentFlag(PendingIntent.FLAG_ONE_SHOT)
-        )
-    }
-
     private val MEDIA_SESSION_ACTIONS = (
-        PlaybackStateCompat.ACTION_PLAY
-            or PlaybackStateCompat.ACTION_PAUSE
-            or PlaybackStateCompat.ACTION_PLAY_PAUSE
-            or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-            or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-            or PlaybackStateCompat.ACTION_STOP
-            or PlaybackStateCompat.ACTION_SEEK_TO
-        )
+            PlaybackStateCompat.ACTION_PLAY
+                    or PlaybackStateCompat.ACTION_PAUSE
+                    or PlaybackStateCompat.ACTION_PLAY_PAUSE
+                    or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                    or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                    or PlaybackStateCompat.ACTION_STOP
+                    or PlaybackStateCompat.ACTION_SEEK_TO
+            )
 
     private fun updateMediaSessionPlaybackState() {
         mediaSession!!.setPlaybackState(
@@ -392,8 +363,7 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
     }
 
     private fun updateMediaSessionMetaData() {
-        audioProgressHandler?.let {
-            audioProgressHandler ->
+        audioProgressHandler?.let { audioProgressHandler ->
             val song: AudioPlaybackInfo = audioProgressHandler.audioPlaybackInfo
             /*if (song.id === -1) {
                 mediaSession!!.setMetadata(null)
@@ -411,21 +381,19 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                 )
                 .putLong(MediaMetadataCompat.METADATA_KEY_YEAR, song.year.toLong())
             val albumUri = AudioUtils.getMediaStoreAlbumCoverUri(song.albumId)
-            AudioUtils.getAlbumBitmap(applicationContext, albumUri)?.let {
-                bitmap ->
+            AudioUtils.getAlbumBitmap(applicationContext, albumUri)?.let { bitmap ->
                 metaData.putBitmap(
                     MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
                     bitmap
                 )
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                audioProgressHandler.uriList?.let {
-                    metaData.putLong(
-                        MediaMetadataCompat.METADATA_KEY_NUM_TRACKS,
-                        audioProgressHandler.uriList!!.size.toLong()
-                    )
-                }
+
+            audioProgressHandler.uriList?.let {
+                metaData.putLong(
+                    MediaMetadataCompat.METADATA_KEY_NUM_TRACKS,
+                    audioProgressHandler.uriList!!.size.toLong()
+                )
             }
             mediaSession!!.setMetadata(metaData.build())
         }
@@ -498,14 +466,6 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
         sendBroadcast(audioEffectsIntent)
     }
 
-    private fun requestFocus(): Boolean {
-        return getAudioManager().requestAudioFocus(
-            audioFocusListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        ) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
     private fun playMediaItem(mediaItem: MediaItem, renderWaveform: Boolean) {
         if (exoPlayer == null) initializePlayer()
         exoPlayer?.apply {
@@ -523,62 +483,6 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
         }
         updatePlaybackState(true, renderWaveform)
         invalidateNotificationPlayButton()
-    }
-
-    var volume = 0f
-
-    private fun startFadeIn(exoPlayer: ExoPlayer, doNext: () -> Unit) {
-        val FADE_DURATION = 5000L // The duration of the fade
-        // The amount of time between volume changes. The smaller this is, the smoother the fade
-        val FADE_INTERVAL = 25L
-        val MAX_VOLUME = 1 // The volume will increase from 0 to 1
-        val numberOfSteps: Float = FADE_DURATION.toFloat() / FADE_INTERVAL.toFloat()
-        // Calculate by how much the volume changes each step
-        val deltaVolume = MAX_VOLUME / numberOfSteps.toFloat()
-
-        // Create a new Timer and Timer task to run the fading outside the main UI thread
-        object : CountDownTimer(FADE_DURATION, FADE_INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (volume <= 1f) {
-                    fadeInStep(deltaVolume, exoPlayer) // Do a fade step
-                }
-            }
-
-            override fun onFinish() {
-                doNext.invoke()
-            }
-        }.start()
-    }
-
-    private fun startFadeOut(exoPlayer: ExoPlayer, doNext: () -> Unit) {
-        val FADE_DURATION = 5000L // The duration of the fade
-        // The amount of time between volume changes. The smaller this is, the smoother the fade
-        val FADE_INTERVAL = 25L
-        val MAX_VOLUME = 0 // The volume will increase from 0 to 1
-        val numberOfSteps: Float = FADE_DURATION.toFloat() / FADE_INTERVAL.toFloat()
-        // Calculate by how much the volume changes each step
-        val deltaVolume = MAX_VOLUME / numberOfSteps
-        object : CountDownTimer(FADE_DURATION, FADE_INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (volume >= 0f) {
-                    fadeOutStep(deltaVolume, exoPlayer) // Do a fade step
-                }
-            }
-
-            override fun onFinish() {
-                doNext()
-            }
-        }.start()
-    }
-
-    private fun fadeInStep(deltaVolume: Float, exoPlayer: ExoPlayer) {
-        exoPlayer.volume = volume
-        volume += deltaVolume
-    }
-
-    private fun fadeOutStep(deltaVolume: Float, exoPlayer: ExoPlayer) {
-        exoPlayer.volume = volume
-        volume -= deltaVolume
     }
 
     private fun playMediaItem() {
@@ -803,11 +707,13 @@ class AudioPlayerService : Service(), ServiceOperationCallback, OnPlayerRepeatin
                     REPEAT_SINGLE -> {
                         playMediaItem()
                     }
+
                     REPEAT_ALL -> {
                         if (!uriList.isNullOrEmpty()) {
                             runService(currentUri!!, uriList, applicationContext, ACTION_NEXT)
                         }
                     }
+
                     REPEAT_NONE -> {
                         serviceBinderPlaybackUpdate?.onPositionUpdate(audioProgressHandler)
                         updateMediaSessionPlaybackState()

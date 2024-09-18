@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import android.content.ContentResolver
@@ -34,7 +14,6 @@ import android.os.ParcelFileDescriptor
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
 import android.view.animation.Animation
@@ -42,7 +21,6 @@ import android.view.animation.TranslateAnimation
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import com.afollestad.materialdialogs.MaterialDialog
 import com.amaze.fileutilities.audio_player.AudioPlayerService
@@ -63,16 +41,16 @@ import com.amaze.fileutilities.home_page.database.SimilarImagesAnalysisMetadataD
 import com.amaze.fileutilities.utilis.dialog_picker.FileFilter
 import com.amaze.fileutilities.utilis.dialog_picker.fileChooser
 import com.amaze.fileutilities.utilis.dialog_picker.folderChooser
+import java.io.File
+import java.io.FileDescriptor
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.FileDescriptor
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
 var log: Logger = LoggerFactory.getLogger(Utils::class.java)
 
@@ -82,7 +60,7 @@ fun Uri.getSiblingUriFiles(filter: (File) -> Boolean): ArrayList<Uri>? {
         currentPath?.let {
             if (currentPath.exists()) {
                 val parent = currentPath.parentFile
-                var siblings: ArrayList<Uri>? = null
+                val siblings: ArrayList<Uri>?
                 if (parent != null) {
                     val filesList = parent.listFiles()
                     if (filesList != null) {
@@ -91,12 +69,11 @@ fun Uri.getSiblingUriFiles(filter: (File) -> Boolean): ArrayList<Uri>? {
                             siblings = arrayListOf(this)
                         } else {
                             siblings = ArrayList()
-                            filteredFiles.sortedBy { it.lastModified() }.forEach {
-                                currentSibling ->
-                                siblings!!.add(
+                            filteredFiles.sortedBy { it.lastModified() }.forEach { currentSibling ->
+                                siblings.add(
                                     Uri.parse(
                                         if (!currentSibling.path
-                                            .startsWith("/")
+                                                .startsWith("/")
                                         )
                                             "/${currentSibling.path}"
                                         else currentSibling.path
@@ -152,8 +129,7 @@ fun Uri.getFileFromUri(context: Context): File? {
     }
     var songFile: File? = getFileFromUri()
     if (songFile == null) {
-        songFile = getContentResolverFilePathFromUri(context, this)?.let {
-            filePath ->
+        songFile = getContentResolverFilePathFromUri(context, this)?.let { filePath ->
             File(filePath)
         }
         if (songFile == null) {
@@ -233,9 +209,9 @@ fun Uri.getFileFromUri(): File? {
         songFile = File(
             this.path?.substring(
                 this.path?.indexOf("/", 1)!! + 1
-            )
+            )!!
         )
-        if (songFile == null || !songFile.exists()) {
+        if (!songFile.exists()) {
             songFile = this.path?.let { File(it) }
         }
     }
@@ -243,10 +219,6 @@ fun Uri.getFileFromUri(): File? {
         return null
     }
     return songFile
-}
-
-fun File.getUriFromFile(context: Context): Uri {
-    return FileProvider.getUriForFile(context, context.packageName, this)
 }
 
 private fun getContentResolverFilePathFromUri(context: Context, uri: Uri): String? {
@@ -273,121 +245,38 @@ private fun getContentResolverFilePathFromUri(context: Context, uri: Uri): Strin
     return null
 }
 
-fun Uri.isImageMimeType(): Boolean {
-    return this.path?.endsWith("jpg")!! ||
-        this.path?.endsWith("jpe")!! ||
-        this.path?.endsWith("jpeg")!! ||
-        this.path?.endsWith("jfif")!! ||
-        this.path?.endsWith("pjpeg")!! ||
-        this.path?.endsWith("pjp")!! ||
-        this.path?.endsWith("gif")!! ||
-        this.path?.endsWith("png")!! ||
-        this.path?.endsWith("svg")!! ||
-        this.path?.endsWith("webp")!!
-}
-
 fun File.isImageMimeType(): Boolean {
     return this.path.endsWith("jpg") ||
-        this.path.endsWith("jpe") ||
-        this.path.endsWith("jpeg") ||
-        this.path.endsWith("jfif") ||
-        this.path.endsWith("pjpeg") ||
-        this.path.endsWith("pjp") ||
-        this.path.endsWith("gif") ||
-        this.path.endsWith("png") ||
-        this.path.endsWith("svg") ||
-        this.path.endsWith("webp")
-}
-
-fun Uri.isVideoMimeType(): Boolean {
-    return this.path?.endsWith("mp4")!! ||
-        this.path?.endsWith("mkv")!! ||
-        this.path?.endsWith("webm")!! ||
-        this.path?.endsWith("mpa")!! ||
-        this.path?.endsWith("flv")!! ||
-        this.path?.endsWith("mts")!! ||
-        this.path?.endsWith("jpgv")!!
-}
-
-fun Uri.isAudioMimeType(): Boolean {
-    return this.path?.endsWith("mp3")!! ||
-        this.path?.endsWith("wav")!! ||
-        this.path?.endsWith("ogg")!! ||
-        this.path?.endsWith("mp4")!! ||
-        this.path?.endsWith("m4a")!! ||
-        this.path?.endsWith("fmp4")!! ||
-        this.path?.endsWith("flv")!! ||
-        this.path?.endsWith("flac")!! ||
-        this.path?.endsWith("amr")!! ||
-        this.path?.endsWith("aac")!! ||
-        this.path?.endsWith("ac3")!! ||
-        this.path?.endsWith("eac3")!! ||
-        this.path?.endsWith("dca")!! ||
-        this.path?.endsWith("opus")!!
+            this.path.endsWith("jpe") ||
+            this.path.endsWith("jpeg") ||
+            this.path.endsWith("jfif") ||
+            this.path.endsWith("pjpeg") ||
+            this.path.endsWith("pjp") ||
+            this.path.endsWith("gif") ||
+            this.path.endsWith("png") ||
+            this.path.endsWith("svg") ||
+            this.path.endsWith("webp")
 }
 
 fun File.isAudioMimeType(): Boolean {
     return this.path.endsWith("mp3") ||
-        this.path.endsWith("wav") ||
-        this.path.endsWith("ogg") ||
-        this.path.endsWith("mp4") ||
-        this.path.endsWith("m4a") ||
-        this.path.endsWith("fmp4") ||
-        this.path.endsWith("flv") ||
-        this.path.endsWith("flac") ||
-        this.path.endsWith("amr") ||
-        this.path.endsWith("aac") ||
-        this.path.endsWith("ac3") ||
-        this.path.endsWith("eac3") ||
-        this.path.endsWith("dca") ||
-        this.path.endsWith("opus")
+            this.path.endsWith("wav") ||
+            this.path.endsWith("ogg") ||
+            this.path.endsWith("mp4") ||
+            this.path.endsWith("m4a") ||
+            this.path.endsWith("fmp4") ||
+            this.path.endsWith("flv") ||
+            this.path.endsWith("flac") ||
+            this.path.endsWith("amr") ||
+            this.path.endsWith("aac") ||
+            this.path.endsWith("ac3") ||
+            this.path.endsWith("eac3") ||
+            this.path.endsWith("dca") ||
+            this.path.endsWith("opus")
 }
-
-val Int.dp get() = this / (
-    Resources.getSystem().displayMetrics.densityDpi.toFloat() /
-        DisplayMetrics.DENSITY_DEFAULT
-    )
-val Float.dp get() = this / (
-    Resources.getSystem().displayMetrics.densityDpi.toFloat() /
-        DisplayMetrics.DENSITY_DEFAULT
-    )
 
 val Int.px get() = this * Resources.getSystem().displayMetrics.density
 val Float.px get() = this * Resources.getSystem().displayMetrics.density
-
-/**
- * Allow null checks on more than one parameters at the same time.
- * Alternative of doing nested p1?.let p2?.let
- */
-inline fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any, R : Any> safeLet(
-    p1: T1?,
-    p2: T2?,
-    p3: T3?,
-    p4: T4?,
-    p5: T5?,
-    block: (T1, T2, T3, T4, T5) -> R?
-): R? {
-    return if (p1 != null && p2 != null && p3 != null && p4 != null && p5 != null) block(
-        p1,
-        p2, p3, p4, p5
-    ) else null
-}
-
-/**
- * Allow null checks on more than one parameters at the same time.
- * Alternative of doing nested p1?.let p2?.let
- */
-inline fun <T1 : Any, T2 : Any, T3 : Any, R : Any> safeLet(
-    p1: T1?,
-    p2: T2?,
-    p3: T3?,
-    block: (T1, T2, T3) -> R?
-): R? {
-    return if (p1 != null && p2 != null && p3 != null) block(
-        p1,
-        p2, p3
-    ) else null
-}
 
 /**
  * Allow null checks on more than one parameters at the same time.
@@ -404,19 +293,13 @@ inline fun <T1 : Any, T2 : Any, R : Any> safeLet(
     ) else null
 }
 
-fun Context.showToastOnTop(message: String) = Toast.makeText(
-    this,
-    message, Toast.LENGTH_SHORT
-)
-    .apply { setGravity(Gravity.TOP, 16.px.toInt(), 0); show() }
-
-fun Context.showToastInCenter(message: String) = Toast.makeText(
+fun Context.showToastInCenter(message: String): Toast = Toast.makeText(
     this,
     message, Toast.LENGTH_SHORT
 )
     .apply { setGravity(Gravity.CENTER, 0, 0); show() }
 
-fun Context.showToastOnBottom(message: String) = Toast.makeText(
+fun Context.showToastOnBottom(message: String): Toast = Toast.makeText(
     this,
     message, Toast.LENGTH_SHORT
 )
@@ -619,7 +502,7 @@ fun String.removeExtension(): String {
 fun Context.isNetworkAvailable(): Boolean {
     log.info("fetching network connection")
     val connectivityManager = getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE)
-        as ConnectivityManager
+            as ConnectivityManager
     val activeNetworkInfo = connectivityManager.activeNetworkInfo
     return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
@@ -689,7 +572,7 @@ fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) 
 }
 
 fun Context.getScreenBrightness(): Float {
-    var brightness = 0
+    val brightness: Int
     try {
         val contentResolver = this.contentResolver
         brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)

@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
@@ -27,21 +8,23 @@ import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup.OnHierarchyChangeListener
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.amaze.fileutilities.R
+import kotlin.math.max
+import kotlin.math.min
 
+@SuppressLint("ClickableViewAccessibility")
 class FastScroller : FrameLayout {
     private var bar: View? = null
     private var handle: ImageView? = null
     private var recyclerView: RecyclerView? = null
     private val scrollListener: ScrollListener
     var manuallyChangingPosition = false
-    var columns = 1
+    private var columns = 1
 
     private inner class ScrollListener : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, i: Int, i2: Int) {
@@ -68,25 +51,23 @@ class FastScroller : FrameLayout {
     private fun computeHandlePosition(): Float {
         val firstVisibleView = recyclerView!!.getChildAt(0)
         handle!!.visibility = VISIBLE
-        val recyclerViewOversize: Float // how much is recyclerView bigger than fastScroller
-        val recyclerViewAbsoluteScroll: Int
         if (firstVisibleView == null || recyclerView == null) return (-1).toFloat()
-        recyclerViewOversize = (
-            firstVisibleView.height / columns * recyclerView!!.adapter!!
-                .itemCount -
-                heightMinusPadding
-            ).toFloat()
-        recyclerViewAbsoluteScroll = (
-            recyclerView!!.getChildLayoutPosition(firstVisibleView) /
-                columns
-                * firstVisibleView.height -
-                firstVisibleView.top
-            )
+        val recyclerViewOversize = (
+                firstVisibleView.height / columns * recyclerView!!.adapter!!
+                    .itemCount -
+                        heightMinusPadding
+                ).toFloat() // how much is recyclerView bigger than fastScroller
+        val recyclerViewAbsoluteScroll = (
+                recyclerView!!.getChildLayoutPosition(firstVisibleView) /
+                        columns
+                        * firstVisibleView.height -
+                        firstVisibleView.top
+                )
         return recyclerViewAbsoluteScroll / recyclerViewOversize
     }
 
     private val heightMinusPadding: Int
-        private get() = height - paddingBottom - paddingTop
+        get() = height - paddingBottom - paddingTop
 
     private fun initialise(context: Context) {
         clipChildren = false
@@ -120,14 +101,14 @@ class FastScroller : FrameLayout {
         bar!!.setBackgroundDrawable(insetDrawable)
     }
 
-    fun resolveColor(context: Context, @AttrRes i: Int): Int {
+    private fun resolveColor(context: Context, @AttrRes i: Int): Int {
         val obtainStyledAttributes = context.obtainStyledAttributes(intArrayOf(i))
         val color = obtainStyledAttributes.getColor(0, 0)
         obtainStyledAttributes.recycle()
         return color
     }
 
-    var a: onTouchListener? = null
+    var a: OnTouchListener? = null
     override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
         return if (motionEvent.action == 0 || motionEvent.action == 2) {
             handle!!.isPressed = true
@@ -154,8 +135,8 @@ class FastScroller : FrameLayout {
         visibility =
             if (recyclerView!!.adapter == null || recyclerView!!.adapter!!.itemCount == 0 ||
                 recyclerView!!.getChildAt(
-                        0
-                    ) == null || isRecyclerViewScrollable
+                    0
+                ) == null || isRecyclerViewScrollable
             ) {
                 INVISIBLE
             } else {
@@ -164,13 +145,13 @@ class FastScroller : FrameLayout {
     }
 
     private val isRecyclerViewScrollable: Boolean
-        private get() = (
-            recyclerView!!.getChildAt(0).height
-                * recyclerView!!.adapter!!.itemCount /
-                columns
-                <= heightMinusPadding ||
-                recyclerView!!.adapter!!.itemCount / columns < 25
-            )
+        get() = (
+                recyclerView!!.getChildAt(0).height
+                        * recyclerView!!.adapter!!.itemCount /
+                        columns
+                        <= heightMinusPadding ||
+                        recyclerView!!.adapter!!.itemCount / columns < 25
+                )
 
     private fun setRecyclerViewPosition(relativePos: Float) {
         if (recyclerView != null) {
@@ -188,15 +169,11 @@ class FastScroller : FrameLayout {
         return yInParent / (heightMinusPadding - handle!!.height)
     }
 
-    interface onTouchListener {
+    interface OnTouchListener {
         fun onTouch()
     }
 
-    fun registerOnTouchListener(onTouchListener: onTouchListener?) {
-        a = onTouchListener
-    }
-
-    fun setPressedHandleColor(i: Int) {
+    private fun setPressedHandleColor(i: Int) {
         handle!!.setColorFilter(i)
         val stateListDrawable = StateListDrawable()
         val drawable = ContextCompat.getDrawable(
@@ -253,18 +230,9 @@ class FastScroller : FrameLayout {
         setHandlePosition1(computeHandlePosition())
     }
 
-    var vx1 = -1
-    fun updateHandlePosition(vx: Int, l: Int) {
-        if (vx != vx1) {
-            setPadding(paddingLeft, paddingTop, paddingRight, l + vx)
-            setHandlePosition1(computeHandlePosition())
-            vx1 = vx
-        }
-    }
-
     private fun clamp(min: Float, max: Float, value: Float): Float {
-        val minimum = Math.max(min, value)
-        return Math.min(minimum, max)
+        val minimum = max(min, value)
+        return min(minimum, max)
     }
 
     private fun getViewRawY(view: View): Float {

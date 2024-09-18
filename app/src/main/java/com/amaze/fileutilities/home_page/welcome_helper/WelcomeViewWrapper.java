@@ -8,15 +8,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.ViewPropertyAnimatorListener;
 
 
-/* package */ abstract class WelcomeViewWrapper implements OnWelcomeScreenPageChangeListener {
+abstract class WelcomeViewWrapper implements OnWelcomeScreenPageChangeListener {
 
-    private View view;
+    private final View view;
     private int firstPageIndex = 0;
     private int lastPageIndex = 0;
     private boolean animated = true;
     protected boolean isRtl = false;
 
-    /* package */ WelcomeViewWrapper(android.view.View view) {
+    WelcomeViewWrapper(android.view.View view) {
         this.view = view;
     }
 
@@ -96,7 +96,7 @@ import androidx.core.view.ViewPropertyAnimatorListener;
             }
 
             @Override
-            public void onAnimationEnd(View view) {
+            public void onAnimationEnd(@NonNull View view) {
                 setAlpha(0f);
                 WelcomeViewWrapper.this.view.setVisibility(View.INVISIBLE);
             }

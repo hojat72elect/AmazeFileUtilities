@@ -1,7 +1,9 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
 import android.annotation.SuppressLint;
+import android.view.MenuItem;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -15,7 +17,6 @@ public abstract class WelcomeActivity extends AppCompatActivity {
     public static final String WELCOME_SCREEN_KEY = "welcome_screen_key";
 
     protected ViewPager viewPager;
-    private WelcomeFragmentPagerAdapter adapter;
     private WelcomeConfiguration configuration;
     private WelcomeItemList responsiveItems = new WelcomeItemList();
 
@@ -30,7 +31,7 @@ public abstract class WelcomeActivity extends AppCompatActivity {
         super.onCreate(null);
         setContentView(R.layout.wel_activity_welcome);
 
-        adapter = new com.amaze.fileutilities.home_page.welcome_helper.WelcomeActivity.WelcomeFragmentPagerAdapter(getSupportFragmentManager());
+        com.amaze.fileutilities.home_page.welcome_helper.WelcomeActivity.WelcomeFragmentPagerAdapter adapter = new com.amaze.fileutilities.home_page.welcome_helper.WelcomeActivity.WelcomeFragmentPagerAdapter(getSupportFragmentManager());
 
         viewPager = findViewById(R.id.wel_view_pager);
         viewPager.setAdapter(adapter);
@@ -116,15 +117,14 @@ public abstract class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    /* package */ boolean scrollToNextPage() {
+    void scrollToNextPage() {
         if (!canScrollToNextPage()) {
-            return false;
+            return;
         }
         viewPager.setCurrentItem(getNextPageIndex());
-        return true;
     }
 
-    /* package */ boolean scrollToPreviousPage() {
+    boolean scrollToPreviousPage() {
         if (!canScrollToPreviousPage()) {
             return false;
         }
@@ -203,7 +203,7 @@ public abstract class WelcomeActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (configuration.getShowActionBarBackButton() && item.getItemId() == android.R.id.home) {
             onBackPressed();
@@ -231,6 +231,7 @@ public abstract class WelcomeActivity extends AppCompatActivity {
             super(fm);
         }
 
+        @NonNull
         @Override
         public Fragment getItem(int position) {
             return configuration.createFragment(position);

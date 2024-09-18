@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.database
 
 import android.content.Context
@@ -70,75 +50,75 @@ abstract class AppDatabase : RoomDatabase() {
             return appDatabase!!
         }
 
-        val MIGRATION_1_2 = object : Migration(1, 2) {
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "CREATE TABLE IF NOT EXISTS `Lyrics` (`_id` INTEGER " +
-                        "PRIMARY KEY AUTOINCREMENT NOT NULL, `file_path` TEXT NOT NULL, " +
-                        "`lyrics_text` TEXT NOT NULL, `is_synced` INTEGER NOT NULL)"
+                            "PRIMARY KEY AUTOINCREMENT NOT NULL, `file_path` TEXT NOT NULL, " +
+                            "`lyrics_text` TEXT NOT NULL, `is_synced` INTEGER NOT NULL)"
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS `index_Lyrics_file_path`" +
-                        " ON `Lyrics` (`file_path`)"
+                            " ON `Lyrics` (`file_path`)"
                 )
             }
         }
 
-        val MIGRATION_2_3 = object : Migration(2, 3) {
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "CREATE TABLE IF NOT EXISTS `InstalledApps` (`_id` INTEGER " +
-                        "PRIMARY KEY AUTOINCREMENT NOT NULL, `package_name` TEXT NOT NULL, " +
-                        "`data_dirs` TEXT NOT NULL)"
+                            "PRIMARY KEY AUTOINCREMENT NOT NULL, `package_name` TEXT NOT NULL, " +
+                            "`data_dirs` TEXT NOT NULL)"
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS `index_InstalledApps_package_name`" +
-                        " ON `InstalledApps` (`package_name`)"
+                            " ON `InstalledApps` (`package_name`)"
                 )
             }
         }
 
-        val MIGRATION_3_4 = object : Migration(3, 4) {
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "CREATE TABLE IF NOT EXISTS `SimilarImagesAnalysis` " +
-                        "(`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                        " `histogram_checksum` TEXT NOT NULL, `files_path` TEXT NOT NULL)"
+                            "(`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                            " `histogram_checksum` TEXT NOT NULL, `files_path` TEXT NOT NULL)"
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS " +
-                        "`index_SimilarImagesAnalysis_histogram_checksum` " +
-                        "ON `SimilarImagesAnalysis` (`histogram_checksum`)"
+                            "`index_SimilarImagesAnalysis_histogram_checksum` " +
+                            "ON `SimilarImagesAnalysis` (`histogram_checksum`)"
                 )
                 database.execSQL(
                     "CREATE TABLE IF NOT EXISTS `SimilarImagesAnalysisMetadata` (`_id` " +
-                        "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parent_path` " +
-                        "TEXT NOT NULL, `file_path` TEXT NOT NULL, `blue_channel` " +
-                        "TEXT NOT NULL, `green_channel` TEXT NOT NULL, `red_channel` " +
-                        "TEXT NOT NULL, `datapoints` INTEGER NOT NULL, `threshold` " +
-                        "INTEGER NOT NULL, `is_analysed` INTEGER NOT NULL)"
+                            "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parent_path` " +
+                            "TEXT NOT NULL, `file_path` TEXT NOT NULL, `blue_channel` " +
+                            "TEXT NOT NULL, `green_channel` TEXT NOT NULL, `red_channel` " +
+                            "TEXT NOT NULL, `datapoints` INTEGER NOT NULL, `threshold` " +
+                            "INTEGER NOT NULL, `is_analysed` INTEGER NOT NULL)"
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS " +
-                        "`index_SimilarImagesAnalysisMetadata_file_path_parent_path` " +
-                        "ON `SimilarImagesAnalysisMetadata` (`file_path`, `parent_path`)"
+                            "`index_SimilarImagesAnalysisMetadata_file_path_parent_path` " +
+                            "ON `SimilarImagesAnalysisMetadata` (`file_path`, `parent_path`)"
                 )
             }
         }
 
-        val MIGRATION_4_5 = object : Migration(4, 5) {
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "CREATE TABLE IF NOT EXISTS `AppStorageStats` " +
-                        "(`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                        "`package_name` TEXT NOT NULL, " +
-                        "`timestamp` INTEGER NOT NULL, " +
-                        "`package_size` INTEGER NOT NULL)"
+                            "(`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "`package_name` TEXT NOT NULL, " +
+                            "`timestamp` INTEGER NOT NULL, " +
+                            "`package_size` INTEGER NOT NULL)"
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS " +
-                        "`index_AppStorageStats_timestamp_package_id` " +
-                        "ON `AppStorageStats` (`timestamp`,`package_name`)"
+                            "`index_AppStorageStats_timestamp_package_id` " +
+                            "ON `AppStorageStats` (`timestamp`,`package_name`)"
                 )
             }
         }

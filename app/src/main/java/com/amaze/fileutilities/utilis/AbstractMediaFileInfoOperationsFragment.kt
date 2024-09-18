@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import android.annotation.SuppressLint
@@ -44,8 +24,6 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
 
     private val uninstallAppFilter = IntentFilter().apply {
         addAction(Intent.ACTION_PACKAGE_REMOVED)
-//        addAction(Intent.ACTION_PACKAGE_REPLACED)
-//        addAction(Intent.ACTION_PACKAGE_CHANGED)
         addDataScheme("package")
     }
 
@@ -119,22 +97,22 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
         }
         val summaryDialog = summaryDialogBuilder.create()
         summaryDialog.show()
-        getFilesViewModelObj().getMediaFileListSize(toDelete).observe(viewLifecycleOwner) {
-            sizeRaw ->
-            if (summaryDialog.isShowing) {
-                val size = Formatter.formatFileSize(requireContext(), sizeRaw)
-                summaryDialog.setMessage(
-                    resources.getString(R.string.delete_files_message)
-                        .format(toDelete.size, size)
-                )
+        getFilesViewModelObj().getMediaFileListSize(toDelete)
+            .observe(viewLifecycleOwner) { sizeRaw ->
+                if (summaryDialog.isShowing) {
+                    val size = Formatter.formatFileSize(requireContext(), sizeRaw)
+                    summaryDialog.setMessage(
+                        resources.getString(R.string.delete_files_message)
+                            .format(toDelete.size, size)
+                    )
+                }
             }
-        }
     }
 
     /**
      * setup compress click
      * @param toCompress to delete media files
-     * @param compressCallback callback once compression finishes
+     * @param compressedCallback callback once compression finishes
      */
     fun setupCompressImagesButton(
         toCompress: List<MediaFileInfo>,
@@ -179,21 +157,21 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
         }
         val summaryDialog = summaryDialogBuilder.create()
         summaryDialog.show()
-        getFilesViewModelObj().getMediaFileListSize(toCompress).observe(viewLifecycleOwner) {
-            sizeRaw ->
-            if (summaryDialog.isShowing) {
-                val size = Formatter.formatFileSize(requireContext(), sizeRaw)
-                summaryDialog.findViewById<TextView>(R.id.compression_message)?.text =
-                    resources.getString(R.string.compress_message)
-                        .format(toCompress.size, size)
+        getFilesViewModelObj().getMediaFileListSize(toCompress)
+            .observe(viewLifecycleOwner) { sizeRaw ->
+                if (summaryDialog.isShowing) {
+                    val size = Formatter.formatFileSize(requireContext(), sizeRaw)
+                    summaryDialog.findViewById<TextView>(R.id.compression_message)?.text =
+                        resources.getString(R.string.compress_message)
+                            .format(toCompress.size, size)
+                }
             }
-        }
     }
 
     /**
      * setup compress click
      * @param toCompress to delete media files
-     * @param compressCallback callback once compression finishes
+     * @param compressedCallback callback once compression finishes
      */
     @SuppressLint("SetTextI18n")
     fun setupCompressVideosButton(
@@ -223,8 +201,7 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
             val compressedFiles = mutableListOf<MediaFileInfo>()
             getFilesViewModelObj().compressMediaFiles(
                 toCompress,
-                compressQuality, disableAudio, deletePermanently, {
-                    progressMap ->
+                compressQuality, disableAudio, deletePermanently, { progressMap ->
                     requireActivity().runOnUiThread {
                         val progressText = StringBuffer()
                         progressMap.forEach {
@@ -258,15 +235,15 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
         }
         val summaryDialog = summaryDialogBuilder.create()
         summaryDialog.show()
-        getFilesViewModelObj().getMediaFileListSize(toCompress).observe(viewLifecycleOwner) {
-            sizeRaw ->
-            if (summaryDialog.isShowing) {
-                val size = Formatter.formatFileSize(requireContext(), sizeRaw)
-                summaryDialog.findViewById<TextView>(R.id.compression_message)?.text =
-                    resources.getString(R.string.compress_message)
-                        .format(toCompress.size, size)
+        getFilesViewModelObj().getMediaFileListSize(toCompress)
+            .observe(viewLifecycleOwner) { sizeRaw ->
+                if (summaryDialog.isShowing) {
+                    val size = Formatter.formatFileSize(requireContext(), sizeRaw)
+                    summaryDialog.findViewById<TextView>(R.id.compression_message)?.text =
+                        resources.getString(R.string.compress_message)
+                            .format(toCompress.size, size)
+                }
             }
-        }
     }
 
     /**
@@ -284,43 +261,43 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
         }
         val progressDialogBuilder = requireContext()
             .showProcessingDialog(layoutInflater, "")
-        val summaryDialogBuilder = Utils.buildDeleteSummaryDialog(requireContext()) {
-            deletePermanently ->
-            val progressDialog = progressDialogBuilder.create()
-            progressDialog.show()
-            if (deletePermanently) {
-                getFilesViewModelObj().deleteMediaFiles(toDelete).observe(viewLifecycleOwner) {
-                    progressDialog.findViewById<TextView>(R.id.please_wait_text)?.text =
-                        resources.getString(R.string.deleted_progress)
-                            .format(it.first, toDelete.size)
-                    if (it.second == toDelete.size) {
-                        deletedCallback.invoke()
-                        progressDialog.dismiss()
+        val summaryDialogBuilder =
+            Utils.buildDeleteSummaryDialog(requireContext()) { deletePermanently ->
+                val progressDialog = progressDialogBuilder.create()
+                progressDialog.show()
+                if (deletePermanently) {
+                    getFilesViewModelObj().deleteMediaFiles(toDelete).observe(viewLifecycleOwner) {
+                        progressDialog.findViewById<TextView>(R.id.please_wait_text)?.text =
+                            resources.getString(R.string.deleted_progress)
+                                .format(it.first, toDelete.size)
+                        if (it.second == toDelete.size) {
+                            deletedCallback.invoke()
+                            progressDialog.dismiss()
+                        }
                     }
-                }
-            } else {
-                getFilesViewModelObj().moveToTrashBin(toDelete).observe(viewLifecycleOwner) {
-                    progressDialog.findViewById<TextView>(R.id.please_wait_text)?.text =
-                        resources.getString(R.string.deleted_progress)
-                            .format(it.first, toDelete.size)
-                    if (it.second == toDelete.size) {
-                        deletedCallback.invoke()
-                        progressDialog.dismiss()
+                } else {
+                    getFilesViewModelObj().moveToTrashBin(toDelete).observe(viewLifecycleOwner) {
+                        progressDialog.findViewById<TextView>(R.id.please_wait_text)?.text =
+                            resources.getString(R.string.deleted_progress)
+                                .format(it.first, toDelete.size)
+                        if (it.second == toDelete.size) {
+                            deletedCallback.invoke()
+                            progressDialog.dismiss()
+                        }
                     }
                 }
             }
-        }
         val summaryDialog = summaryDialogBuilder.create()
         summaryDialog.show()
-        getFilesViewModelObj().getMediaFileListSize(toDelete).observe(viewLifecycleOwner) {
-            sizeRaw ->
-            if (summaryDialog.isShowing) {
-                val size = Formatter.formatFileSize(requireContext(), sizeRaw)
-                summaryDialog.findViewById<TextView>(R.id.dialog_summary)?.text =
-                    resources.getString(R.string.delete_files_temporarily_message)
-                        .format(toDelete.size, size)
+        getFilesViewModelObj().getMediaFileListSize(toDelete)
+            .observe(viewLifecycleOwner) { sizeRaw ->
+                if (summaryDialog.isShowing) {
+                    val size = Formatter.formatFileSize(requireContext(), sizeRaw)
+                    summaryDialog.findViewById<TextView>(R.id.dialog_summary)?.text =
+                        resources.getString(R.string.delete_files_temporarily_message)
+                            .format(toDelete.size, size)
+                }
             }
-        }
     }
 
     /**
@@ -353,15 +330,15 @@ abstract class AbstractMediaFileInfoOperationsFragment : Fragment() {
         }
         val summaryDialog = summaryDialogBuilder.create()
         summaryDialog.show()
-        getFilesViewModelObj().getMediaFileListSize(toRestore).observe(viewLifecycleOwner) {
-            sizeRaw ->
-            if (summaryDialog.isShowing) {
-                val size = Formatter.formatFileSize(requireContext(), sizeRaw)
-                summaryDialog.setMessage(
-                    resources.getString(R.string.trash_bin_restore_dialog_message)
-                        .format(toRestore.size, size)
-                )
+        getFilesViewModelObj().getMediaFileListSize(toRestore)
+            .observe(viewLifecycleOwner) { sizeRaw ->
+                if (summaryDialog.isShowing) {
+                    val size = Formatter.formatFileSize(requireContext(), sizeRaw)
+                    summaryDialog.setMessage(
+                        resources.getString(R.string.trash_bin_restore_dialog_message)
+                            .format(toRestore.size, size)
+                    )
+                }
             }
-        }
     }
 }

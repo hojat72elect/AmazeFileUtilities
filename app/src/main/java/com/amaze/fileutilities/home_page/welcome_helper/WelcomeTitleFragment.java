@@ -1,24 +1,16 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
 
-//import android.os.Build;
-//import android.os.Bundle;
-//import android.support.annotation.ColorInt;
-//import android.support.annotation.DrawableRes;
-//import android.support.annotation.Nullable;
-//import android.support.v4.app.Fragment;
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.view.ViewGroup;
-//import android.widget.ImageView;
-//import android.widget.TextView;
-
+import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.amaze.fileutilities.R;
+import android.view.LayoutInflater;
+import android.view.View;
 
 /**
  * A simple fragment that shows an image and a title.
@@ -34,8 +26,6 @@ public class WelcomeTitleFragment extends Fragment implements WelcomePage.OnChan
     private static final String ARG_TYPEFACE_PATH = "typeface_path";
     private static final String ARG_TITLE_COLOR = "title_color";
 
-    private int drawableId;
-    private String title = "";
     private boolean showParallaxAnim = true;
     private android.widget.TextView titleView = null;
     private android.widget.ImageView imageView = null;
@@ -55,7 +45,7 @@ public class WelcomeTitleFragment extends Fragment implements WelcomePage.OnChan
 
 
         WelcomeTitleFragment fragment = new WelcomeTitleFragment();
-        android.os.Bundle args = new android.os.Bundle();
+        Bundle args = new Bundle();
         args.putInt(ARG_DRAWABLE_ID, resId);
         args.putString(ARG_TITLE, title);
         args.putBoolean(ARG_SHOW_ANIM, showParallaxAnim);
@@ -66,24 +56,24 @@ public class WelcomeTitleFragment extends Fragment implements WelcomePage.OnChan
     }
 
     @Override
-    public android.view.View onCreateView(android.view.LayoutInflater inflater, ViewGroup container, android.os.Bundle savedInstanceState) {
-        android.view.View view = inflater.inflate(R.layout.wel_fragment_title, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.wel_fragment_title, container, false);
         imageView = view.findViewById(R.id.wel_image);
         titleView = view.findViewById(R.id.wel_title);
         return view;
     }
 
     @Override
-    public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        android.os.Bundle args = getArguments();
+        Bundle args = getArguments();
 
         if (args == null)
             return;
 
-        drawableId = args.getInt(ARG_DRAWABLE_ID);
-        title = args.getString(ARG_TITLE);
+        int drawableId = args.getInt(ARG_DRAWABLE_ID);
+        String title = args.getString(ARG_TITLE);
 
         imageView.setImageResource(drawableId);
         titleView.setText(title);
@@ -99,7 +89,7 @@ public class WelcomeTitleFragment extends Fragment implements WelcomePage.OnChan
 
     @Override
     public void onWelcomeScreenPageScrolled(int pageIndex, float offset, int offsetPixels) {
-        if (showParallaxAnim && android.os.Build.VERSION.SDK_INT >= 11 && imageView != null) {
+        if (showParallaxAnim && imageView != null) {
             imageView.setTranslationX(-offsetPixels * 0.8f);
         }
     }

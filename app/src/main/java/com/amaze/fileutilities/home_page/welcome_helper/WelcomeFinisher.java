@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
  */
 public class WelcomeFinisher {
 
-    private Fragment mFragment;
+    private final Fragment mFragment;
 
     /**
      * @param fragment A fragment that is a custom page in a {@link WelcomeActivity}

@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.analyse
 
 import androidx.lifecycle.LiveData
@@ -42,10 +22,9 @@ import com.amaze.fileutilities.utilis.AbstractMediaFilesAdapter
 import com.amaze.fileutilities.utilis.FixedSizePriorityQueue
 import com.amaze.fileutilities.utilis.PreferencesConstants
 import com.amaze.fileutilities.utilis.invalidate
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.util.PriorityQueue
 
 class AnalyseViewModel : ViewModel() {
 
@@ -59,8 +38,8 @@ class AnalyseViewModel : ViewModel() {
     var lowLightImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var memeImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var sleepingImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
-    var sadImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
-    var distractedImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
+    private var sadImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
+    private var distractedImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var selfieImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var groupPicImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var similarImagesLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
@@ -248,8 +227,7 @@ class AnalyseViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val countIdx = IntArray(101) { 0 }
             videosList.forEach {
-                it.extraInfo?.videoMetaData?.duration?.let {
-                    duration ->
+                it.extraInfo?.videoMetaData?.duration?.let { duration ->
                     val idx = duration / 1000 / 60
                     if (idx < 101) {
                         countIdx[idx.toInt()]++
@@ -265,8 +243,7 @@ class AnalyseViewModel : ViewModel() {
                 }
             }
             val result = videosList.filter {
-                it.extraInfo?.videoMetaData?.duration?.let {
-                    duration ->
+                it.extraInfo?.videoMetaData?.duration?.let { duration ->
                     if ((duration / 1000 / 60).toInt() == maxIdx) {
                         return@filter true
                     }
@@ -352,26 +329,27 @@ class AnalyseViewModel : ViewModel() {
         analysisType: Int,
         checkItemsList: List<AbstractMediaFilesAdapter.ListItem>
     ):
-        LiveData<Boolean> {
+            LiveData<Boolean> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(false)
-            checkItemsList.filter {
-                listItem ->
+            checkItemsList.filter { listItem ->
                 listItem.mediaFileInfo != null
-            }.map {
-                listItem ->
+            }.map { listItem ->
                 listItem.mediaFileInfo!!.path
-            }.let {
-                list ->
+            }.let { list ->
                 when (analysisType) {
                     ReviewImagesFragment.TYPE_SELFIE ->
                         dao.cleanIsSelfie(list)
+
                     ReviewImagesFragment.TYPE_SAD ->
                         dao.cleanIsSad(list)
+
                     ReviewImagesFragment.TYPE_SLEEPING ->
                         dao.cleanIsSleeping(list)
+
                     ReviewImagesFragment.TYPE_DISTRACTED ->
                         dao.cleanIsDistracted(list)
+
                     ReviewImagesFragment.TYPE_GROUP_PIC ->
                         dao.cleanIsGroupPic(list)
                 }
@@ -384,11 +362,10 @@ class AnalyseViewModel : ViewModel() {
         dao: SimilarImagesAnalysisDao,
         checkItemsList: List<AbstractMediaFilesAdapter.ListItem>
     ):
-        LiveData<Boolean> {
+            LiveData<Boolean> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(false)
-            checkItemsList.filter {
-                listItem ->
+            checkItemsList.filter { listItem ->
                 listItem.mediaFileInfo != null
             }.let { list ->
                 for (item in list) {
@@ -418,7 +395,7 @@ class AnalyseViewModel : ViewModel() {
         dao: MemeAnalysisDao,
         checkItemsList: List<AbstractMediaFilesAdapter.ListItem>
     ):
-        LiveData<Boolean> {
+            LiveData<Boolean> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(false)
             checkItemsList.filter { listItem ->
@@ -436,7 +413,7 @@ class AnalyseViewModel : ViewModel() {
         dao: BlurAnalysisDao,
         checkItemsList: List<AbstractMediaFilesAdapter.ListItem>
     ):
-        LiveData<Boolean> {
+            LiveData<Boolean> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(false)
             checkItemsList.filter { listItem ->
@@ -454,7 +431,7 @@ class AnalyseViewModel : ViewModel() {
         dao: LowLightAnalysisDao,
         checkItemsList: List<AbstractMediaFilesAdapter.ListItem>
     ):
-        LiveData<Boolean> {
+            LiveData<Boolean> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(false)
             checkItemsList.filter { listItem ->
@@ -468,33 +445,8 @@ class AnalyseViewModel : ViewModel() {
         }
     }
 
-    private fun processFileRecursive(
-        file: File,
-        priorityQueue: PriorityQueue<MediaFileInfo>,
-        mediaType: Int,
-        limit: Int = 99,
-    ) {
-        if (file.exists()) {
-            if (file.isDirectory) {
-                val filesInDir = file.listFiles()
-                filesInDir?.forEach {
-                    processFileRecursive(it, priorityQueue, mediaType)
-                }
-            } else {
-                val mediaFile = MediaFileInfo.fromFile(
-                    file,
-                    MediaFileInfo.ExtraInfo(mediaType, null, null, null)
-                )
-                if (priorityQueue.size > limit) {
-                    priorityQueue.remove()
-                }
-                priorityQueue.add(mediaFile)
-            }
-        }
-    }
-
     private fun transformSimilarImagesAnalysisToMediaFile(dao: SimilarImagesAnalysisDao):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val analysis = dao.getAll()
         val response = analysis.filter {
             it.invalidate(dao)
@@ -508,8 +460,7 @@ class AnalyseViewModel : ViewModel() {
                 return 1
             }
         }).map {
-            it.files.map {
-                filePath ->
+            it.files.map { filePath ->
                 val extraMetaData = MediaFileInfo.ExtraMetaData(it.histogram_checksum)
                 MediaFileInfo.fromFile(
                     File(filePath),
@@ -526,7 +477,7 @@ class AnalyseViewModel : ViewModel() {
     }
 
     private fun transformInternalStorageAnalysisToMediaFile(dao: InternalStorageAnalysisDao):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val analysis = dao.getAllEmptyFiles()
         val response = analysis.filter {
             it.invalidate(dao)
@@ -547,14 +498,16 @@ class AnalyseViewModel : ViewModel() {
         searchMediaFiles: Boolean,
         deepSearch: Boolean
     ):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val analysis: List<InternalStorageAnalysis> = when {
             searchMediaFiles -> {
                 dao.getAllMediaFiles()
             }
+
             deepSearch -> {
                 dao.getAll()
             }
+
             else -> {
                 dao.getAllShallow(PreferencesConstants.DEFAULT_DUPLICATE_SEARCH_DEPTH_INCL)
             }
@@ -564,8 +517,7 @@ class AnalyseViewModel : ViewModel() {
         }.filter {
             it.files.size > 1
         }.map {
-            it.files.map {
-                filePath ->
+            it.files.map { filePath ->
                 val extraMetaData = MediaFileInfo.ExtraMetaData(it.checksum)
                 MediaFileInfo.fromFile(
                     File(filePath),
@@ -584,7 +536,7 @@ class AnalyseViewModel : ViewModel() {
         imageAnalysis: List<ImageAnalysis>,
         dao: ImageAnalysisDao
     ):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val response = imageAnalysis.filter {
             it.invalidate(dao)
         }.map {
@@ -603,7 +555,7 @@ class AnalyseViewModel : ViewModel() {
         analysis: List<BlurAnalysis>,
         dao: BlurAnalysisDao
     ):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val response = analysis.filter {
             it.invalidate(dao)
         }.map {
@@ -622,7 +574,7 @@ class AnalyseViewModel : ViewModel() {
         analysis: List<LowLightAnalysis>,
         dao: LowLightAnalysisDao
     ):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val response = analysis.filter {
             it.invalidate(dao)
         }.map {
@@ -641,7 +593,7 @@ class AnalyseViewModel : ViewModel() {
         analysis: List<MemeAnalysis>,
         dao: MemeAnalysisDao
     ):
-        ArrayList<MediaFileInfo> {
+            ArrayList<MediaFileInfo> {
         val response = analysis.filter {
             it.invalidate(dao)
         }.map {

@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.settings
 
 import android.content.Context
@@ -36,18 +16,11 @@ import com.amaze.fileutilities.home_page.database.PathPreferencesDao
 import com.amaze.fileutilities.utilis.PreferencesConstants
 import com.amaze.fileutilities.utilis.getAppCommonSharedPreferences
 import com.amaze.fileutilities.utilis.showFolderChooserDialog
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.ref.WeakReference
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
-import kotlin.collections.arrayListOf
-import kotlin.collections.containsKey
-import kotlin.collections.forEach
-import kotlin.collections.iterator
 import kotlin.collections.set
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class PathPreferencesFragment : PreferenceFragmentCompat() {
 
@@ -118,7 +91,7 @@ class PathPreferencesFragment : PreferenceFragmentCompat() {
                 PreferencesConstants.DEFAULT_ENABLED_ANALYSIS
             )
         )
-        val onChange = Preference.OnPreferenceChangeListener { pref, newValue ->
+        val onChange = Preference.OnPreferenceChangeListener { _, newValue ->
             sharedPrefs.edit().putBoolean(
                 PathPreferences
                     .getEnablePreferenceKey(featureName!!),
@@ -129,9 +102,9 @@ class PathPreferencesFragment : PreferenceFragmentCompat() {
         preference.onPreferenceChangeListener = onChange
         preference.order = 0
         if ((
-            featureName!! == PathPreferences.FEATURE_ANALYSIS_IMAGE_FEATURES ||
-                featureName!! == PathPreferences.FEATURE_ANALYSIS_MEME
-            ) &&
+                    featureName!! == PathPreferences.FEATURE_ANALYSIS_IMAGE_FEATURES ||
+                            featureName!! == PathPreferences.FEATURE_ANALYSIS_MEME
+                    ) &&
             BuildConfig.IS_VERSION_FDROID
         ) {
             preference.isEnabled = false
@@ -145,7 +118,7 @@ class PathPreferencesFragment : PreferenceFragmentCompat() {
         preference.title = getString(R.string.reanalyse)
         preference.summary = getString(R.string.reanalyse_hint)
         preference.key = PathPreferences.getAnalysisMigrationPreferenceKey(featureName!!)
-        val onClick = Preference.OnPreferenceClickListener { pref ->
+        val onClick = Preference.OnPreferenceClickListener { _ ->
             showReanalyseDialog()
             true
         }
@@ -228,15 +201,13 @@ class PathPreferencesFragment : PreferenceFragmentCompat() {
     }
 
     private fun showCreateDialog() {
-        requireContext().showFolderChooserDialog {
-            file ->
+        requireContext().showFolderChooserDialog { file ->
             val pathPreferences = PathPreferences(
                 file.path, featureName!!,
                 featureName == PathPreferences.FEATURE_AUDIO_PLAYER
             )
             var overrideExisting = false
-            dao.findByFeature(featureName!!).forEach {
-                pathPref ->
+            dao.findByFeature(featureName!!).forEach { pathPref ->
                 if (file.path.contains(pathPref.path) || pathPref.path.contains(file.path)) {
                     // new analysis path contains existing path preference, clear existing analysis
                     overrideExisting = true

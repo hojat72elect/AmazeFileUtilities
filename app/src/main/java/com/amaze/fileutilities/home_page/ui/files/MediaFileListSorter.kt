@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.content.Context
@@ -38,19 +18,20 @@ class MediaFileListSorter(private val sortingPreference: SortingPreference) :
      * less than, equal to or greater than second
      */
     override fun compare(file1: MediaFileInfo?, file2: MediaFileInfo?): Int {
-        safeLet(file1, file2) {
-            f1, f2 ->
+        safeLet(file1, file2) { f1, f2 ->
             var compareGroupBy = 0
             when (sortingPreference.groupBy) {
                 GROUP_NAME -> {
                     compareGroupBy = groupByAsc * f1.listHeader[0].compareTo(f2.listHeader[0])
                 }
+
                 GROUP_DATE -> {
                     compareGroupBy = f1.listHeader.compareTo(f2.listHeader)
                     if (compareGroupBy != 0) {
                         compareGroupBy = groupByAsc * f1.date.compareTo(f2.date)
                     }
                 }
+
                 GROUP_PARENT, GROUP_ALBUM, GROUP_ARTIST, GROUP_PLAYLISTS -> {
                     compareGroupBy = groupByAsc * f1.listHeader.compareTo(f2.listHeader)
                 }
@@ -62,12 +43,15 @@ class MediaFileListSorter(private val sortingPreference: SortingPreference) :
                     SORT_NAME -> {
                         sortByAsc * f1.title.compareTo(f2.title)
                     }
+
                     SORT_MODIF -> {
                         sortByAsc * f1.date.compareTo(f2.date)
                     }
+
                     SORT_SIZE -> {
                         sortByAsc * f1.longSize.compareTo(f2.longSize)
                     }
+
                     SORT_LENGTH -> {
                         if (f1.extraInfo != null && f2.extraInfo != null) {
                             if (f1.extraInfo?.videoMetaData != null &&
@@ -93,6 +77,7 @@ class MediaFileListSorter(private val sortingPreference: SortingPreference) :
                             0
                         }
                     }
+
                     else -> {
                         0
                     }
@@ -156,22 +141,27 @@ class MediaFileListSorter(private val sortingPreference: SortingPreference) :
                     GROUP_PARENT -> {
                         it.listHeader = it.getParentName().uppercase()
                     }
+
                     GROUP_DATE -> {
                         it.listHeader = it.getModificationDate(context)
                     }
+
                     GROUP_NAME -> {
                         it.listHeader = if (it.title.isNotBlank())
                             it.title[0].toString().uppercase() else "-"
                     }
+
                     GROUP_ALBUM -> {
                         it.listHeader = it.extraInfo?.audioMetaData?.albumName?.uppercase()
                             ?: context
                                 .getString(R.string.unknown_artist)
                     }
+
                     GROUP_ARTIST -> {
                         it.listHeader = it.extraInfo?.audioMetaData?.artistName?.uppercase()
                             ?: context.getString(R.string.unknown_artist)
                     }
+
                     GROUP_PLAYLISTS -> {
                         it.listHeader = it.extraInfo?.audioMetaData?.playlist?.name?.uppercase()
                             ?: context.getString(R.string.unknown_artist)
@@ -248,9 +238,11 @@ class MediaFileListSorter(private val sortingPreference: SortingPreference) :
             fun getSortByKey(mediaListType: Int): String {
                 return "${mediaListType}_${PreferencesConstants.KEY_MEDIA_LIST_SORT_BY}"
             }
+
             fun getIsGroupByAscKey(mediaListType: Int): String {
                 return "${mediaListType}_${PreferencesConstants.KEY_MEDIA_LIST_GROUP_BY_IS_ASC}"
             }
+
             fun getIsSortByAscKey(mediaListType: Int): String {
                 return "${mediaListType}_${PreferencesConstants.KEY_MEDIA_LIST_SORT_BY_IS_ASC}"
             }

@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.database
 
 import android.content.Context
@@ -46,7 +26,7 @@ data class PathPreferences(
 ) {
     @Ignore
     constructor(path: String, feature: Int, excludes: Boolean = false) :
-        this(0, path, feature, excludes)
+            this(0, path, feature, excludes)
 
     companion object {
         const val FEATURE_AUDIO_PLAYER = 0
@@ -59,7 +39,6 @@ data class PathPreferences(
         const val FEATURE_ANALYSIS_TELEGRAM = 7
         const val FEATURE_ANALYSIS_LOW_LIGHT = 8
         const val FEATURE_ANALYSIS_WHATSAPP = 9
-        const val FEATURE_ANALYSIS_LARGE_FILES = 10
         const val FEATURE_ANALYSIS_SIMILAR_IMAGES = 11
 
         val ANALYSE_FEATURES_LIST = arrayListOf(
@@ -104,8 +83,7 @@ data class PathPreferences(
             pathPreferences: List<PathPreferences>,
             contextRef: WeakReference<Context>
         ) {
-            contextRef.get()?.let {
-                context ->
+            contextRef.get()?.let { context ->
                 val db = AppDatabase.getInstance(context)
                 pathPreferences.forEach {
                     when (it.feature) {
@@ -113,18 +91,22 @@ data class PathPreferences(
                             val analysisDao = db.analysisDao()
                             analysisDao.deleteByPathContains(it.path)
                         }
+
                         FEATURE_ANALYSIS_BLUR -> {
                             val blurDao = db.blurAnalysisDao()
                             blurDao.deleteByPathContains(it.path)
                         }
+
                         FEATURE_ANALYSIS_MEME -> {
                             val memesDao = db.memesAnalysisDao()
                             memesDao.deleteByPathContains(it.path)
                         }
+
                         FEATURE_ANALYSIS_LOW_LIGHT -> {
                             val lowLightDao = db.lowLightAnalysisDao()
                             lowLightDao.deleteByPathContains(it.path)
                         }
+
                         FEATURE_ANALYSIS_SIMILAR_IMAGES -> {
                             val similarImagesAnalysisDao = db.similarImagesAnalysisDao()
                             val similarImagesAnalysisMetadataDao =

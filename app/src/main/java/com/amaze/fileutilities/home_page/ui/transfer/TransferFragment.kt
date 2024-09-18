@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.transfer
 
 import android.content.ActivityNotFoundException
@@ -56,9 +36,9 @@ import com.amaze.fileutilities.utilis.showFade
 import com.amaze.fileutilities.utilis.showFileChooserDialog
 import com.amaze.fileutilities.utilis.showToastInCenter
 import com.amaze.fileutilities.utilis.showToastOnBottom
+import kotlin.math.abs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlin.math.abs
 
 class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, PeerListListener {
 
@@ -76,10 +56,8 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
     private val binding get() = _binding!!
 
     companion object {
-        val RECEIVER_BASE_PATH = "AmazeFileUtils"
-        val NO_MEDIA = ".nomedia"
-        val ID_LOG = "_id.log"
-        private val SEND_FILE_META_SPLITTER = "/"
+        const val RECEIVER_BASE_PATH = "AmazeFileUtils"
+        private const val SEND_FILE_META_SPLITTER = "/"
     }
 
     override fun onCreateView(
@@ -96,9 +74,9 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
         binding.scanButton.visibility = View.GONE
 
         val wifiManager = (
-            mainActivity!!.applicationContext
-                .getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
-            )
+                mainActivity!!.applicationContext
+                    .getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+                )
         if (!wifiManager.isWifiEnabled) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 try {
@@ -118,15 +96,15 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
             )
         } else {
             val isGranted = mainActivity?.initLocationResources(object :
-                    PermissionsActivity.OnPermissionGranted {
-                    override fun onPermissionGranted(isGranted: Boolean) {
-                        if (isGranted) {
-                            initScreenComponents()
-                        } else {
-                            locationPermissionDenied()
-                        }
+                PermissionsActivity.OnPermissionGranted {
+                override fun onPermissionGranted(isGranted: Boolean) {
+                    if (isGranted) {
+                        initScreenComponents()
+                    } else {
+                        locationPermissionDenied()
                     }
-                })
+                }
+            })
             isGranted?.also {
                 initScreenComponents()
             }
@@ -142,8 +120,8 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
 
             log.info(
                 "Already connect with" +
-                    " id ${viewModel.groupOwnerIP} my ip " +
-                    "${viewModel.selfIP}"
+                        " id ${viewModel.groupOwnerIP} my ip " +
+                        "${viewModel.selfIP}"
             )
         } else {
             _binding?.run {
@@ -157,10 +135,6 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
 
     fun getTransferViewModel(): TransferViewModel {
         return viewModel
-    }
-
-    fun getViewBinding(): FragmentTransferBinding {
-        return binding
     }
 
     private fun locationPermissionDenied() {
@@ -213,7 +187,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                         override fun onFailure(p0: Int) {
                             log.warn(
                                 "Failed to stop peer discovery, " +
-                                    "error code $p0"
+                                        "error code $p0"
                             )
                             requireActivity().showToastOnBottom(
                                 resources
@@ -263,7 +237,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                             requireActivity()
                                 .showToastOnBottom(
                                     "${getString(R.string.discovery_failure)} " +
-                                        ": $reasonCode"
+                                            ": $reasonCode"
                                 )
                             initScreenComponents()
                             stopScanButton.visibility = View.GONE
@@ -328,8 +302,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                         initConnectionTimer.start()
                         viewModel
                             .sendMessage("${it.name}$SEND_FILE_META_SPLITTER${it.length()}")
-                            .observe(viewLifecycleOwner) {
-                                didSendFileName ->
+                            .observe(viewLifecycleOwner) { didSendFileName ->
                                 if (!didSendFileName) {
                                     requireContext().showToastInCenter(
                                         resources
@@ -340,8 +313,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                                 } else {
                                     var lastProgress = 0L
                                     viewModel.initClientTransfer(it)
-                                        .observe(viewLifecycleOwner) {
-                                            progress ->
+                                        .observe(viewLifecycleOwner) { progress ->
                                             initConnectionTimer.cancel()
                                             invalidateTransferProgressBar(
                                                 progress, lastProgress,
@@ -391,31 +363,31 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                         sendButton.visibility = View.GONE
                         searchingText.visibility = View.VISIBLE
                         searchingText.text = resources.getString(R.string.receiving_files)
-                        viewModel.receiveMessage().observe(viewLifecycleOwner) {
-                            receivedFileNameAndBytes ->
-                            if (receivedFileNameAndBytes != null) {
-                                val array = receivedFileNameAndBytes.split(SEND_FILE_META_SPLITTER)
-                                val filePath = "$it/$RECEIVER_BASE_PATH/${array[0]}"
-                                val fileLength = array[1].toLong()
-                                searchingText.visibility = View.VISIBLE
-                                searchingText.text = getString(R.string.receiving_files)
-                                var lastProgress = 0L
-                                viewModel.initServerConnection(filePath, fileLength)
-                                    .observe(viewLifecycleOwner) {
-                                        progress ->
-                                        invalidateTransferProgressBar(
-                                            progress, lastProgress,
-                                            array[0]
-                                        )
-                                        lastProgress = progress.split("/")[0].toLong()
-                                    }
-                            } else {
-                                requireContext().showToastInCenter(
-                                    resources
-                                        .getString(R.string.failed_filename_receive)
-                                )
+                        viewModel.receiveMessage()
+                            .observe(viewLifecycleOwner) { receivedFileNameAndBytes ->
+                                if (receivedFileNameAndBytes != null) {
+                                    val array =
+                                        receivedFileNameAndBytes.split(SEND_FILE_META_SPLITTER)
+                                    val filePath = "$it/$RECEIVER_BASE_PATH/${array[0]}"
+                                    val fileLength = array[1].toLong()
+                                    searchingText.visibility = View.VISIBLE
+                                    searchingText.text = getString(R.string.receiving_files)
+                                    var lastProgress = 0L
+                                    viewModel.initServerConnection(filePath, fileLength)
+                                        .observe(viewLifecycleOwner) { progress ->
+                                            invalidateTransferProgressBar(
+                                                progress, lastProgress,
+                                                array[0]
+                                            )
+                                            lastProgress = progress.split("/")[0].toLong()
+                                        }
+                                } else {
+                                    requireContext().showToastInCenter(
+                                        resources
+                                            .getString(R.string.failed_filename_receive)
+                                    )
+                                }
                             }
-                        }
                     }
                 }
             }
@@ -609,7 +581,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                     override fun onFailure(p0: Int) {
                         requireContext().showToastInCenter(
                             "Connection " +
-                                "failed with $p0"
+                                    "failed with $p0"
                         )
                     }
                 }
@@ -647,8 +619,8 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
             viewModel.selfIP = Utils.wifiIpAddress(requireContext())
             log.info(
                 "isGO: ${p0.isGroupOwner}" +
-                    " owner ip: ${viewModel.groupOwnerIP}\n " +
-                    "selfIP: ${viewModel.groupOwnerIP}"
+                        " owner ip: ${viewModel.groupOwnerIP}\n " +
+                        "selfIP: ${viewModel.groupOwnerIP}"
             )
 
             if (getTransferViewModel().isConnectedToPeer) {
@@ -658,15 +630,14 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
                 )*/
                 log.warn("existing connection present!")
             } else {
-                viewModel.initHandshake(p0)?.observe(viewLifecycleOwner) {
-                    handshakeSuccess ->
+                viewModel.initHandshake(p0)?.observe(viewLifecycleOwner) { handshakeSuccess ->
                     initConnectionTimer.cancel()
                     if (!handshakeSuccess) {
                         failedToHandshake()
                     } else {
                         log.info(
                             "Handshake success, " +
-                                "peer ip: ${viewModel.peerIP}"
+                                    "peer ip: ${viewModel.peerIP}"
                         )
                         requireContext().showToastInCenter(
                             resources
@@ -691,7 +662,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
 
         log.info(
             "Connection established with group owner" +
-                " id ${viewModel.groupOwnerIP}"
+                    " id ${viewModel.groupOwnerIP}"
         )
     }
 
@@ -707,8 +678,7 @@ class TransferFragment : Fragment(), WifiP2pManager.ConnectionInfoListener, Peer
             } else {
                 _binding?.devicesParent?.removeAllViews()
                 monitorDiscoveryTime.cancel()
-                peers.deviceList.forEach {
-                    device ->
+                peers.deviceList.forEach { device ->
                     log.info("Found peer: $device")
                     _binding?.devicesParent?.addView(getPeerButton(device))
                 }

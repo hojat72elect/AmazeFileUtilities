@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.image_viewer.editor
 
 import android.Manifest
@@ -27,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -85,13 +64,13 @@ import ja.burhanrashid52.photoeditor.TextStyleBuilder
 import ja.burhanrashid52.photoeditor.ViewType
 import ja.burhanrashid52.photoeditor.shape.ShapeBuilder
 import ja.burhanrashid52.photoeditor.shape.ShapeType
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
 class EditImageActivity :
     BaseActivity(),
@@ -113,10 +92,9 @@ class EditImageActivity :
     private var mShapeBuilder: ShapeBuilder? = null
     private var mEmojiBSFragment: EmojiBSFragment? = null
     private var mStickerBSFragment: StickerBSFragment? = null
-//    private var mTxtCurrentTool: TextView? = null
+
     private var customToolbar: CustomToolbar? = null
     private var cropImageView: CropImageView? = null
-    private var mWonderFont: Typeface? = null
     private var mRvTools: RecyclerView? = null
     private var mRvFilters: LinearLayout? = null
     private var mRvFiltersParent: HorizontalScrollView? = null
@@ -126,6 +104,7 @@ class EditImageActivity :
     private var isFlipHApplied = false
     private var isFlipVApplied = false
     private var isCropVisible = false
+
     // need this to restart activity so that we can load latest image saved
     private var isSaved = false
     private var intentUri: Uri? = null
@@ -236,6 +215,7 @@ class EditImageActivity :
                     log.warn("failed to display image in editor", e)
                 }
             }
+
             else -> {
                 val imageUri = intent.data
                 if (imageUri != null) {
@@ -325,8 +305,7 @@ class EditImageActivity :
     private fun addFilterViews() {
         loadedBitmap?.let {
             val resizedBitmap = Bitmap.createScaledBitmap(loadedBitmap!!, 100, 100, false)
-            supportedFilters.forEach {
-                photoFilter ->
+            supportedFilters.forEach { photoFilter ->
                 val filterItem = layoutInflater.inflate(R.layout.row_filter_view, null)
                 val photoEditorView = filterItem.findViewById<PhotoEditorView>(R.id.imgFilterView)
                 val txtFilterName = filterItem.findViewById<TextView>(R.id.txtFilterName)
@@ -349,24 +328,24 @@ class EditImageActivity :
         val textEditorDialogFragment =
             TextEditorDialogFragment.show(this, text.toString(), colorCode)
         textEditorDialogFragment.setOnTextEditorListener(object :
-                TextEditorDialogFragment.TextEditorListener {
-                override fun onDone(inputText: String?, colorCode: Int) {
-                    val styleBuilder = TextStyleBuilder()
-                    styleBuilder.withTextColor(colorCode)
-                    if (rootView != null) {
-                        mPhotoEditor?.editText(rootView, inputText, styleBuilder)
-                    }
-//                mTxtCurrentTool?.setText(R.string.label_text)
-                    customToolbar?.setTitle(getString(R.string.label_text))
+            TextEditorDialogFragment.TextEditorListener {
+            override fun onDone(inputText: String?, colorCode: Int) {
+                val styleBuilder = TextStyleBuilder()
+                styleBuilder.withTextColor(colorCode)
+                if (rootView != null) {
+                    mPhotoEditor?.editText(rootView, inputText, styleBuilder)
                 }
-            })
+//                mTxtCurrentTool?.setText(R.string.label_text)
+                customToolbar?.setTitle(getString(R.string.label_text))
+            }
+        })
     }
 
     override fun onAddViewListener(viewType: ViewType?, numberOfAddedViews: Int) {
         log.debug(
             TAG,
             "onAddViewListener() called with: viewType = [$viewType], " +
-                "numberOfAddedViews = [$numberOfAddedViews]"
+                    "numberOfAddedViews = [$numberOfAddedViews]"
         )
     }
 
@@ -374,7 +353,7 @@ class EditImageActivity :
         log.debug(
             TAG,
             "onRemoveViewListener() called with: viewType = [$viewType], " +
-                "numberOfAddedViews = [$numberOfAddedViews]"
+                    "numberOfAddedViews = [$numberOfAddedViews]"
         )
     }
 
@@ -439,7 +418,7 @@ class EditImageActivity :
                     } else {
                         log.warn(
                             "failed to get stickers response code: ${response.code()} " +
-                                "error: ${response.message()}"
+                                    "error: ${response.message()}"
                         )
                     }
                 }
@@ -526,16 +505,13 @@ class EditImageActivity :
                 CAMERA_REQUEST -> {
                     mPhotoEditor?.clearAllViews()
                     val photo = data?.extras?.get("data") as Bitmap?
-//                    mPhotoEditorView?.source?.setImageBitmap(photo)
                     Glide.with(this).load(photo).into(mPhotoEditorView!!.source)
                 }
+
                 PICK_REQUEST -> try {
                     mPhotoEditor?.clearAllViews()
                     val uri = data?.data
-                    val bitmap = MediaStore.Images.Media.getBitmap(
-                        contentResolver, uri
-                    )
-//                    mPhotoEditorView?.source?.setImageBitmap(bitmap)
+
                     Glide.with(this).load(uri).into(mPhotoEditorView!!.source)
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -585,15 +561,15 @@ class EditImageActivity :
         val builder = AlertDialog.Builder(this, R.style.Custom_Dialog_Dark)
         builder.setMessage(getString(R.string.msg_save_image))
         builder.setPositiveButton(getString(R.string.save)) { _: DialogInterface?,
-            _: Int ->
+                                                              _: Int ->
             saveImage({}, {})
         }
         builder.setNegativeButton(getString(R.string.cancel)) { dialog: DialogInterface,
-            _: Int ->
+                                                                _: Int ->
             dialog.dismiss()
         }
         builder.setNeutralButton(getString(R.string.discard)) { _: DialogInterface?,
-            _: Int ->
+                                                                _: Int ->
             finish()
         }
         builder.create().show()
@@ -649,29 +625,33 @@ class EditImageActivity :
                 customToolbar?.setTitle(getString(R.string.label_shape))
                 showBottomSheetDialogFragment(mShapeBSFragment)
             }
+
             ToolType.TEXT -> {
                 removeCropView()
                 val textEditorDialogFragment = TextEditorDialogFragment.show(this)
                 textEditorDialogFragment.setOnTextEditorListener(object :
-                        TextEditorDialogFragment.TextEditorListener {
-                        override fun onDone(inputText: String?, colorCode: Int) {
-                            val styleBuilder = TextStyleBuilder()
-                            styleBuilder.withTextColor(colorCode)
-                            mPhotoEditor?.addText(inputText, styleBuilder)
-                            customToolbar?.setTitle(getString(R.string.label_text))
-                        }
-                    })
+                    TextEditorDialogFragment.TextEditorListener {
+                    override fun onDone(inputText: String?, colorCode: Int) {
+                        val styleBuilder = TextStyleBuilder()
+                        styleBuilder.withTextColor(colorCode)
+                        mPhotoEditor?.addText(inputText, styleBuilder)
+                        customToolbar?.setTitle(getString(R.string.label_text))
+                    }
+                })
             }
+
             ToolType.ERASER -> {
                 removeCropView()
                 mPhotoEditor?.brushEraser()
                 customToolbar?.setTitle(getString(R.string.label_eraser_mode))
             }
+
             ToolType.FILTER -> {
                 removeCropView()
                 customToolbar?.setTitle(getString(R.string.label_filter))
                 showFilter(true)
             }
+
             ToolType.ROTATE -> {
                 removeCropView()
                 isRotateApplied = !isRotateApplied
@@ -684,11 +664,13 @@ class EditImageActivity :
                 )
 //                applyBitmapOperation { rotate(it) }
             }
+
             ToolType.RESIZE -> {
                 customToolbar?.setTitle(getString(R.string.image_editor))
                 showResizeView()
                 isCropVisible = true
             }
+
             ToolType.FLIP_HORIZONTAL -> {
                 removeCropView()
                 isFlipHApplied = !isFlipHApplied
@@ -701,6 +683,7 @@ class EditImageActivity :
                 )
 //                applyBitmapOperation { flipHorizontal(it) }
             }
+
             ToolType.FLIP_VERTICAL -> {
                 removeCropView()
                 isFlipVApplied = !isFlipVApplied
@@ -713,10 +696,12 @@ class EditImageActivity :
                 )
 //                applyBitmapOperation { flipVertical(it) }
             }
+
             ToolType.EMOJI -> {
                 removeCropView()
                 showBottomSheetDialogFragment(mEmojiBSFragment)
             }
+
             ToolType.STICKER -> {
                 removeCropView()
                 val arguments = Bundle()
@@ -724,6 +709,7 @@ class EditImageActivity :
                 mStickerBSFragment?.arguments = arguments
                 showBottomSheetDialogFragment(mStickerBSFragment)
             }
+
             else -> {
                 // do nothing
             }
@@ -824,9 +810,9 @@ class EditImageActivity :
 
     override fun onBackPressed() {
         val isCacheEmpty = (
-            mPhotoEditor?.isCacheEmpty ?: false ||
-                cropImageView?.isVisible ?: false
-            )
+                mPhotoEditor?.isCacheEmpty ?: false ||
+                        cropImageView?.isVisible ?: false
+                )
 
         if (mIsFilterVisible) {
             showFilter(false)

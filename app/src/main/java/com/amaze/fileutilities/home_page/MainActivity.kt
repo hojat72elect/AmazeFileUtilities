@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
@@ -36,7 +17,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.ExistingPeriodicWorkPolicy
 import com.amaze.fileutilities.BuildConfig
@@ -90,12 +70,11 @@ class MainActivity :
     private var didShowWelcomeScreen = true
 
     // refers to com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
-    val RESULT_IN_APP_UPDATE_FAILED = 1
+    private val RESULT_IN_APP_UPDATE_FAILED = 1
 
     companion object {
         private const val VOICE_REQUEST_CODE = 1000
         const val KEY_INTENT_AUDIO_PLAYER = "audio_player_intent"
-        private const val DAYS_FOR_IMMEDIATE_UPDATE = Trial.TRIAL_DEFAULT_DAYS
         const val UPDATE_REQUEST_CODE = 123234
     }
 
@@ -109,8 +88,6 @@ class MainActivity :
             invokePermissionCheck()
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
-//        viewModel.copyTrainedData()
-//        viewModel.getAndSaveUniqueDeviceId()
         actionBarBinding = ActivityMainActionbarBinding.inflate(layoutInflater)
         searchActionBarBinding = ActivityMainActionbarSearchBinding.inflate(layoutInflater)
         selectedItemActionBarBinding = ActivityMainActionbarItemSelectedBinding
@@ -120,14 +97,7 @@ class MainActivity :
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_analyse, R.id.navigation_files, R.id.navigation_transfer
-            )
-        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
+
         supportActionBar?.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(
@@ -137,7 +107,7 @@ class MainActivity :
         )
         supportActionBar?.customView = actionBarBinding.root
         supportActionBar?.elevation = 0f
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             if (isOptionsVisible) {
                 isOptionsVisible = !isOptionsVisible
                 invalidateOptionsTabs()
@@ -167,7 +137,11 @@ class MainActivity :
             invalidateOptionsTabs()
         }
         binding.aboutText.setOnClickListener {
-            showAboutActivity(false, false, false)
+            showAboutActivity(
+                isTrialExpired = false,
+                isTrialInactive = false,
+                isNotConnected = false
+            )
         }
         binding.settingsText.setOnClickListener {
             val intent = Intent(this, PreferenceActivity::class.java)
@@ -261,54 +235,6 @@ class MainActivity :
         welcomeScreen?.onSaveInstanceState(outState)
     }
 
-    /*override fun onResume() {
-        super.onResume()
-
-        // observe for content changes
-        applicationContext
-            .contentResolver
-            .registerContentObserver(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false,
-                imagesObserver
-            )
-        applicationContext
-            .contentResolver
-            .registerContentObserver(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, false,
-                audiosObserver
-            )
-        applicationContext
-            .contentResolver
-            .registerContentObserver(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, false,
-                videosObserver
-            )
-        applicationContext
-            .contentResolver
-            .registerContentObserver(
-                MediaStore.Files.getContentUri("external"), false,
-                documentsObserver
-            )
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        // observe for content changes
-        applicationContext
-            .contentResolver
-            .unregisterContentObserver(imagesObserver)
-        applicationContext
-            .contentResolver
-            .unregisterContentObserver(audiosObserver)
-        applicationContext
-            .contentResolver
-            .unregisterContentObserver(videosObserver)
-        applicationContext
-            .contentResolver
-            .unregisterContentObserver(documentsObserver)
-    }*/
-
     override fun onPause() {
         super.onPause()
         UpdateChecker.unregisterListener()
@@ -367,6 +293,7 @@ class MainActivity :
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val fragment = getFragmentAtFrame()
         if (selectedItemActionBarBinding.root.isVisible &&
@@ -453,19 +380,6 @@ class MainActivity :
         }
     }
 
-    /*private val imagesObserver = UriObserver(Handler()) {
-        showToastInCenter("changes in images")
-    }
-    private val videosObserver = UriObserver(Handler()) {
-        showToastInCenter("changes in videos")
-    }
-    private val audiosObserver = UriObserver(Handler()) {
-        showToastInCenter("changes in audios")
-    }
-    private val documentsObserver = UriObserver(Handler()) {
-        showToastInCenter("changes in documents")
-    }*/
-
     private fun handleValidateTrial(trialResponse: TrialValidationApi.TrialResponse) {
         this@MainActivity.runOnUiThread {
             if (trialResponse.subscriptionStatus
@@ -481,7 +395,11 @@ class MainActivity :
                             notConnectedCount + 1
                         ).apply()
                     if (notConnectedCount > PreferencesConstants.VAL_THRES_NOT_CONNECTED_TRIAL) {
-                        showAboutActivity(false, false, true)
+                        showAboutActivity(
+                            isTrialExpired = false,
+                            isTrialInactive = false,
+                            isNotConnected = true
+                        )
                     }
                     log.warn("internet not connected count $notConnectedCount")
                 } else {
@@ -509,11 +427,19 @@ class MainActivity :
 
                         TrialValidationApi.TrialResponse.TRIAL_EXPIRED,
                         TrialValidationApi.TrialResponse.TRIAL_UNOFFICIAL -> {
-                            showAboutActivity(true, false, false)
+                            showAboutActivity(
+                                isTrialExpired = true,
+                                isTrialInactive = false,
+                                isNotConnected = false
+                            )
                         }
 
                         TrialValidationApi.TrialResponse.TRIAL_INACTIVE -> {
-                            showAboutActivity(false, true, false)
+                            showAboutActivity(
+                                isTrialExpired = false,
+                                isTrialInactive = true,
+                                isNotConnected = false
+                            )
                         }
                     }
                 }
@@ -530,7 +456,11 @@ class MainActivity :
                     if (notConnectedCount > PreferencesConstants
                             .VAL_THRES_NOT_CONNECTED_SUBSCRIBED
                     ) {
-                        showAboutActivity(false, false, true)
+                        showAboutActivity(
+                            isTrialExpired = false,
+                            isTrialInactive = false,
+                            isNotConnected = true
+                        )
                     }
                     log.warn("subscribed and internet not connected count $notConnectedCount")
                 } else {
@@ -553,6 +483,7 @@ class MainActivity :
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     fun invalidateSearchBar(showSearch: Boolean): AutoCompleteTextView? {
         if (::searchActionBarBinding.isInitialized) {
             searchActionBarBinding.run {
@@ -595,6 +526,7 @@ class MainActivity :
         return null
     }
 
+    @SuppressLint("SetTextI18n")
     fun invalidateSelectedActionBar(
         doShow: Boolean,
         hideActionBarOnClick: Boolean,
@@ -618,10 +550,10 @@ class MainActivity :
                             onBackPressed()
                         }
                     }
-                    title.setText("0")
+                    title.text = "0"
                     selectedItemActionBarBinding.root
                 } else {
-                    title.setText("0")
+                    title.text = "0"
                     searchActionBarBinding.root.hideFade(200)
                     actionBarBinding.root.showFade(300)
                     supportActionBar?.customView = actionBarBinding.root
@@ -635,10 +567,8 @@ class MainActivity :
     fun invalidateBottomBar(doShow: Boolean) {
         if (::binding.isInitialized) {
             if (doShow) {
-//            binding.navView.visibility = View.VISIBLE
                 binding.navView.showTranslateY(500)
             } else {
-//            binding.navView.visibility = View.GONE
                 binding.navView.hideTranslateY(500)
             }
         }

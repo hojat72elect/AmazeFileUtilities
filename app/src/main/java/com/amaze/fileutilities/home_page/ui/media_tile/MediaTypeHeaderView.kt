@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.media_tile
 
 import android.content.Context
@@ -144,9 +124,6 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
         invalidate()
     }
 
-    fun setTypeImageSrc(imageRes: Drawable) {
-//        typeImageView.setImageDrawable(imageRes)
-    }
 
     fun setAccentImageSrc(accentImage: Drawable) {
         accentImageView.setImageDrawable(accentImage)
@@ -161,9 +138,7 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
         return mediaRouteButton
     }
 
-    fun setHeaderColor(headerColor: Int, headerRes: Int) {
-//        setBackgroundResource(headerRes)
-//        setBackgroundResource(R.drawable.background_curved)
+    fun setHeaderColor(headerColor: Int) {
         mediaProgressIndicator.trackColor = ColorUtils.blendARGB(
             headerColor,
             Color.BLACK, .2f
@@ -282,8 +257,7 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
                 MediaFileListSorter.SortingPreference.getIsGroupByAscKey(mediaListType),
                 PreferencesConstants.DEFAULT_MEDIA_LIST_GROUP_BY_ASC
             )
-        MediaFileListSorter.GROUP_BY_MEDIA_TYPE_MAP[mediaListType]?.forEach {
-            groupByType ->
+        MediaFileListSorter.GROUP_BY_MEDIA_TYPE_MAP[mediaListType]?.forEach { groupByType ->
             val button = if (groupByType == sortingPreference.groupBy) {
                 getSelectedTextButton(
                     MediaFileListSorter.getGroupNameByType(
@@ -303,8 +277,7 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
                 )
             }
             button.setOnClickListener {
-                buttonsList.forEach {
-                    allButtons ->
+                buttonsList.forEach { allButtons ->
                     setUnSelectButton(allButtons)
                 }
                 setSelectButton(button)
@@ -350,8 +323,7 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
                 MediaFileListSorter.SortingPreference.getIsSortByAscKey(mediaListType),
                 PreferencesConstants.DEFAULT_MEDIA_LIST_SORT_BY_ASC
             )
-        MediaFileListSorter.SORT_BY_MEDIA_TYPE_MAP[mediaListType]?.forEach {
-            sortByType ->
+        MediaFileListSorter.SORT_BY_MEDIA_TYPE_MAP[mediaListType]?.forEach { sortByType ->
             val button = if (sortByType == sortingPreference.sortBy) {
                 getSelectedTextButton(
                     MediaFileListSorter.getSortNameByType(
@@ -371,8 +343,7 @@ class MediaTypeHeaderView(context: Context, attrs: AttributeSet?) : FrameLayout(
                 )
             }
             button.setOnClickListener {
-                buttonsList.forEach {
-                    allButtons ->
+                buttonsList.forEach { allButtons ->
                     setUnSelectButton(allButtons)
                 }
                 setSelectButton(button)

@@ -1,11 +1,5 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
-//import android.content.Context;
-//import android.os.Build;
-//import android.support.annotation.AnimRes;
-//import android.support.annotation.ColorRes;
-//import android.support.annotation.LayoutRes;
-//import android.support.v4.app.Fragment;
 
 import androidx.annotation.AnimRes;
 import androidx.annotation.ColorRes;
@@ -56,7 +50,7 @@ public class WelcomeConfiguration {
         NONE(R.layout.wel_bottom_none);
 
         @LayoutRes
-        /* package */ final int resId;
+        final int resId;
 
         BottomLayout(@LayoutRes int resId) {
             this.resId = resId;
@@ -66,11 +60,11 @@ public class WelcomeConfiguration {
 
     public static final int NO_ANIMATION_SET = -1;
 
-    private com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder builder;
+    private final WelcomeConfiguration.Builder builder;
 
-    private WelcomePageList pages;
+    private final WelcomePageList pages;
 
-    public WelcomeConfiguration(com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder builder) {
+    public WelcomeConfiguration(WelcomeConfiguration.Builder builder) {
         this.builder = builder;
 
         this.pages = new WelcomePageList();
@@ -122,15 +116,6 @@ public class WelcomeConfiguration {
      */
     public Fragment createFragment(int index) {
         return pages.get(index).createFragment();
-    }
-
-    /**
-     * Get the default background color
-     *
-     * @return default color
-     */
-    public BackgroundColor getDefaultBackgroundColor() {
-        return builder.defaultBackgroundColor;
     }
 
     /**
@@ -201,15 +186,6 @@ public class WelcomeConfiguration {
      */
     public String getDoneButtonTypefacePath() {
         return builder.doneButtonTypefacePath;
-    }
-
-    /**
-     * Default typeface path for titles
-     *
-     * @return path to typeface in assets folder
-     */
-    public String getDefaultTitleTypefacePath() {
-        return builder.defaultTitleTypefacePath;
     }
 
     /**
@@ -354,17 +330,16 @@ public class WelcomeConfiguration {
 
     public static class Builder {
 
-        private WelcomePageList pages = new WelcomePageList();
+        private final WelcomePageList pages = new WelcomePageList();
         private boolean canSkip = true;
         private boolean backButtonSkips = true;
         private boolean backButtonNavigatesPages = true;
         private BackgroundColor defaultBackgroundColor;
-        private android.content.Context context;
+        private final android.content.Context context;
         private boolean swipeToDismiss = false;
         private int exitAnimationResId = NO_ANIMATION_SET;
         private String skipButtonTypefacePath = null;
         private String doneButtonTypefacePath = null;
-        private String defaultTitleTypefacePath = null;
         private String defaultHeaderTypefacePath = null;
         private String defaultDescriptionTypefacePath = null;
         private boolean animateButtons = true;
@@ -477,109 +452,6 @@ public class WelcomeConfiguration {
             return this;
         }
 
-        /**
-         * Set the visibility of the next button
-         *
-         * @param showNextButton Whether or not to show the next button
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder showNextButton(boolean showNextButton) {
-            this.showNextButton = showNextButton;
-            return this;
-        }
-
-        /**
-         * Sets the visibility of the previous button (navigates back through the pages).
-         * This shows in the same spot as the skip button. If this welcome screen can be skipped,
-         * setting this to true will hide the skip button on all but the first page.
-         *
-         * @param showPrevButton Whether or not to show the previous button
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder showPrevButton(boolean showPrevButton) {
-            this.showPrevButton = showPrevButton;
-            return this;
-        }
-
-        /**
-         * If the action bar is enabled, setting this to true will cause the back
-         * button to be shown. Tapping it will cancel the welcome screen.
-         * (Show the action bar with a custom theme, set 'windowActionBar' to true
-         * and 'windowNoTitle' to false)
-         *
-         * @param showBackButton Whether or not to show the back button on the action bar
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder showActionBarBackButton(boolean showBackButton) {
-            this.showActionBarBackButton = showBackButton;
-            return this;
-        }
-
-        /**
-         * Set the path to a typeface (in assets) to be used for the skip button
-         *
-         * @param typefacePath The path to a typeface file in assets folder
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder skipButtonTypefacePath(String typefacePath) {
-            this.skipButtonTypefacePath = typefacePath;
-            return this;
-        }
-
-        /**
-         * Set the path to a typeface (in assets) to be used for the done button
-         *
-         * @param typefacePath The path to a typeface file in assets folder
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder doneButtonTypefacePath(String typefacePath) {
-            this.doneButtonTypefacePath = typefacePath;
-            return this;
-        }
-
-        /**
-         * Set the path to a typeface (in assets) to be used by default for titles
-         *
-         * @param typefacePath The path to a typeface file in assets folder
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder defaultTitleTypefacePath(String typefacePath) {
-            this.defaultTitleTypefacePath = typefacePath;
-            return this;
-        }
-
-        /**
-         * Set the path to a typeface (in assets) to be used by default for headers
-         *
-         * @param typefacePath The path to a typeface file in assets folder
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder defaultHeaderTypefacePath(String typefacePath) {
-            this.defaultHeaderTypefacePath = typefacePath;
-            return this;
-        }
-
-        /**
-         * Set the path to a typeface (in assets) to be used by default for descriptions
-         *
-         * @param typefacePath The path to a typeface file in assets folder
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder defaultDescriptionTypefacePath(String typefacePath) {
-            this.defaultDescriptionTypefacePath = typefacePath;
-            return this;
-        }
-
-        /**
-         * Set the animation that is used when the welcome screen closes
-         *
-         * @param exitAnimationResId The resource id of the animation to use
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder exitAnimation(@AnimRes int exitAnimationResId) {
-            this.exitAnimationResId = exitAnimationResId;
-            return this;
-        }
 
         /**
          * Set the color to be used when no background color is specified for a page
@@ -593,28 +465,6 @@ public class WelcomeConfiguration {
             return this;
         }
 
-        /**
-         * Set the color to be used when no background color is specified for a page.
-         * Default is colorPrimary if available (support library or lollipop+), otherwise material blue 600
-         *
-         * @param backgroundColor BackgroundColor to use as the default background color
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder defaultBackgroundColor(BackgroundColor backgroundColor) {
-            this.defaultBackgroundColor = backgroundColor;
-            return this;
-        }
-
-        /**
-         * Set the bottom layout to be used
-         *
-         * @param layout Bottom layout
-         * @return this Builder object to allow method calls to be chained
-         */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder bottomLayout(com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.BottomLayout layout) {
-            this.bottomLayoutRes = layout.resId;
-            return this;
-        }
 
         /**
          * Adds a page, uses the default background color
@@ -622,7 +472,7 @@ public class WelcomeConfiguration {
          * @param page The page to add
          * @return this Builder object to allow method calls to be chained
          */
-        public com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration.Builder page(WelcomePage page) {
+        public WelcomeConfiguration.Builder page(WelcomePage page) {
             page.setIndex(pages.size());
             if (!page.backgroundIsSet()) {
                 page.background(defaultBackgroundColor);

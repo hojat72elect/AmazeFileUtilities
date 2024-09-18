@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.video_player
 
 import android.app.PendingIntent
@@ -96,13 +76,13 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.common.collect.ImmutableList
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.Collections
 import java.util.Date
 import kotlin.math.abs
 import kotlin.math.ceil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 abstract class BaseVideoPlayerActivity :
     PermissionsActivity(),
@@ -189,13 +169,13 @@ abstract class BaseVideoPlayerActivity :
         initializePlayer()
         refactorPlayerController(
             !(
-                videoPlayerViewModel?.isInPictureInPicture ?: false ||
-                    videoPlayerViewModel?.isUiLocked ?: false
-                )
+                    videoPlayerViewModel?.isInPictureInPicture ?: false ||
+                            videoPlayerViewModel?.isUiLocked ?: false
+                    )
         )
         refactorSystemUi(
             resources.configuration.orientation
-                == Configuration.ORIENTATION_LANDSCAPE
+                    == Configuration.ORIENTATION_LANDSCAPE
         )
         getScreenSize()
         if (!isDialogActivity()) {
@@ -214,13 +194,9 @@ abstract class BaseVideoPlayerActivity :
     override fun onPlaybackStateChanged(playbackState: Int) {
         super.onPlaybackStateChanged(playbackState)
         viewBinding.videoView.keepScreenOn = !(
-            playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ||
-                player?.playWhenReady == false || player?.isPlaying == false
-            )
-    }
-
-    override fun onPause() {
-        super.onPause()
+                playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ||
+                        player?.playWhenReady == false || player?.isPlaying == false
+                )
     }
 
     override fun onStop() {
@@ -297,6 +273,7 @@ abstract class BaseVideoPlayerActivity :
                     gestureSkipStepMs = ((player?.duration!! * 5.0) / sWidth).toInt()
                 }
             }
+
             MotionEvent.ACTION_UP -> {
                 diffX = ceil((event.x - downX).toDouble()).toLong()
                 diffY = ceil((event.y - downY).toDouble()).toLong()
@@ -314,6 +291,7 @@ abstract class BaseVideoPlayerActivity :
                             viewBinding.videoView.isControllerVisible -> {
                                 viewBinding.videoView.hideController()
                             }
+
                             videoPlayerViewModel?.isUiLocked == true -> {
                                 viewBinding.lockUi.showFade(300)
                                 if (lockUiVisibilityCounter == null) {
@@ -335,6 +313,7 @@ abstract class BaseVideoPlayerActivity :
                                 }
                                 return true
                             }
+
                             else -> {
                                 viewBinding.videoView.showController()
                             }
@@ -360,6 +339,7 @@ abstract class BaseVideoPlayerActivity :
                     }
                 }
             }
+
             MotionEvent.ACTION_MOVE -> {
                 if (videoPlayerViewModel?.isUiLocked == true) {
                     return true
@@ -462,9 +442,9 @@ abstract class BaseVideoPlayerActivity :
         videoPlayerViewModel?.isInPictureInPicture = isInPictureInPictureMode
         refactorPlayerController(
             !(
-                videoPlayerViewModel?.isInPictureInPicture ?: false ||
-                    videoPlayerViewModel?.isUiLocked ?: false
-                )
+                    videoPlayerViewModel?.isInPictureInPicture ?: false ||
+                            videoPlayerViewModel?.isUiLocked ?: false
+                    )
         )
         if (!isInPictureInPictureMode && onStopCalled) {
             finish()
@@ -476,10 +456,10 @@ abstract class BaseVideoPlayerActivity :
         val videoUri = intent.data
         log.info(
             "Loading video from path ${videoUri?.path} " +
-                "and mimetype $mimeType"
+                    "and mimetype $mimeType"
         )
         if (videoUri != null) {
-            localVideoModel = LocalVideoModel(uri = videoUri!!, mimeType = mimeType)
+            localVideoModel = LocalVideoModel(uri = videoUri, mimeType = mimeType)
         }
     }
 
@@ -501,7 +481,7 @@ abstract class BaseVideoPlayerActivity :
                         videoPlayerViewModel?.videoModel?.mimeType
                     )
                     if (!videoPlayerViewModel?.videoModel?.uri?.authority
-                        .equals(packageName, true)
+                            .equals(packageName, true)
                     ) {
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
@@ -530,9 +510,9 @@ abstract class BaseVideoPlayerActivity :
                 videoPlayerViewModel?.isUiLocked = true
                 refactorPlayerController(
                     !(
-                        videoPlayerViewModel?.isInPictureInPicture ?: false ||
-                            videoPlayerViewModel?.isUiLocked ?: false
-                        )
+                            videoPlayerViewModel?.isInPictureInPicture ?: false ||
+                                    videoPlayerViewModel?.isUiLocked ?: false
+                            )
                 )
             }
             if (!isDialogActivity()) {
@@ -540,16 +520,15 @@ abstract class BaseVideoPlayerActivity :
             }
             rotationDisableView = customToolbar.addActionButton(getToolbarRotationDrawable()) {
                 videoPlayerViewModel?.isRotationLocked = !(
-                    videoPlayerViewModel?.isRotationLocked
-                        ?: true
-                    )
+                        videoPlayerViewModel?.isRotationLocked
+                            ?: true
+                        )
                 if (videoPlayerViewModel?.isRotationLocked == true) {
                     Utils.disableScreenRotation(this@BaseVideoPlayerActivity)
                 } else {
                     Utils.setScreenRotationSensor(this@BaseVideoPlayerActivity)
                 }
-                rotationDisableView?.let {
-                    imageView ->
+                rotationDisableView?.let { imageView ->
                     customToolbar.updateActionButton(imageView, getToolbarRotationDrawable())
                 }
             }
@@ -557,14 +536,13 @@ abstract class BaseVideoPlayerActivity :
             videoView.findViewById<ImageView>(R.id.fit_to_screen).visibility = View.VISIBLE
             videoView.findViewById<ImageView>(R.id.pip_video_player).visibility = View.VISIBLE
             viewBinding.lockUi.setOnClickListener {
-                videoPlayerViewModel?.let {
-                    viewModel ->
+                videoPlayerViewModel?.let { viewModel ->
                     viewModel.isUiLocked = false
                     refactorPlayerController(
                         !(
-                            videoPlayerViewModel?.isInPictureInPicture ?: false ||
-                                videoPlayerViewModel?.isUiLocked ?: false
-                            )
+                                videoPlayerViewModel?.isInPictureInPicture ?: false ||
+                                        videoPlayerViewModel?.isUiLocked ?: false
+                                )
                     )
                     viewBinding.lockUi.hideFade(300)
                 }
@@ -606,6 +584,7 @@ abstract class BaseVideoPlayerActivity :
                     R.id.info -> {
                         showInfoDialog()
                     }
+
                     R.id.playback_properties -> {
                         player?.pause()
                         // required because conversion from pitch to semitones doesn't match slider steps
@@ -620,21 +599,22 @@ abstract class BaseVideoPlayerActivity :
                             layoutInflater,
                             player?.playbackParameters?.speed ?: 1f,
                             defaultSemitones,
-                            {
-                                playbackSpeed, pitch ->
+                            { playbackSpeed, pitch ->
                                 val param = PlaybackParameters(playbackSpeed, pitch)
                                 player?.playbackParameters = param
                                 videoPlayerViewModel?.playbackSpeed = playbackSpeed
                                 videoPlayerViewModel?.pitchSpeed = pitch
                                 player?.play()
                             }, {
-                            player?.play()
-                        }
+                                player?.play()
+                            }
                         ).show()
                     }
+
                     R.id.subtitles -> {
                         showSubtitlePopup()
                     }
+
                     R.id.share -> {
                         showShareDialog(mediaFile)
                     }
@@ -646,8 +626,7 @@ abstract class BaseVideoPlayerActivity :
 
     private fun showShareDialog(mediaFile: File?) {
         var processed = false
-        mediaFile?.let {
-            file ->
+        mediaFile?.let { file ->
             val mediaFileInfo = MediaFileInfo.fromFile(
                 file,
                 MediaFileInfo.ExtraInfo(
@@ -684,40 +663,40 @@ abstract class BaseVideoPlayerActivity :
     private fun showSubtitlePopup() {
         val customToolbar = viewBinding.videoView
             .findViewById<ConstraintLayout>(R.id.top_bar_video_player) as CustomToolbar
-        setupSubtitlePopup {
-            item ->
+        setupSubtitlePopup { item ->
             when (item!!.itemId) {
                 R.id.sync_subtitles -> {
                     val popupWindow = setupSyncSubtitlesPopupWindow()
                     popupWindow.showAsDropDown(customToolbar.getOverflowButton())
                 }
+
                 R.id.open_subtitles -> {
                     val filter: FileFilter = {
                         it.isDirectory ||
-                            it.name.endsWith(".srt", true)
+                                it.name.endsWith(".srt", true)
                     }
                     this.showFileChooserDialog(filter) {
                         saveStateAndSetSubtitleFile(it)
                     }
                 }
+
                 R.id.enable_subtitles -> {
                     item.setChecked(!item.isChecked)
                     videoPlayerViewModel?.isSubtitleEnabled = item.isChecked
                     if (item.isChecked) {
-                        videoPlayerViewModel?.subtitleFilePath?.let {
-                            filePath ->
+                        videoPlayerViewModel?.subtitleFilePath?.let { filePath ->
                             saveStateAndSetSubtitleFile(File(filePath))
                         }
                     } else {
                         saveStateAndSetSubtitleFile(null)
                     }
                 }
+
                 R.id.search_subtitles -> {
                     if (isNetworkAvailable()) {
                         videoPlayerViewModel?.videoModel?.uri?.let {
                             val mediaFile = it.getFileFromUri(this)
-                            mediaFile?.let {
-                                file ->
+                            mediaFile?.let { file ->
                                 player?.pause()
                                 showFetchSubtitlesOnlineDialog(file)
                             }
@@ -773,20 +752,17 @@ abstract class BaseVideoPlayerActivity :
             onMenuItemClickListener.onMenuItemClick(item)
         }
         popupMenu.inflate(R.menu.video_subtitle_popup)
-        popupMenu.menu.findItem(R.id.enable_subtitles).let {
-            item ->
+        popupMenu.menu.findItem(R.id.enable_subtitles).let { item ->
             item.isVisible =
                 videoPlayerViewModel?.isSubtitleAvailable == true
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
-        popupMenu.menu.findItem(R.id.sync_subtitles).let {
-            item ->
+        popupMenu.menu.findItem(R.id.sync_subtitles).let { item ->
             item.isVisible =
                 videoPlayerViewModel?.isSubtitleAvailable == true && false
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
-        popupMenu.menu.findItem(R.id.search_subtitles).let {
-            item ->
+        popupMenu.menu.findItem(R.id.search_subtitles).let { item ->
             item.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
@@ -803,51 +779,51 @@ abstract class BaseVideoPlayerActivity :
                 dialogMessage += "${resources.getString(R.string.name)}: ${file.name}" + "\n"
                 dialogMessage += "${resources.getString(R.string.file_path)}: ${file.path}" + "\n"
                 dialogMessage += "${resources.getString(R.string.last_modified)}: " +
-                    Date(file.lastModified()) + "\n"
+                        Date(file.lastModified()) + "\n"
             }
         }
         player?.videoFormat?.let {
             dialogMessage += "\n${resources.getString(R.string.video)}\n---\n"
             dialogMessage += "${resources.getString(R.string.width)}: " +
-                "${it.width}" + "\n"
+                    "${it.width}" + "\n"
             dialogMessage += "${resources.getString(R.string.height)}: " +
-                "${it.height}" + "\n"
+                    "${it.height}" + "\n"
             dialogMessage += "${resources.getString(R.string.codecs)}: " +
-                "${it.codecs}" + "\n"
+                    "${it.codecs}" + "\n"
             dialogMessage += "${resources.getString(R.string.frame_rate)}: " +
-                "${it.frameRate}" + "\n"
+                    "${it.frameRate}" + "\n"
             dialogMessage += "${resources.getString(R.string.bitrate)}: " +
-                "${it.averageBitrate}" + "\n"
+                    "${it.averageBitrate}" + "\n"
             dialogMessage += "${resources.getString(R.string.channel)}: " +
-                "${it.channelCount}" + "\n"
+                    "${it.channelCount}" + "\n"
             dialogMessage += "${resources.getString(R.string.mime_type)}: " +
-                "${it.containerMimeType}" + "\n"
+                    "${it.containerMimeType}" + "\n"
             dialogMessage += "${resources.getString(R.string.sample_rate)}: " +
-                "${it.sampleRate}" + "\n"
+                    "${it.sampleRate}" + "\n"
         }
         player?.audioFormat?.let {
             dialogMessage += "\n${resources.getString(R.string.audio)}\n---\n"
             "${it.containerMimeType}" + "\n"
             dialogMessage += "${resources.getString(R.string.codecs)}: " +
-                "${it.codecs}" + "\n"
+                    "${it.codecs}" + "\n"
             dialogMessage += "${resources.getString(R.string.sample_rate)}: " +
-                "${it.sampleRate}" + "\n"
+                    "${it.sampleRate}" + "\n"
             dialogMessage += "${resources.getString(R.string.bitrate)}: " +
-                "${it.averageBitrate}" + "\n"
+                    "${it.averageBitrate}" + "\n"
             dialogMessage += "${resources.getString(R.string.channel)}: " +
-                "${it.channelCount}" + "\n"
+                    "${it.channelCount}" + "\n"
             dialogMessage += "${resources.getString(R.string.mime_type)}: " +
-                "${it.containerMimeType}" + "\n"
+                    "${it.containerMimeType}" + "\n"
         }
         player?.mediaMetadata?.let {
             dialogMessage += "\n${resources.getString(R.string.media)}\n---\n"
             dialogMessage += "${resources.getString(R.string.description)}: " +
-                "${it.description}" + "\n"
+                    "${it.description}" + "\n"
             dialogMessage += "${resources.getString(R.string.recording_date)}: ${it.artist}" + "\n"
             dialogMessage += "${resources.getString(R.string.release_date)}: " +
-                "${it.releaseMonth}/${it.releaseYear}" + "\n"
+                    "${it.releaseMonth}/${it.releaseYear}" + "\n"
             dialogMessage += "${resources.getString(R.string.recording_date)}: " +
-                "${it.recordingMonth}/${it.recordingYear}" + "\n"
+                    "${it.recordingMonth}/${it.recordingYear}" + "\n"
         }
         val builder: AlertDialog.Builder = this.let {
             AlertDialog.Builder(it, R.style.Custom_Dialog_Dark)
@@ -875,11 +851,12 @@ abstract class BaseVideoPlayerActivity :
                                 play()
                             }
                         }
+
                     ACTION_FORWARD ->
                         player?.seekForward()
+
                     ACTION_BACKGROUND -> {
-                        videoPlayerViewModel?.videoModel?.uri?.let {
-                            uri ->
+                        videoPlayerViewModel?.videoModel?.uri?.let { uri ->
                             AudioPlayerService.runService(
                                 uri,
                                 null, this@BaseVideoPlayerActivity
@@ -887,6 +864,7 @@ abstract class BaseVideoPlayerActivity :
                             finish()
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -910,8 +888,8 @@ abstract class BaseVideoPlayerActivity :
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             this.packageManager
                 .hasSystemFeature(
-                        PackageManager.FEATURE_PICTURE_IN_PICTURE
-                    )
+                    PackageManager.FEATURE_PICTURE_IN_PICTURE
+                )
         ) {
             videoPlayerViewModel?.playbackPosition = player?.currentPosition ?: 0
             viewBinding.videoView.useController = false
@@ -952,8 +930,7 @@ abstract class BaseVideoPlayerActivity :
     }
 
     private fun invalidateBrightness(doIncrease: Boolean) {
-        videoPlayerViewModel?.let {
-            videoPlayerViewModel ->
+        videoPlayerViewModel?.let { videoPlayerViewModel ->
             if (doIncrease) {
                 if (videoPlayerViewModel.brightnessLevel <= 0.993f) {
                     videoPlayerViewModel.brightnessLevel += 0.007f
@@ -971,8 +948,7 @@ abstract class BaseVideoPlayerActivity :
     }
 
     private fun invalidateVolume(doIncrease: Boolean) {
-        videoPlayerViewModel?.let {
-            videoPlayerViewModel ->
+        videoPlayerViewModel?.let { videoPlayerViewModel ->
             if (doIncrease) {
                 if (videoPlayerViewModel.volumeLevel <= 0.993f) {
                     videoPlayerViewModel.volumeLevel += 0.007f
@@ -1041,8 +1017,7 @@ abstract class BaseVideoPlayerActivity :
             videoPlayerViewModel?.subtitleFilePath = null
         } else {
             val filePath = subtitleFile.path
-            filePath.let {
-                path ->
+            filePath.let { path ->
                 val srt = path.removeExtension() + ".srt"
                 val srtFile = File(srt)
                 if (srtFile.exists()) {
@@ -1079,7 +1054,7 @@ abstract class BaseVideoPlayerActivity :
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.subtitles_search_view, null)
         dialogBuilder.setView(dialogView)
-        val editText = dialogView.findViewById(R.id.movie_name_edit_text) as AutoCompleteTextView
+        val editText: AutoCompleteTextView = dialogView.findViewById(R.id.movie_name_edit_text)
         editText.setText(mediaFile.name.removeExtension())
         val spinner = dialogView.findViewById<Spinner>(R.id.language_selection_spinner)
         val pleaseWaitDialog = this.showProcessingDialog(
@@ -1112,8 +1087,7 @@ abstract class BaseVideoPlayerActivity :
                     videoPlayerViewModel?.getSubtitlesList(
                         checkedList,
                         editText.text.toString()
-                    )?.observe(this) {
-                        resultList ->
+                    )?.observe(this) { resultList ->
                         if (resultList == null) {
                             pleaseWaitDialog.show()
                             dialog.dismiss()
@@ -1133,7 +1107,7 @@ abstract class BaseVideoPlayerActivity :
 
     private fun showSubtitlesSearchResultsList(
         subtitleResultsList:
-            List<SubtitlesSearchResultsAdapter.SubtitleResult>,
+        List<SubtitlesSearchResultsAdapter.SubtitleResult>,
         targetFile: File
     ) {
         val adapter: SubtitlesSearchResultsAdapter?
@@ -1155,8 +1129,10 @@ abstract class BaseVideoPlayerActivity :
             recyclerView.visibility = View.GONE
         } else {
             recyclerView.visibility = View.VISIBLE
-            adapter = SubtitlesSearchResultsAdapter(this, subtitleResultsList) {
-                downloadLink, downloadFileName ->
+            adapter = SubtitlesSearchResultsAdapter(
+                this,
+                subtitleResultsList
+            ) { downloadLink, downloadFileName ->
                 alertDialog.dismiss()
                 downloadLink?.let {
                     downloadSubtitle(downloadLink, downloadFileName, targetFile)
@@ -1181,7 +1157,7 @@ abstract class BaseVideoPlayerActivity :
             downloadFileName,
             targetFile,
             this.getExternalStorageDirectory()?.path +
-                "/${TransferFragment.RECEIVER_BASE_PATH}/files"
+                    "/${TransferFragment.RECEIVER_BASE_PATH}/files"
         )?.observe(this) { downloadPath ->
             if (downloadPath == null) {
                 pleaseWaitDialog.show()
@@ -1259,8 +1235,7 @@ abstract class BaseVideoPlayerActivity :
             } else {
                 it.videoView.showController()
                 it.videoView.useController = true
-                it.videoView.setControllerVisibilityListener {
-                    view ->
+                it.videoView.setControllerVisibilityListener { view ->
                     if (view == View.VISIBLE) {
                         it.videoView.showController()
                     } else {
@@ -1301,8 +1276,7 @@ abstract class BaseVideoPlayerActivity :
     }
 
     private fun initializePlayer() {
-        player?.let {
-            exoPlayer ->
+        player?.let { exoPlayer ->
             videoPlayerViewModel?.also {
                 initializeAttributes()
                 exoPlayer.setAudioAttributes(mAttrs!!, true)
@@ -1313,18 +1287,16 @@ abstract class BaseVideoPlayerActivity :
                     videoPlayerViewModel?.getPlaybackSavedState(
                         appDatabase
                             .videoPlayerStateDao()
-                    )?.observe(this) {
-                        playbackState ->
+                    )?.observe(this) { playbackState ->
                         if (playbackState != null) {
                             log.info(
                                 "found existing saved playback state for" +
-                                    " ${playbackState.filePath} at " +
-                                    "${playbackState.playbackPosition}"
+                                        " ${playbackState.filePath} at " +
+                                        "${playbackState.playbackPosition}"
                             )
                             continuePlayingTimer.start()
                             viewBinding.continuePlaying.showFade(300)
-                            viewBinding.continuePlaying.setOnClickListener {
-                                _ ->
+                            viewBinding.continuePlaying.setOnClickListener { _ ->
                                 exoPlayer.seekTo(
                                     it.currentWindow,
                                     playbackState.playbackPosition
@@ -1372,8 +1344,7 @@ abstract class BaseVideoPlayerActivity :
             WindowInsetsControllerCompat(
                 this.window,
                 viewBinding.root
-            ).let {
-                controller ->
+            ).let { controller ->
                 controller.hide(WindowInsetsCompat.Type.systemBars())
                 controller.systemBarsBehavior = WindowInsetsControllerCompat
                     .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -1382,8 +1353,7 @@ abstract class BaseVideoPlayerActivity :
             WindowInsetsControllerCompat(
                 this.window,
                 viewBinding.root
-            ).let {
-                controller ->
+            ).let { controller ->
                 controller.show(WindowInsetsCompat.Type.systemBars())
                 controller.systemBarsBehavior = WindowInsetsControllerCompat
                     .BEHAVIOR_SHOW_BARS_BY_TOUCH

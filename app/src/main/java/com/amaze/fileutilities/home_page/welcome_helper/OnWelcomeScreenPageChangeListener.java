@@ -4,11 +4,9 @@ import androidx.viewpager.widget.ViewPager;
 
 /**
  * Implemented by library components to respond to page scroll events
- * and initial setup
- * <p>
- * Created by stephentuso on 11/16/15.
+ * and initial setup.
  */
-/* package */ interface OnWelcomeScreenPageChangeListener extends ViewPager.OnPageChangeListener {
+interface OnWelcomeScreenPageChangeListener extends ViewPager.OnPageChangeListener {
     void setup(WelcomeConfiguration config);
 }
 

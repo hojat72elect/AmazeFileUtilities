@@ -1,6 +1,6 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
-/* package */ class ColorChangingBackgroundView extends android.view.View {
+class ColorChangingBackgroundView extends android.view.View {
 
     private BackgroundColor[] mColors = new BackgroundColor[0];
 
@@ -8,7 +8,7 @@ package com.amaze.fileutilities.home_page.welcome_helper;
     private float mOffset = 0;
 
     private android.graphics.Paint mPaint = null;
-    private android.graphics.Rect mRect = new android.graphics.Rect();
+    private final android.graphics.Rect mRect = new android.graphics.Rect();
 
     public ColorChangingBackgroundView(android.content.Context context) {
         super(context);

@@ -3,7 +3,7 @@ package com.amaze.fileutilities.home_page.welcome_helper;
 import android.view.View;
 import android.widget.TextView;
 
-/* package */ class SkipButton extends WelcomeViewWrapper {
+class SkipButton extends WelcomeViewWrapper {
 
     private boolean enabled = true;
     private boolean onlyShowOnFirstPage = false;

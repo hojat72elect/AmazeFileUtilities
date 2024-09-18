@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.os.Bundle
@@ -68,6 +48,7 @@ class SearchListFragment :
         const val SEARCH_HINT_RESULTS_THRESHOLD = 3
         const val FRAGMENT_TAG = "search_fragment"
     }
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -132,10 +113,9 @@ class SearchListFragment :
             requireActivity(),
             preloader!!,
             mutableListOf()
-        ) {
-            checkedSize, itemsCount, bytesFormatted ->
+        ) { checkedSize, itemsCount, bytesFormatted ->
             val title = "$checkedSize / $itemsCount" +
-                " ($bytesFormatted)"
+                    " ($bytesFormatted)"
             if (checkedSize > 0) {
                 setupShowActionBar()
                 setupCommonButtons()
@@ -148,8 +128,7 @@ class SearchListFragment :
         }
         invalidateFilterButtons()
         binding.run {
-            searchQueryInput.searchFilter.let {
-                searchFilter ->
+            searchQueryInput.searchFilter.let { searchFilter ->
                 filterImagesButton.setOnClickListener {
                     searchFilter.toggleFilterImages()
                     invalidateFilterButtons()
@@ -231,8 +210,7 @@ class SearchListFragment :
     }
 
     override fun afterTextChanged(s: Editable?) {
-        s?.let {
-            query ->
+        s?.let { query ->
             if (query.toString().length > SEARCH_HINT_THRESHOLD) {
                 if (searchQueryInput.aggregatedMediaFiles.mediaListsLoaded()) {
                     showLoadingViews(false)

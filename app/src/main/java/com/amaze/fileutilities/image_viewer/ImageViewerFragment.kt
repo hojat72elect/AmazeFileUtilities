@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.image_viewer
 
 import android.content.Intent
@@ -40,10 +20,19 @@ import com.amaze.fileutilities.databinding.QuickViewFragmentBinding
 import com.amaze.fileutilities.home_page.ui.files.FilesViewModel
 import com.amaze.fileutilities.home_page.ui.files.MediaFileInfo
 import com.amaze.fileutilities.image_viewer.editor.EditImageActivity
-import com.amaze.fileutilities.utilis.*
+import com.amaze.fileutilities.utilis.AbstractMediaFragment
+import com.amaze.fileutilities.utilis.DragDismissBottomSheetBehaviour
+import com.amaze.fileutilities.utilis.PreferencesConstants
+import com.amaze.fileutilities.utilis.Utils
 import com.amaze.fileutilities.utilis.Utils.Companion.showProcessingDialog
+import com.amaze.fileutilities.utilis.getAppCommonSharedPreferences
+import com.amaze.fileutilities.utilis.getDocumentFileFromUri
+import com.amaze.fileutilities.utilis.getFileFromUri
+import com.amaze.fileutilities.utilis.px
 import com.amaze.fileutilities.utilis.share.showSetAsDialog
 import com.amaze.fileutilities.utilis.share.showShareDialog
+import com.amaze.fileutilities.utilis.showToastInCenter
+import com.amaze.fileutilities.utilis.showToastOnBottom
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -51,13 +40,16 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.drew.imaging.ImageMetadataReader
-import com.drew.metadata.exif.*
-import com.drew.metadata.file.FileSystemDirectory
+import com.drew.metadata.exif.ExifIFD0Directory
+import com.drew.metadata.exif.ExifSubIFDDescriptor
+import com.drew.metadata.exif.ExifSubIFDDirectory
+import com.drew.metadata.exif.GpsDescriptor
+import com.drew.metadata.exif.GpsDirectory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.util.Collections
 import java.util.Date
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class ImageViewerFragment : AbstractMediaFragment() {
 
@@ -72,9 +64,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
         const val VIEW_TYPE_ARGUMENT = "ImageViewerFragment.viewTypeArgument"
 
         /**
-         * Creates a new instance of [ImageViewerFragment]
-         *
-         * [viewType] is the [ImageModel] that will be shown
+         * Creates a new instance of [ImageViewerFragment].
          */
         @JvmStatic
         fun newInstance(imageModel: LocalImageModel): ImageViewerFragment {
@@ -156,19 +146,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                 setupBottomBar(quickViewType)
                 setupBottomSheetBehaviour()
                 setupPropertiesSheet(quickViewType)
-                /*var result = "\n"
-                metadata.directories.forEach { directory ->
-                    val dirName = directory.name
-                    result += dirName + "\n"
-                    directory.tags.forEach {
-                        tag ->
-                        result += tag.description
-                        result += "\n"
-                    }
-                    result += "\n\n"
-                }*/
 
-//                    viewBinding.metadata.text = result
             }
         }
         showImage(quickViewType)
@@ -177,38 +155,42 @@ class ImageViewerFragment : AbstractMediaFragment() {
     private fun setupPropertiesSheet(quickViewType: LocalImageModel) {
         quickViewType.let {
             val file = it.uri.getFileFromUri(requireContext())
-            file?.let {
-                file ->
+            file?.let { file ->
                 _binding?.run {
 
                     imageMetadataLayout.fileName.text =
-                        "${resources.getString(R.string.file_name)}: \n${file.name}\n"
+                        buildString {
+                            append(resources.getString(R.string.file_name))
+                            append(": \n")
+                            append(file.name)
+                            append("\n")
+                        }
 
                     imageMetadataLayout.fileSize.text =
-                        "${resources.getString(R.string.size)}: \n" +
-                        "${Formatter.formatFileSize(
-                            requireContext(),
-                            file.length()
-                        )}\n"
-                    imageMetadataLayout.fileLastModified.text =
-                        "${resources.getString(R.string.date)}: \n" +
-                        "${Date(file.lastModified())}\n"
-                    imageMetadataLayout.filePath.text =
-                        "${resources.getString(R.string.path)}: \n${it.uri.path ?: file.path}\n"
-                    /*else if (fileSystemDirectory != null) {
-                        viewBinding.imageMetadataLayout.fileName.text =
-                            fileSystemDirectory.tags.toMutableList()[0].toString()
-                        viewBinding.imageMetadataLayout.fileSize.text =
-                            Formatter.formatFileSize(
-                                requireContext(),
-                                fileSystemDirectory.tags.toMutableList()[1].toString().toLong()
+                        buildString {
+                            append("${resources.getString(R.string.size)}: \n")
+                            append(
+                                "${
+                                    Formatter.formatFileSize(
+                                        requireContext(),
+                                        file.length()
+                                    )
+                                }\n"
                             )
+                        }
+                    imageMetadataLayout.fileLastModified.text =
+                        buildString {
+                            append("${resources.getString(R.string.date)}: \n")
+                            append("${Date(file.lastModified())}\n")
+                        }
+                    imageMetadataLayout.filePath.text =
+                        buildString {
+                            append(resources.getString(R.string.path))
+                            append(": \n")
+                            append(it.uri.path ?: file.path)
+                            append("\n")
+                        }
 
-                        imageMetadataLayout.fileLastModified.text =
-                            "${resources.getString(R.string.date)}: " +
-                                    "${fileSystemDirectory.tags.toMutableList()[2]
-                                    }"
-                    }*/
 
                     try {
                         val metadata = ImageMetadataReader.readMetadata(file)
@@ -216,103 +198,123 @@ class ImageViewerFragment : AbstractMediaFragment() {
                         val exifSubDirectory = metadata
                             .getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
                         val descriptor = ExifSubIFDDescriptor(exifSubDirectory)
-                        val fileSystemDirectory = metadata
-                            .getFirstDirectoryOfType(FileSystemDirectory::class.java)
+
                         val gpsDirectory = metadata
                             .getFirstDirectoryOfType(GpsDirectory::class.java)
                         val gpsDescriptor = GpsDescriptor(gpsDirectory)
 
                         var widthAndHeight = ""
-                        if (exifSubDirectory != null && descriptor != null) {
-                            descriptor.exifImageWidthDescription.let {
-                                width ->
+                        if (exifSubDirectory != null) {
+                            descriptor.exifImageWidthDescription.let { width ->
                                 if (!width.isNullOrEmpty()) {
-                                    descriptor.exifImageHeightDescription.let {
-                                        height ->
+                                    descriptor.exifImageHeightDescription.let { height ->
                                         if (!height.isNullOrEmpty()) {
                                             widthAndHeight =
-                                                "${width.replace(
-                                                " pixels",
-                                                ""
-                                            )}" +
-                                                "x${height.replace(
+                                                width.replace(
                                                     " pixels",
                                                     ""
-                                                )} | "
+                                                ) +
+                                                        "x${
+                                                            height.replace(
+                                                                " pixels",
+                                                                ""
+                                                            )
+                                                        } | "
                                         }
                                     }
                                 }
                             }
                         }
                         imageMetadataLayout.fileSize.text =
-                            "${resources.getString(R.string.size)}: \n" +
-                            "$widthAndHeight${Formatter.formatFileSize(
-                                requireContext(),
-                                file.length()
-                            )}\n"
+                            buildString {
+                                append("${resources.getString(R.string.size)}: \n")
+                                append(
+                                    "$widthAndHeight${
+                                        Formatter.formatFileSize(
+                                            requireContext(),
+                                            file.length()
+                                        )
+                                    }\n"
+                                )
+                            }
 
                         val exifDirectory = metadata
                             .getFirstDirectoryOfType(ExifIFD0Directory::class.java)
                         if (exifDirectory != null) {
-                            exifDirectory.getString(ExifIFD0Directory.TAG_MODEL).let {
-                                property ->
+                            exifDirectory.getString(ExifIFD0Directory.TAG_MODEL).let { property ->
                                 if (!property.isNullOrEmpty()) {
                                     imageMetadataLayout.model.visibility = View.VISIBLE
                                     imageMetadataLayout.lensInfoParent.visibility = View.VISIBLE
                                     imageMetadataLayout.model.text =
-                                        "${resources.getString(R.string.model)}: $property"
+                                        buildString {
+                                            append(resources.getString(R.string.model))
+                                            append(": ")
+                                            append(property)
+                                        }
                                 } else {
                                     imageMetadataLayout.model.visibility = View.GONE
                                 }
                             }
-                            exifDirectory.getString(ExifIFD0Directory.TAG_MAKE).let {
-                                property ->
+                            exifDirectory.getString(ExifIFD0Directory.TAG_MAKE).let { property ->
                                 if (!property.isNullOrEmpty()) {
                                     imageMetadataLayout.make.visibility = View.VISIBLE
                                     imageMetadataLayout.lensInfoParent.visibility = View.VISIBLE
                                     imageMetadataLayout.make.text =
-                                        "${resources.getString(R.string.make)}: $property"
+                                        buildString {
+                                            append(resources.getString(R.string.make))
+                                            append(": ")
+                                            append(property)
+                                        }
                                 } else {
                                     imageMetadataLayout.make.visibility = View.GONE
                                 }
                             }
                         }
-                        if (exifSubDirectory != null && descriptor != null) {
-                            descriptor.apertureValueDescription.let {
-                                property ->
+                        if (exifSubDirectory != null) {
+                            descriptor.apertureValueDescription.let { property ->
                                 if (!property.isNullOrEmpty()) {
                                     imageMetadataLayout.aperture.visibility = View.VISIBLE
                                     imageMetadataLayout.lensInfoParent.visibility = View.VISIBLE
                                     imageMetadataLayout.aperture.text =
-                                        "${resources.getString(R.string.aperture)}: $property"
+                                        buildString {
+                                            append(resources.getString(R.string.aperture))
+                                            append(": ")
+                                            append(property)
+                                        }
                                 } else {
                                     imageMetadataLayout.aperture.visibility = View.GONE
                                 }
                             }
-                            descriptor.shutterSpeedDescription.let {
-                                property ->
+                            descriptor.shutterSpeedDescription.let { property ->
                                 if (!property.isNullOrEmpty()) {
                                     imageMetadataLayout.shutterTime.visibility = View.VISIBLE
                                     imageMetadataLayout.lensInfoParent.visibility = View.VISIBLE
                                     imageMetadataLayout.shutterTime.text =
-                                        "${resources.getString(R.string.shutter_time)}: $property"
+                                        buildString {
+                                            append(resources.getString(R.string.shutter_time))
+                                            append(": ")
+                                            append(property)
+                                        }
                                 } else {
                                     imageMetadataLayout.shutterTime.visibility = View.GONE
                                 }
                             }
-                            descriptor.isoEquivalentDescription.let {
-                                property ->
+                            descriptor.isoEquivalentDescription.let { property ->
                                 if (!property.isNullOrEmpty()) {
                                     imageMetadataLayout.iso.visibility = View.VISIBLE
                                     imageMetadataLayout.lensInfoParent.visibility = View.VISIBLE
                                     imageMetadataLayout.iso.text =
-                                        "${resources.getString(R.string.iso)}: $property"
+                                        buildString {
+                                            append(resources.getString(R.string.iso))
+                                            append(": ")
+                                            append(property)
+                                        }
                                 } else {
                                     imageMetadataLayout.iso.visibility = View.GONE
                                 }
                             }
                         }
-                        if (gpsDirectory != null && gpsDescriptor != null) {
+                        if (gpsDirectory != null) {
                             gpsDescriptor.gpsLatitudeDescription.let { latitude ->
                                 gpsDescriptor.gpsLongitudeDescription.let { longitude ->
                                     if (!longitude.isNullOrEmpty() &&
@@ -321,12 +323,16 @@ class ImageViewerFragment : AbstractMediaFragment() {
                                         imageMetadataLayout.longitude.visibility = View.VISIBLE
                                         imageMetadataLayout.gpsInfoParent.visibility = View.VISIBLE
                                         imageMetadataLayout.longitude.text =
-                                            "${resources.getString(R.string.longitude)}: " +
-                                            "$longitude"
+                                            buildString {
+                                                append("${resources.getString(R.string.longitude)}: ")
+                                                append(longitude)
+                                            }
                                         imageMetadataLayout.lat.visibility = View.VISIBLE
                                         imageMetadataLayout.lat.text =
-                                            "${resources.getString(R.string.latitude)}: " +
-                                            "$latitude"
+                                            buildString {
+                                                append("${resources.getString(R.string.latitude)}: ")
+                                                append(latitude)
+                                            }
                                         imageMetadataLayout.openInMapsImage
                                             .setOnClickListener {
                                                 Utils.openInMaps(
@@ -354,8 +360,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                                 imageMetadataLayout.histogramInfoParent.width.toDouble(),
                                 resources
                             )
-                                .observe(viewLifecycleOwner) {
-                                    bitmap ->
+                                .observe(viewLifecycleOwner) { bitmap ->
                                     if (bitmap != null) {
                                         imageMetadataLayout.histogramInfo.visibility =
                                             View.VISIBLE
@@ -460,8 +465,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                         Collections
                             .singletonList(it.uri)
                     )
-                        .observe(viewLifecycleOwner) {
-                            shareAdapter ->
+                        .observe(viewLifecycleOwner) { shareAdapter ->
                             if (shareAdapter == null) {
                                 if (processed) {
                                     requireActivity().showToastInCenter(
@@ -507,8 +511,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                 resources.getString(R.string.delete)
             ) {
                 localImageModel!!.uri
-                    .getFileFromUri(requireContext())?.let {
-                        file ->
+                    .getFileFromUri(requireContext())?.let { file ->
                         val toDelete = Collections.singletonList(
                             MediaFileInfo.fromFile(
                                 file,
@@ -522,8 +525,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                             .showProcessingDialog(layoutInflater, "")
                         val progressDialog = progressDialogBuilder.create()
                         val summaryDialogBuilder = Utils
-                            .buildDeleteSummaryDialog(requireContext()) {
-                                deletePermanently ->
+                            .buildDeleteSummaryDialog(requireContext()) { deletePermanently ->
                                 progressDialog.show()
                                 if (deletePermanently) {
                                     filesViewModel.deleteMediaFiles(toDelete)
@@ -540,8 +542,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                         val summaryDialog = summaryDialogBuilder.create()
                         summaryDialog.show()
                         filesViewModel.getMediaFileListSize(toDelete)
-                            .observe(viewLifecycleOwner) {
-                                sizeRaw ->
+                            .observe(viewLifecycleOwner) { sizeRaw ->
                                 if (summaryDialog.isShowing) {
                                     val size = Formatter.formatFileSize(requireContext(), sizeRaw)
                                     summaryDialog
@@ -570,8 +571,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
         if (progressPair.second == toDelete.size) {
             // delete deleted data from observables in fileviewmodel
             filesViewModel.usedImagesSummaryTransformations()
-                .observe(viewLifecycleOwner) {
-                    pair ->
+                .observe(viewLifecycleOwner) { pair ->
                     if (pair != null) {
                         filesViewModel.deleteMediaFilesFromList(
                             pair.second,
@@ -614,7 +614,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
                         imageView.visibility = View.VISIBLE
                         sheetUpArrow.visibility = View.INVISIBLE
                         if ((activity as ImageViewerActivity).getViewpager()
-                            .isUserInputEnabled
+                                .isUserInputEnabled
                         ) {
                             (activity as ImageViewerActivity).getViewpager()
                                 .isUserInputEnabled = false
@@ -625,8 +625,6 @@ class ImageViewerFragment : AbstractMediaFragment() {
                     sheetUpArrow.visibility = View.VISIBLE
                     (activity as ImageViewerActivity).getViewpager().isUserInputEnabled = true
                 }
-//            viewBinding.bottomSheetBig.alpha = slideOffset
-//            viewBinding.layoutBottomSheet.alpha = slideOffset
             }
         }
     }
@@ -634,7 +632,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
     private fun showImage(localTypeModel: LocalImageModel) {
         log.info(
             "Show image in fragment ${localTypeModel.uri.path} " +
-                "and mimetype ${localTypeModel.mimeType}"
+                    "and mimetype ${localTypeModel.mimeType}"
         )
 
         var glide = Glide.with(this).load(localTypeModel.uri.toString())
@@ -722,8 +720,7 @@ class ImageViewerFragment : AbstractMediaFragment() {
             ): Boolean {
                 resource.let {
                     filesViewModel.getPaletteColors(it)
-                        .observe(this@ImageViewerFragment) {
-                            colorPair ->
+                        .observe(this@ImageViewerFragment) { colorPair ->
                             if (colorPair != null) {
                                 _binding?.layoutBottomSheet?.background?.setColorFilter(
                                     colorPair.first,
@@ -767,53 +764,4 @@ class ImageViewerFragment : AbstractMediaFragment() {
             }
         }
 
-    private fun showImageProcessingText() {
-
-        /*val matrix = Imgcodecs.imread(it.uri.getFileFromUri(requireContext())!!.path)
-        val factor = ImgUtils.laplace(matrix)
-        log.info("Found laplace of image: $factor")*/
-
-        /*val recognizer = TextRecognition
-            .getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        val imgPath = quickViewType.uri.getFileFromUri(requireContext())!!.path
-        val image = InputImage.fromBitmap(
-            BitmapFactory.decodeFile(imgPath),
-            0
-        )
-//                    result += "Laplacian variance: $factor\n"
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                // Task completed successfully
-
-                result += "\n\n\n------ Extracted text --------\n\n"
-                result += visionText.text
-                result += "\n\n"
-                log.info("CUSTOM:\n${visionText.text}")
-                viewBinding.metadata.text = result
-            }
-            .addOnFailureListener { e ->
-                // Task failed with an exception
-                // ...
-                log.warn("failed to recognize image", e)
-            }
-
-        *//*val thres = ImgUtils.thresholdInvert(ImgUtils.convertBitmapToMat(BitmapFactory
-                        .decodeFile(imgPath)))*//*
-                    ImgUtils.convertBitmapToMat(
-                        BitmapFactory
-                            .decodeFile(imgPath)
-                    )?.let {
-                        mat ->
-                        val zeros = ImgUtils.getTotalAndZeros(mat)
-
-//            val bitmap = ImgUtils.convertMatToBitmap(thres)
-                        result += "\n\n\n------ Dark areas --------\n\n"
-                        result += "Total: ${zeros.first}\nZeros: ${zeros.second}" +
-                            "\nRatio: ${(
-                                zeros.second.toDouble() /
-                                    zeros.first.toDouble()
-                                ).toDouble()}"
-                        result += "\n\n"
-                    }*/
-    }
 }

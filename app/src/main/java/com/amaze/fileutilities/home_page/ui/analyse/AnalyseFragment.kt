@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.analyse
 
 import android.content.ActivityNotFoundException
@@ -51,9 +31,9 @@ import com.amaze.fileutilities.utilis.Utils
 import com.amaze.fileutilities.utilis.getAppCommonSharedPreferences
 import com.amaze.fileutilities.utilis.showToastInCenter
 import com.amaze.fileutilities.utilis.showToastOnBottom
+import kotlin.concurrent.thread
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlin.concurrent.thread
 
 class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
 
@@ -207,8 +187,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                         similarImagesPreview.loadPreviews(it) {
                             val checksumHash: HashMap<String, Boolean> = HashMap()
                             cleanButtonClick(
-                                it.filter {
-                                    mediaFile ->
+                                it.filter { mediaFile ->
                                     val fileChecksum = mediaFile.extraInfo?.extraMetaData?.checksum
                                     if (fileChecksum == null ||
                                         checksumHash[fileChecksum] == true
@@ -270,8 +249,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                 }
             }
 
-            filesViewModel.getLargeFilesLiveData().observe(viewLifecycleOwner) {
-                largeFiles ->
+            filesViewModel.getLargeFilesLiveData().observe(viewLifecycleOwner) { largeFiles ->
                 largeFilesPreview.invalidateProgress(true, null)
                 largeFiles?.let {
                     largeFilesPreview.invalidateProgress(false, null)
@@ -283,8 +261,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                 }
             }
 
-            filesViewModel.getJunkFilesLiveData().observe(viewLifecycleOwner) {
-                junkFiles ->
+            filesViewModel.getJunkFilesLiveData().observe(viewLifecycleOwner) { junkFiles ->
                 junkFilesPreview.invalidateProgress(true, null)
                 junkFiles?.let {
                     junkFilesPreview.invalidateProgress(false, null)
@@ -310,8 +287,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                     duplicateFilesPreview.loadPreviews(it) {
                         val checksumHash: HashMap<String, Boolean> = HashMap()
                         cleanButtonClick(
-                            it.filter {
-                                mediaFile ->
+                            it.filter { mediaFile ->
                                 val fileChecksum = mediaFile.extraInfo?.extraMetaData?.checksum
                                 if (fileChecksum == null || checksumHash[fileChecksum] == true) {
                                     true
@@ -347,8 +323,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                                 }
                             }
                         analyseViewModel.getLargeVideos(mediaFilePair.second)
-                            .observe(viewLifecycleOwner) {
-                                largeVideosList ->
+                            .observe(viewLifecycleOwner) { largeVideosList ->
                                 largeVideosList?.let {
                                     largeVideoPreview.invalidateProgress(
                                         false,
@@ -366,8 +341,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
 
             if (PathPreferences.isEnabled(prefs, PathPreferences.FEATURE_ANALYSIS_DOWNLOADS)) {
                 filesViewModel.getLargeDownloads(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        largeDownloads ->
+                    .observe(viewLifecycleOwner) { largeDownloads ->
                         largeDownloadPreview.invalidateProgress(true, null)
                         largeDownloads?.let {
                             largeDownloadPreview.invalidateProgress(
@@ -381,23 +355,22 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                             }
                         }
                     }
-                filesViewModel.getOldDownloads(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    oldDownloads ->
-                    oldDownloadPreview.invalidateProgress(true, null)
-                    oldDownloads?.let {
-                        oldDownloadPreview.invalidateProgress(false, null)
-                        oldDownloadPreview.loadPreviews(oldDownloads) {
-                            cleanButtonClick(it) {
-                                filesViewModel.oldDownloadsLiveData = null
+                filesViewModel.getOldDownloads(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { oldDownloads ->
+                        oldDownloadPreview.invalidateProgress(true, null)
+                        oldDownloads?.let {
+                            oldDownloadPreview.invalidateProgress(false, null)
+                            oldDownloadPreview.loadPreviews(oldDownloads) {
+                                cleanButtonClick(it) {
+                                    filesViewModel.oldDownloadsLiveData = null
+                                }
                             }
                         }
                     }
-                }
             }
             if (PathPreferences.isEnabled(prefs, PathPreferences.FEATURE_ANALYSIS_SCREENSHOTS)) {
                 filesViewModel.getOldScreenshots(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        oldScreenshots ->
+                    .observe(viewLifecycleOwner) { oldScreenshots ->
                         oldScreenshotsPreview.invalidateProgress(
                             true,
                             null
@@ -416,23 +389,22 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                     }
             }
             if (PathPreferences.isEnabled(prefs, PathPreferences.FEATURE_ANALYSIS_RECORDING)) {
-                filesViewModel.getOldRecordings(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    oldRecordings ->
-                    oldRecordingsPreview.invalidateProgress(true, null)
-                    oldRecordings?.let {
-                        oldRecordingsPreview.invalidateProgress(false, null)
-                        oldRecordingsPreview.loadPreviews(oldRecordings) {
-                            cleanButtonClick(it) {
-                                filesViewModel.oldRecordingsLiveData = null
+                filesViewModel.getOldRecordings(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { oldRecordings ->
+                        oldRecordingsPreview.invalidateProgress(true, null)
+                        oldRecordings?.let {
+                            oldRecordingsPreview.invalidateProgress(false, null)
+                            oldRecordingsPreview.loadPreviews(oldRecordings) {
+                                cleanButtonClick(it) {
+                                    filesViewModel.oldRecordingsLiveData = null
+                                }
                             }
                         }
                     }
-                }
             }
             if (PathPreferences.isEnabled(prefs, PathPreferences.FEATURE_ANALYSIS_WHATSAPP)) {
                 filesViewModel.getWhatsappMediaLiveData(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        whatsappMedia ->
+                    .observe(viewLifecycleOwner) { whatsappMedia ->
                         whatsappPreview.invalidateProgress(true, null)
                         whatsappMedia?.let {
                             whatsappPreview.invalidateProgress(false, null)
@@ -446,8 +418,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
             }
             if (PathPreferences.isEnabled(prefs, PathPreferences.FEATURE_ANALYSIS_TELEGRAM)) {
                 filesViewModel.getTelegramMediaFiles(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        telegramMedia ->
+                    .observe(viewLifecycleOwner) { telegramMedia ->
                         telegramPreview.invalidateProgress(true, null)
                         telegramMedia?.let {
                             telegramPreview.invalidateProgress(false, null)
@@ -461,8 +432,7 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 memoryUsagePreview.visibility = View.VISIBLE
-                filesViewModel.getMemoryInfo().observe(viewLifecycleOwner) {
-                    memoryUsage ->
+                filesViewModel.getMemoryInfo().observe(viewLifecycleOwner) { memoryUsage ->
                     memoryUsagePreview.invalidateProgress(true, null)
                     memoryUsage?.let {
                         memoryUsagePreview.invalidateProgress(false, null)
@@ -492,18 +462,18 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                         launchUsageAccessScreen()
                     }, ::usageStatsPermissionReload)
                 } else {
-                    filesViewModel.getUnusedApps().observe(viewLifecycleOwner) {
-                        mediaFileInfoList ->
-                        unusedAppsPreview.invalidateProgress(true, null)
-                        mediaFileInfoList?.let {
-                            unusedAppsPreview.invalidateProgress(false, null)
-                            unusedAppsPreview.loadPreviews(mediaFileInfoList) {
-                                cleanButtonClick(it, true) {
-                                    filesViewModel.unusedAppsLiveData = null
+                    filesViewModel.getUnusedApps()
+                        .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                            unusedAppsPreview.invalidateProgress(true, null)
+                            mediaFileInfoList?.let {
+                                unusedAppsPreview.invalidateProgress(false, null)
+                                unusedAppsPreview.loadPreviews(mediaFileInfoList) {
+                                    cleanButtonClick(it, true) {
+                                        filesViewModel.unusedAppsLiveData = null
+                                    }
                                 }
                             }
                         }
-                    }
                 }
             }
 
@@ -518,36 +488,36 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                         launchUsageAccessScreen()
                     }, ::usageStatsPermissionReload)
                 } else {
-                    filesViewModel.getMostUsedApps().observe(viewLifecycleOwner) {
-                        mediaFileInfoList ->
-                        mostUsedAppsPreview.invalidateProgress(true, null)
-                        mediaFileInfoList?.let {
-                            mostUsedAppsPreview.invalidateProgress(
-                                false,
-                                null
-                            )
-                            mostUsedAppsPreview.loadPreviews(mediaFileInfoList) {
-                                cleanButtonClick(it, true) {
-                                    filesViewModel.mostUsedAppsLiveData = null
+                    filesViewModel.getMostUsedApps()
+                        .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                            mostUsedAppsPreview.invalidateProgress(true, null)
+                            mediaFileInfoList?.let {
+                                mostUsedAppsPreview.invalidateProgress(
+                                    false,
+                                    null
+                                )
+                                mostUsedAppsPreview.loadPreviews(mediaFileInfoList) {
+                                    cleanButtonClick(it, true) {
+                                        filesViewModel.mostUsedAppsLiveData = null
+                                    }
                                 }
                             }
                         }
-                    }
-                    filesViewModel.getLeastUsedApps().observe(viewLifecycleOwner) {
-                        mediaFileInfoList ->
-                        leastUsedAppsPreview.invalidateProgress(true, null)
-                        mediaFileInfoList?.let {
-                            leastUsedAppsPreview.invalidateProgress(
-                                false,
-                                null
-                            )
-                            leastUsedAppsPreview.loadPreviews(mediaFileInfoList) {
-                                cleanButtonClick(it, true) {
-                                    filesViewModel.leastUsedAppsLiveData = null
+                    filesViewModel.getLeastUsedApps()
+                        .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                            leastUsedAppsPreview.invalidateProgress(true, null)
+                            mediaFileInfoList?.let {
+                                leastUsedAppsPreview.invalidateProgress(
+                                    false,
+                                    null
+                                )
+                                leastUsedAppsPreview.loadPreviews(mediaFileInfoList) {
+                                    cleanButtonClick(it, true) {
+                                        filesViewModel.leastUsedAppsLiveData = null
+                                    }
                                 }
                             }
                         }
-                    }
                 }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
@@ -557,24 +527,23 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                     launchUsageAccessScreen()
                 }, ::usageStatsPermissionReload)
             } else {
-                filesViewModel.getNetworkIntensiveApps().observe(viewLifecycleOwner) {
-                    mediaFileInfoList ->
-                    networkIntensiveAppsPreview.invalidateProgress(true, null)
-                    mediaFileInfoList?.let {
-                        networkIntensiveAppsPreview.invalidateProgress(
-                            false,
-                            null
-                        )
-                        networkIntensiveAppsPreview.loadPreviews(mediaFileInfoList) {
-                            cleanButtonClick(it, true) {
-                                filesViewModel.networkIntensiveAppsLiveData = null
+                filesViewModel.getNetworkIntensiveApps()
+                    .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                        networkIntensiveAppsPreview.invalidateProgress(true, null)
+                        mediaFileInfoList?.let {
+                            networkIntensiveAppsPreview.invalidateProgress(
+                                false,
+                                null
+                            )
+                            networkIntensiveAppsPreview.loadPreviews(mediaFileInfoList) {
+                                cleanButtonClick(it, true) {
+                                    filesViewModel.networkIntensiveAppsLiveData = null
+                                }
                             }
                         }
                     }
-                }
             }
-            filesViewModel.getLargeApps().observe(viewLifecycleOwner) {
-                mediaFileInfoList ->
+            filesViewModel.getLargeApps().observe(viewLifecycleOwner) { mediaFileInfoList ->
                 largeAppsPreview.invalidateProgress(true, null)
                 mediaFileInfoList?.let {
                     largeAppsPreview.invalidateProgress(false, null)
@@ -585,30 +554,30 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                     }
                 }
             }
-            filesViewModel.getNewlyInstalledApps().observe(viewLifecycleOwner) {
-                mediaFileInfoList ->
-                newlyInstalledAppsPreview.invalidateProgress(true, null)
-                mediaFileInfoList?.let {
-                    newlyInstalledAppsPreview.invalidateProgress(false, null)
-                    newlyInstalledAppsPreview.loadPreviews(mediaFileInfoList) {
-                        cleanButtonClick(it, true) {
-                            filesViewModel.newlyInstalledAppsLiveData = null
+            filesViewModel.getNewlyInstalledApps()
+                .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                    newlyInstalledAppsPreview.invalidateProgress(true, null)
+                    mediaFileInfoList?.let {
+                        newlyInstalledAppsPreview.invalidateProgress(false, null)
+                        newlyInstalledAppsPreview.loadPreviews(mediaFileInfoList) {
+                            cleanButtonClick(it, true) {
+                                filesViewModel.newlyInstalledAppsLiveData = null
+                            }
                         }
                     }
                 }
-            }
-            filesViewModel.getRecentlyUpdatedApps().observe(viewLifecycleOwner) {
-                mediaFileInfoList ->
-                recentlyUpdatedAppsPreview.invalidateProgress(true, null)
-                mediaFileInfoList?.let {
-                    recentlyUpdatedAppsPreview.invalidateProgress(false, null)
-                    recentlyUpdatedAppsPreview.loadPreviews(mediaFileInfoList) {
-                        cleanButtonClick(it, true) {
-                            filesViewModel.recentlyUpdatedAppsLiveData = null
+            filesViewModel.getRecentlyUpdatedApps()
+                .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                    recentlyUpdatedAppsPreview.invalidateProgress(true, null)
+                    mediaFileInfoList?.let {
+                        recentlyUpdatedAppsPreview.invalidateProgress(false, null)
+                        recentlyUpdatedAppsPreview.loadPreviews(mediaFileInfoList) {
+                            cleanButtonClick(it, true) {
+                                filesViewModel.recentlyUpdatedAppsLiveData = null
+                            }
                         }
                     }
                 }
-            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 !isUsageStatsPermissionGranted()
             ) {
@@ -634,22 +603,21 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 gamesPreview.visibility = View.VISIBLE
-                filesViewModel.getGamesInstalled().observe(viewLifecycleOwner) {
-                    mediaFileInfoList ->
-                    gamesPreview.invalidateProgress(true, null)
-                    mediaFileInfoList?.let {
-                        gamesPreview.invalidateProgress(false, null)
-                        gamesPreview.loadPreviews(mediaFileInfoList) {
-                            cleanButtonClick(it, true) {
-                                filesViewModel.gamesInstalledLiveData = null
+                filesViewModel.getGamesInstalled()
+                    .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                        gamesPreview.invalidateProgress(true, null)
+                        mediaFileInfoList?.let {
+                            gamesPreview.invalidateProgress(false, null)
+                            gamesPreview.loadPreviews(mediaFileInfoList) {
+                                cleanButtonClick(it, true) {
+                                    filesViewModel.gamesInstalledLiveData = null
+                                }
                             }
                         }
                     }
-                }
             }
 
-            filesViewModel.getApksLiveData().observe(viewLifecycleOwner) {
-                mediaFileInfoList ->
+            filesViewModel.getApksLiveData().observe(viewLifecycleOwner) { mediaFileInfoList ->
                 allApksPreview.invalidateProgress(true, null)
                 mediaFileInfoList?.let {
                     allApksPreview.invalidateProgress(false, null)
@@ -661,18 +629,18 @@ class AnalyseFragment : AbstractMediaFileInfoOperationsFragment() {
                 }
             }
 
-            filesViewModel.getHiddenFilesLiveData().observe(viewLifecycleOwner) {
-                mediaFileInfoList ->
-                hiddenFilesPreview.invalidateProgress(true, null)
-                mediaFileInfoList?.let {
-                    hiddenFilesPreview.invalidateProgress(false, null)
-                    hiddenFilesPreview.loadPreviews(mediaFileInfoList) {
-                        cleanButtonClick(it) {
-                            filesViewModel.hiddenFilesLiveData = null
+            filesViewModel.getHiddenFilesLiveData()
+                .observe(viewLifecycleOwner) { mediaFileInfoList ->
+                    hiddenFilesPreview.invalidateProgress(true, null)
+                    mediaFileInfoList?.let {
+                        hiddenFilesPreview.invalidateProgress(false, null)
+                        hiddenFilesPreview.loadPreviews(mediaFileInfoList) {
+                            cleanButtonClick(it) {
+                                filesViewModel.hiddenFilesLiveData = null
+                            }
                         }
                     }
                 }
-            }
             if (analyseViewModel.fragmentScrollPosition != null) {
                 Handler().postDelayed({
                     analyseScrollView.scrollY = analyseViewModel.fragmentScrollPosition!!

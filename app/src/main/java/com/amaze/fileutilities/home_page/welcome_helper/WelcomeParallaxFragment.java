@@ -1,6 +1,8 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
+import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.annotation.ColorInt;
@@ -8,6 +10,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.amaze.fileutilities.R;
+import android.view.LayoutInflater;
 
 public class WelcomeParallaxFragment extends Fragment implements WelcomePage.OnChangeListener {
 
@@ -23,8 +26,6 @@ public class WelcomeParallaxFragment extends Fragment implements WelcomePage.OnC
     public static final String KEY_DESCRIPTION_COLOR = "description_color";
 
     private FrameLayout frameLayout = null;
-    private TextView titleView = null;
-    private android.widget.TextView descriptionView = null;
 
     private float startFactor = 0.2f;
     private float endFactor = 1.0f;
@@ -53,21 +54,21 @@ public class WelcomeParallaxFragment extends Fragment implements WelcomePage.OnC
         args.putString(KEY_DESCRIPTION_TYPEFACE_PATH, descriptionTypefacePath);
         args.putInt(KEY_HEADER_COLOR, headerColor);
         args.putInt(KEY_DESCRIPTION_COLOR, descriptionColor);
-        com.amaze.fileutilities.home_page.welcome_helper.WelcomeParallaxFragment fragment = new com.amaze.fileutilities.home_page.welcome_helper.WelcomeParallaxFragment();
+        WelcomeParallaxFragment fragment = new WelcomeParallaxFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Nullable
     @Override
-    public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, android.os.Bundle savedInstanceState) {
-        android.view.View view = inflater.inflate(R.layout.wel_fragment_parallax, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.wel_fragment_parallax, container, false);
 
         android.os.Bundle args = getArguments();
 
-        frameLayout = (android.widget.FrameLayout) view.findViewById(R.id.wel_parallax_frame);
-        titleView = (android.widget.TextView) view.findViewById(R.id.wel_title);
-        descriptionView = (android.widget.TextView) view.findViewById(R.id.wel_description);
+        frameLayout = view.findViewById(R.id.wel_parallax_frame);
+        TextView titleView = view.findViewById(R.id.wel_title);
+        TextView descriptionView = view.findViewById(R.id.wel_description);
 
         if (args == null)
             return view;

@@ -3,13 +3,13 @@ package com.amaze.fileutilities.home_page.welcome_helper;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/* package */ class WelcomeItemList extends ArrayList<OnWelcomeScreenPageChangeListener> implements OnWelcomeScreenPageChangeListener {
+class WelcomeItemList extends ArrayList<OnWelcomeScreenPageChangeListener> implements OnWelcomeScreenPageChangeListener {
 
-    /* package */ WelcomeItemList(OnWelcomeScreenPageChangeListener... items) {
+    WelcomeItemList(OnWelcomeScreenPageChangeListener... items) {
         super(Arrays.asList(items));
     }
 
-    /* package */ void addAll(OnWelcomeScreenPageChangeListener... items) {
+    void addAll(OnWelcomeScreenPageChangeListener... items) {
         super.addAll(Arrays.asList(items));
     }
 

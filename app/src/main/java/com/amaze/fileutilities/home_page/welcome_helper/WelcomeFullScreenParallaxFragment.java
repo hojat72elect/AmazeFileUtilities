@@ -1,5 +1,7 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
@@ -21,9 +23,12 @@ public class WelcomeFullScreenParallaxFragment extends Fragment implements Welco
     private float parallaxInterval = 0f;
     private boolean parallaxRecursive = false;
 
-    public static WelcomeFullScreenParallaxFragment newInstance(@LayoutRes int layoutId, float startParallaxFactor, float endParallaxFactor,
-                                                                boolean parallaxRecursive) {
-        android.os.Bundle args = new android.os.Bundle();
+    public static WelcomeFullScreenParallaxFragment newInstance(
+            @LayoutRes int layoutId,
+            float startParallaxFactor,
+            float endParallaxFactor,
+            boolean parallaxRecursive) {
+        Bundle args = new Bundle();
         args.putInt(KEY_LAYOUT_ID, layoutId);
         args.putFloat(KEY_START_FACTOR, startParallaxFactor);
         args.putFloat(KEY_END_FACTOR, endParallaxFactor);
@@ -35,10 +40,10 @@ public class WelcomeFullScreenParallaxFragment extends Fragment implements Welco
 
     @Nullable
     @Override
-    public View onCreateView(android.view.LayoutInflater inflater, ViewGroup container, android.os.Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wel_fragment_parallax_full_screen, container, false);
 
-        android.os.Bundle args = getArguments();
+        Bundle args = getArguments();
 
         frameLayout = view.findViewById(R.id.wel_parallax_frame);
 

@@ -1,14 +1,19 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.amaze.fileutilities.R;
 
+
 /**
- * Created by stephentuso on 11/15/15.
  * A simple fragment that shows an image, a heading, and a description.
  */
 public class WelcomeBasicFragment extends Fragment implements WelcomePage.OnChangeListener {
@@ -22,20 +27,20 @@ public class WelcomeBasicFragment extends Fragment implements WelcomePage.OnChan
     public static final String KEY_HEADER_COLOR = "header_color";
     public static final String KEY_DESCRIPTION_COLOR = "description_color";
 
-    private android.widget.ImageView imageView = null;
-    private android.widget.TextView titleView = null;
-    private android.widget.TextView descriptionView = null;
+    private ImageView imageView = null;
     private boolean showParallaxAnim = true;
 
-    public static com.amaze.fileutilities.home_page.welcome_helper.WelcomeBasicFragment newInstance(@DrawableRes int drawableId,
-                                                                                                    String title,
-                                                                                                    String description,
-                                                                                                    boolean showParallaxAnim,
-                                                                                                    String headerTypefacePath,
-                                                                                                    String descriptionTypefacePath,
-                                                                                                    @ColorInt int headerColor,
-                                                                                                    @ColorInt int descriptionColor) {
-        android.os.Bundle args = new android.os.Bundle();
+    public static WelcomeBasicFragment newInstance(
+            @DrawableRes int drawableId,
+            String title,
+            String description,
+            boolean showParallaxAnim,
+            String headerTypefacePath,
+            String descriptionTypefacePath,
+            @ColorInt int headerColor,
+            @ColorInt int descriptionColor
+    ) {
+        Bundle args = new android.os.Bundle();
         args.putInt(KEY_DRAWABLE_ID, drawableId);
         args.putString(KEY_TITLE, title);
         args.putString(KEY_DESCRIPTION, description);
@@ -44,21 +49,21 @@ public class WelcomeBasicFragment extends Fragment implements WelcomePage.OnChan
         args.putString(KEY_DESCRIPTION_TYPEFACE_PATH, descriptionTypefacePath);
         args.putInt(KEY_HEADER_COLOR, headerColor);
         args.putInt(KEY_DESCRIPTION_COLOR, descriptionColor);
-        com.amaze.fileutilities.home_page.welcome_helper.WelcomeBasicFragment fragment = new com.amaze.fileutilities.home_page.welcome_helper.WelcomeBasicFragment();
+        WelcomeBasicFragment fragment = new WelcomeBasicFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Nullable
     @Override
-    public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, android.os.Bundle savedInstanceState) {
-        android.view.View view = inflater.inflate(R.layout.wel_fragment_basic, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.wel_fragment_basic, container, false);
 
         android.os.Bundle args = getArguments();
 
-        imageView = (android.widget.ImageView) view.findViewById(R.id.wel_image);
-        titleView = (android.widget.TextView) view.findViewById(R.id.wel_title);
-        descriptionView = (android.widget.TextView) view.findViewById(R.id.wel_description);
+        imageView = view.findViewById(R.id.wel_image);
+        TextView titleView = view.findViewById(R.id.wel_title);
+        TextView descriptionView = view.findViewById(R.id.wel_description);
 
         if (args == null)
             return view;

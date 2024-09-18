@@ -1,11 +1,10 @@
 package com.amaze.fileutilities.home_page.welcome_helper;
 
-import  androidx.fragment.app.Fragment;
+import android.content.Context;
 import androidx.annotation.ColorRes;
+import androidx.fragment.app.Fragment;
 
 /**
- * Created by stephentuso on 11/15/15.
- *
  * @param <T> needed for method chaining of inherited methods in subclasses
  */
 public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScreenPageChangeListener {
@@ -25,15 +24,17 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
 
         /**
          * Called when this page is coming into view
-         * @param pageIndex The position index of this page
-         * @param offset The % offset of this page, negative if page is off the screen on the right, positive if off on the left
+         *
+         * @param pageIndex    The position index of this page
+         * @param offset       The % offset of this page, negative if page is off the screen on the right, positive if off on the left
          * @param offsetPixels The offset of this page in pixels, negative if page is off the screen on the right, positive if off on the left
          */
         void onWelcomeScreenPageScrolled(int pageIndex, float offset, int offsetPixels);
 
         /**
          * Called when the selected page changes
-         * @param pageIndex The position index of this page
+         *
+         * @param pageIndex         The position index of this page
          * @param selectedPageIndex The index of the page that was selected
          */
         void onWelcomeScreenPageSelected(int pageIndex, int selectedPageIndex);
@@ -42,12 +43,12 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
          * Called when the scroll state of the ViewPager changes
          *
          * @param pageIndex The position index of this page
-         * @param state The new scroll state
+         * @param state     The new scroll state
          */
         void onWelcomeScreenPageScrollStateChanged(int pageIndex, int state);
     }
 
-    /* package */ void setIndex(int index) {
+    void setIndex(int index) {
         this.index = index;
     }
 
@@ -62,7 +63,7 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
 
     protected abstract Fragment fragment();
 
-    /* package */ boolean backgroundIsSet() {
+    boolean backgroundIsSet() {
         return backgroundColorResId != null || backgroundColor != null;
     }
 
@@ -78,7 +79,7 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
         return (T) this;
     }
 
-    /* package */ BackgroundColor getBackground(android.content.Context context) {
+    BackgroundColor getBackground(Context context) {
         if (backgroundColor == null) {
             backgroundColor = new BackgroundColor(ColorHelper.getColor(context, backgroundColorResId));
         }
@@ -97,7 +98,7 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
         //Correct position for RTL. One is subtracted to make it zero indexed
         int realPosition = isRtl ? totalPages - 1 - position : position;
 
-        if (getFragment() != null && getFragment() instanceof com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener && realPosition - index <= 1) {
+        if (getFragment() != null && getFragment() instanceof WelcomePage.OnChangeListener && realPosition - index <= 1) {
             Fragment fragment = getFragment();
 
             int fragmentWidth = 0;
@@ -109,21 +110,21 @@ public abstract class WelcomePage<T extends WelcomePage> implements OnWelcomeScr
             float offset = lowerPosition ? -(1 - positionOffset) : positionOffset;
             int offsetPixels = lowerPosition ? -(fragmentWidth - positionOffsetPixels) : positionOffsetPixels;
 
-            ((com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener) fragment).onWelcomeScreenPageScrolled(index, offset, offsetPixels);
+            ((WelcomePage.OnChangeListener) fragment).onWelcomeScreenPageScrolled(index, offset, offsetPixels);
         }
     }
 
     @Override
     public void onPageSelected(int position) {
-        if (getFragment() != null && getFragment() instanceof com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener) {
-            ((com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener) getFragment()).onWelcomeScreenPageSelected(index, position);
+        if (getFragment() != null && getFragment() instanceof WelcomePage.OnChangeListener) {
+            ((WelcomePage.OnChangeListener) getFragment()).onWelcomeScreenPageSelected(index, position);
         }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (getFragment() != null && getFragment() instanceof com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener) {
-            ((com.amaze.fileutilities.home_page.welcome_helper.WelcomePage.OnChangeListener) getFragment()).onWelcomeScreenPageScrollStateChanged(index, state);
+        if (getFragment() != null && getFragment() instanceof WelcomePage.OnChangeListener) {
+            ((WelcomePage.OnChangeListener) getFragment()).onWelcomeScreenPageScrollStateChanged(index, state);
         }
     }
 }

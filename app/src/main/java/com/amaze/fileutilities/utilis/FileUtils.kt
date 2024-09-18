@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -32,12 +13,9 @@ import android.os.storage.StorageManager
 import android.os.storage.StorageVolume
 import android.text.TextUtils
 import android.text.format.Formatter
-import androidx.annotation.DrawableRes
 import androidx.core.content.FileProvider
 import com.amaze.fileutilities.R
 import com.amaze.fileutilities.home_page.database.PathPreferences
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -45,6 +23,8 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Collections
 import java.util.regex.Pattern
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class FileUtils {
 
@@ -52,7 +32,7 @@ class FileUtils {
         var log: Logger = LoggerFactory.getLogger(FileUtils::class.java)
 
         private const val INTERNAL_SHARED_STORAGE = "Internal shared storage"
-        const val DEFAULT_BUFFER_SIZE = 8192
+        private const val DEFAULT_BUFFER_SIZE = 8192
 
         private const val DEFAULT_FALLBACK_STORAGE_PATH = "/storage/sdcard0"
         private const val WHATSAPP_BASE_ANDROID = "Android/media/com.whatsapp"
@@ -176,15 +156,13 @@ class FileUtils {
 
         @TargetApi(VERSION_CODES.N)
         internal fun getStorageDirectoriesNew(context: Context): StorageDirectoryParcelable {
-            val volumes: ArrayList<StorageDirectoryParcelable> =
-                ArrayList<StorageDirectoryParcelable>()
             val sm: StorageManager = context.getSystemService(StorageManager::class.java)
             for (volume in sm.storageVolumes) {
                 if (!volume.state.equals(Environment.MEDIA_MOUNTED, ignoreCase = true) &&
                     !volume.state.equals(
-                            Environment.MEDIA_MOUNTED_READ_ONLY,
-                            ignoreCase = true
-                        )
+                        Environment.MEDIA_MOUNTED_READ_ONLY,
+                        ignoreCase = true
+                    )
                 ) {
                     continue
                 }
@@ -202,7 +180,7 @@ class FileUtils {
             }
             throw RuntimeException(
                 "Failed to get internal storage, " +
-                    "all storages available ${sm.storageVolumes}"
+                        "all storages available ${sm.storageVolumes}"
             )
         }
 
@@ -218,7 +196,7 @@ class FileUtils {
          */
         @Synchronized
         internal fun getStorageDirectoriesLegacy(context: Context):
-            StorageDirectoryParcelable? {
+                StorageDirectoryParcelable? {
             val rv: MutableList<String> = ArrayList()
 
             // Primary physical SD-CARD (not emulated)
@@ -246,34 +224,32 @@ class FileUtils {
                         )
                     }
                 } else {
-                    rv.add(rawExternalStorage)
+                    rv.add(rawExternalStorage!!)
                 }
             } else {
                 // Device has emulated storage; external storage paths should have
                 // userId burned into them.
                 val rawUserId: String
-                if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR1) {
-                    rawUserId = ""
-                } else {
-                    val path = Environment
-                        .getExternalStorageDirectory().absolutePath
-                    val folders: Array<String> = DIR_SEPARATOR.split(path)
-                    val lastFolder = folders[folders.size - 1]
-                    var isDigit = false
-                    try {
-                        Integer.valueOf(lastFolder)
-                        isDigit = true
-                    } catch (ignored: NumberFormatException) {
-                    }
-                    rawUserId = if (isDigit) lastFolder else ""
+
+                val path = Environment
+                    .getExternalStorageDirectory().absolutePath
+                val folders: Array<String> = DIR_SEPARATOR.split(path)
+                val lastFolder = folders[folders.size - 1]
+                var isDigit = false
+                try {
+                    Integer.valueOf(lastFolder)
+                    isDigit = true
+                } catch (ignored: NumberFormatException) {
                 }
+                rawUserId = if (isDigit) lastFolder else ""
+
                 // /storage/emulated/0[1,2,...]
                 if (TextUtils.isEmpty(rawUserId)) {
-                    rv.add(rawEmulatedStorageTarget)
+                    rv.add(rawEmulatedStorageTarget!!)
                 } else {
                     rv.add(
-                        rawEmulatedStorageTarget +
-                            File.separator + rawUserId
+                        rawEmulatedStorageTarget!! +
+                                File.separator + rawUserId
                     )
                 }
             }
@@ -281,24 +257,20 @@ class FileUtils {
             if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
                 // All Secondary SD-CARDs splited into array
                 val rawSecondaryStorages =
-                    rawSecondaryStoragesStr.split(File.pathSeparator).toTypedArray()
+                    rawSecondaryStoragesStr!!.split(File.pathSeparator).toTypedArray()
                 Collections.addAll(rv, *rawSecondaryStorages)
             }
-//            if (VERSION.SDK_INT >= VERSION_CODES.M
-//            && checkStoragePermission()) rv.clear()
-            if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-                val strings: Array<String> =
-                    getExtSdCardPathsForActivity(context)
-                for (s in strings) {
-                    val f = File(s)
-                    if (!rv.contains(s) && f.canRead() && f.isDirectory) rv.add(s)
-                }
+
+            val strings: Array<String> =
+                getExtSdCardPathsForActivity(context)
+            for (s in strings) {
+                val f = File(s)
+                if (!rv.contains(s) && f.canRead() && f.isDirectory) rv.add(s)
             }
+
             // Assign a label and icon to each directory
-            val volumes = ArrayList<StorageDirectoryParcelable>()
             for (file in rv) {
-                val f = File(file)
-                @DrawableRes var icon: Int
+
                 if ("/storage/emulated/legacy" == file ||
                     "/storage/emulated/0" == file ||
                     "/mnt/sdcard" == file
@@ -375,8 +347,7 @@ class FileUtils {
                 } catch (e: Exception) {
                     log.warn("failed to delete media file from system database", e)
                 } finally {
-                    getContentUri(context, path)?.let {
-                        uri ->
+                    getContentUri(context, path)?.let { uri ->
                         scanFile(
                             uri,
                             path,
@@ -393,6 +364,7 @@ class FileUtils {
             return FileProvider.getUriForFile(context, context.packageName, File(path))
         }
 
+        @SuppressLint("PrivateApi")
         @TargetApi(VERSION_CODES.N)
         private fun getVolumeDirectory(volume: StorageVolume): File {
             return try {
@@ -406,9 +378,8 @@ class FileUtils {
         }
 
         @JvmStatic
-        @TargetApi(VERSION_CODES.KITKAT)
         private fun getExtSdCardPathsForActivity(context: Context):
-            Array<String> {
+                Array<String> {
             val paths: MutableList<String> = ArrayList()
             for (file in context.getExternalFilesDirs("external")) {
                 if (file != null) {
@@ -417,7 +388,7 @@ class FileUtils {
                     if (index < 0) {
                         log.warn(
                             "Unexpected external file dir: " +
-                                file.absolutePath
+                                    file.absolutePath
                         )
                     } else {
                         var path = file.absolutePath.substring(0, index)

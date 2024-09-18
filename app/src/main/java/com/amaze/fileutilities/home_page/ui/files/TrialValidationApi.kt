@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import androidx.annotation.Keep
@@ -59,17 +39,17 @@ interface TrialValidationApi {
     ) {
 
         companion object {
-            val TRIAL_ACTIVE = BuildConfig.API_REQ_TRIAL_TRIAL_ACTIVE
-            val TRIAL_EXPIRED = BuildConfig.API_REQ_TRIAL_TRIAL_EXPIRED
-            val TRIAL_INACTIVE = BuildConfig.API_REQ_TRIAL_TRIAL_INACTIVE
-            val TRIAL_EXCLUSIVE = BuildConfig.API_REQ_TRIAL_TRIAL_EXCLUSIVE
-            val TRIAL_UNOFFICIAL = BuildConfig.API_REQ_TRIAL_TRIAL_UNOFFICIAL
-            val SUBSCRIPTION = BuildConfig.API_REQ_TRIAL_YEARLY
-            val CODE_TRIAL_ACTIVE = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_ACTIVE
-            val CODE_TRIAL_EXPIRED = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_EXPIRED
-            val CODE_TRIAL_INACTIVE = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_INACTIVE
-            val CODE_TRIAL_EXCLUSIVE = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_EXCLUSIVE
-            val CODE_TRIAL_UNOFFICIAL = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_UNOFFICIAL
+            const val TRIAL_ACTIVE = BuildConfig.API_REQ_TRIAL_TRIAL_ACTIVE
+            const val TRIAL_EXPIRED = BuildConfig.API_REQ_TRIAL_TRIAL_EXPIRED
+            const val TRIAL_INACTIVE = BuildConfig.API_REQ_TRIAL_TRIAL_INACTIVE
+            const val TRIAL_EXCLUSIVE = BuildConfig.API_REQ_TRIAL_TRIAL_EXCLUSIVE
+            const val TRIAL_UNOFFICIAL = BuildConfig.API_REQ_TRIAL_TRIAL_UNOFFICIAL
+            const val SUBSCRIPTION = BuildConfig.API_REQ_TRIAL_YEARLY
+            val CODE_TRIAL_ACTIVE: Int = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_ACTIVE
+            private val CODE_TRIAL_EXPIRED: Int = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_EXPIRED
+            private val CODE_TRIAL_INACTIVE: Int = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_INACTIVE
+            private val CODE_TRIAL_EXCLUSIVE: Int = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_EXCLUSIVE
+            private val CODE_TRIAL_UNOFFICIAL: Int = BuildConfig.API_REQ_TRIAL_CODE_TRIAL_UNOFFICIAL
 
             val trialStatusMap = mapOf(
                 Pair(TRIAL_ACTIVE, "Trial"),

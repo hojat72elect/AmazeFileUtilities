@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.content.Context
@@ -54,7 +34,7 @@ class MediaFileAdapter(
     listItemPressedCallback: (mediaFileInfo: MediaFileInfo) -> Unit,
     toggleCheckCallback: (checkedSize: Int, itemsCount: Int, bytesFormatted: String) -> Unit,
     private val titleOverflowPopupClick:
-        ((item: MenuItem, actionItems: List<MediaFileInfo>) -> Unit)?,
+    ((item: MenuItem, actionItems: List<MediaFileInfo>) -> Unit)?,
     // callback called if we want to refresh data when user tries to switch groupping / sorting
     // eg. in case of audio player we would want to utilise different dataset for playlists
     private val invalidateDataCallback: (() -> Unit)?,
@@ -172,8 +152,7 @@ class MediaFileAdapter(
                     } else {
                         R.menu.generic_list_overflow
                     }
-                ) {
-                    item ->
+                ) { item ->
                     titleOverflowPopupClick?.invoke(
                         item,
                         headerItems
@@ -181,9 +160,11 @@ class MediaFileAdapter(
                     true
                 }
             }
+
             is ListBannerViewHolder -> {
                 setBannerResources(holder)
             }
+
             is MediaInfoRecyclerViewHolder -> {
                 if (mediaListType == MEDIA_TYPE_AUDIO) {
                     if (lastCurrentPlayingPositionAnimation != -1 &&
@@ -211,8 +192,7 @@ class MediaFileAdapter(
                             toggleChecked(listItem, position)
                             invalidateCheckedTitle(getOnlyItemsCount())
                         } else {
-                            listItem.mediaFileInfo?.getContentUri(context)?.let {
-                                uri ->
+                            listItem.mediaFileInfo?.getContentUri(context)?.let { uri ->
                                 (context as CastActivity)
                                     .showCastFileDialog(
                                         mediaFileListItems[position].mediaFileInfo!!,
@@ -310,8 +290,7 @@ class MediaFileAdapter(
                         .getColor(
                             context.resources,
                             R.color.peach_70, context.theme
-                        ),
-                    R.drawable.background_curved_bottom_peach
+                        )
                 )
                 holder.mediaTypeHeaderView.setAccentImageSrc(
                     ResourcesCompat.getDrawable(
@@ -320,14 +299,14 @@ class MediaFileAdapter(
                     )!!
                 )
             }
+
             MediaFileInfo.MEDIA_TYPE_VIDEO -> {
                 holder.mediaTypeHeaderView.setHeaderColor(
                     ResourcesCompat
                         .getColor(
                             context.resources,
                             R.color.orange_70, context.theme
-                        ),
-                    R.drawable.background_curved_bottom_orange
+                        )
                 )
                 holder.mediaTypeHeaderView.setAccentImageSrc(
                     ResourcesCompat.getDrawable(
@@ -336,14 +315,14 @@ class MediaFileAdapter(
                     )!!
                 )
             }
+
             MediaFileInfo.MEDIA_TYPE_IMAGE -> {
                 holder.mediaTypeHeaderView.setHeaderColor(
                     ResourcesCompat
                         .getColor(
                             context.resources,
                             R.color.purple_70, context.theme
-                        ),
-                    R.drawable.background_curved_bottom_pink
+                        )
                 )
                 holder.mediaTypeHeaderView.setAccentImageSrc(
                     ResourcesCompat.getDrawable(
@@ -352,14 +331,14 @@ class MediaFileAdapter(
                     )!!
                 )
             }
+
             MediaFileInfo.MEDIA_TYPE_DOCUMENT -> {
                 holder.mediaTypeHeaderView.setHeaderColor(
                     ResourcesCompat
                         .getColor(
                             context.resources,
                             R.color.green_banner_70, context.theme
-                        ),
-                    R.drawable.background_curved_bottom_green
+                        )
                 )
                 holder.mediaTypeHeaderView.setAccentImageSrc(
                     ResourcesCompat.getDrawable(

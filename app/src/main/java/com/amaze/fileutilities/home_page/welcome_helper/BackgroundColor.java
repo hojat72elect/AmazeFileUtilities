@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
  */
 public class BackgroundColor {
 
-    private int color = 0;
+    private final int color;
 
     public BackgroundColor(@ColorInt int color) {
         this.color = color;

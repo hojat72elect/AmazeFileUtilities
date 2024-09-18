@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.app.ActivityManager
@@ -91,17 +71,8 @@ import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.destination
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.lang.NullPointerException
 import java.lang.ref.WeakReference
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -117,6 +88,11 @@ import java.util.GregorianCalendar
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.streams.toList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class FilesViewModel(val applicationContext: Application) :
     AndroidViewModel(applicationContext) {
@@ -155,7 +131,7 @@ class FilesViewModel(val applicationContext: Application) :
     var oldScreenshotsLiveData: MutableLiveData<ArrayList<MediaFileInfo>?>? = null
     var trashBinFilesLiveData: MutableLiveData<MutableList<MediaFileInfo>?>? = null
     var memoryInfoLiveData: MutableLiveData<String?>? = null
-    var allMediaFilesPair: ArrayList<MediaFileInfo>? = null
+    private var allMediaFilesPair: ArrayList<MediaFileInfo>? = null
 
     private var trashBinConfig: TrashBinConfig? = null
     private val TRASH_BIN_BASE_PATH = Environment.getExternalStorageDirectory()
@@ -172,7 +148,7 @@ class FilesViewModel(val applicationContext: Application) :
             ArrayList<MediaFileInfo>>?>? = null
 
     private var allApps: AtomicReference<List<Pair<ApplicationInfo,
-                PackageInfo?>>?> = AtomicReference()
+            PackageInfo?>>?> = AtomicReference()
 
     var internalStorageStatsLiveData: MutableLiveData<StorageSummary?>? = null
     private var trashBin: TrashBin? = null
@@ -189,8 +165,7 @@ class FilesViewModel(val applicationContext: Application) :
     private fun processInternalStorageStats() {
         viewModelScope.launch(Dispatchers.IO) {
             val storageData = applicationContext.applicationContext.getExternalStorageDirectory()
-            storageData?.let {
-                data ->
+            storageData?.let { data ->
                 val file = File(data.path)
                 try {
                     val items = CursorUtils.getMediaFilesCount(applicationContext)
@@ -305,10 +280,9 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun usedImagesSummaryTransformations():
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         if (usedImagesSummaryTransformations == null) {
-            usedImagesSummaryTransformations = internalStorageStats().switchMap {
-                input ->
+            usedImagesSummaryTransformations = internalStorageStats().switchMap { input ->
                 getImagesSummaryLiveData(input)
             }
         }
@@ -316,10 +290,9 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun usedAudiosSummaryTransformations():
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         if (usedAudiosSummaryTransformations == null) {
-            usedAudiosSummaryTransformations = internalStorageStats().switchMap {
-                input ->
+            usedAudiosSummaryTransformations = internalStorageStats().switchMap { input ->
                 getAudiosSummaryLiveData(input)
             }
         }
@@ -327,11 +300,10 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun usedPlaylistsSummaryTransformations():
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         if (usedPlaylistsSummaryTransformations == null) {
             usedPlaylistsSummaryTransformations =
-                internalStorageStats().switchMap {
-                    input ->
+                internalStorageStats().switchMap { input ->
                     getPlaylistsSummaryLiveData(input)
                 }
         }
@@ -339,10 +311,9 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun usedVideosSummaryTransformations():
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         if (usedVideosSummaryTransformations == null) {
-            usedVideosSummaryTransformations = internalStorageStats().switchMap {
-                input ->
+            usedVideosSummaryTransformations = internalStorageStats().switchMap { input ->
                 getVideosSummaryLiveData(input)
             }
         }
@@ -350,10 +321,9 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun usedDocsSummaryTransformations():
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         if (usedDocsSummaryTransformations == null) {
-            usedDocsSummaryTransformations = internalStorageStats().switchMap {
-                input ->
+            usedDocsSummaryTransformations = internalStorageStats().switchMap { input ->
                 getDocumentsSummaryLiveData(input)
             }
         }
@@ -364,7 +334,7 @@ class FilesViewModel(val applicationContext: Application) :
         query: String,
         searchFilter: SearchListFragment.SearchQueryInput
     ):
-        LiveData<MutableList<MediaFileInfo>?> {
+            LiveData<MutableList<MediaFileInfo>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.Default) {
             emit(null)
             val mediaFileResults = mutableListOf<MediaFileInfo>()
@@ -418,7 +388,7 @@ class FilesViewModel(val applicationContext: Application) :
         resultsThreshold: Int,
         searchFilter: SearchListFragment.SearchQueryInput
     ):
-        LiveData<MutableList<String>?> {
+            LiveData<MutableList<String>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.Default) {
             emit(null)
             val textResults = mutableListOf<String>()
@@ -427,7 +397,7 @@ class FilesViewModel(val applicationContext: Application) :
             if (searchFilter.searchFilter.searchFilterImages) {
                 searchFilter.aggregatedMediaFiles.imagesMediaFilesList?.let { mediaInfoList ->
                     mediaInfoList.forEach il@{
-                        if (currentResultsCount> resultsThreshold) {
+                        if (currentResultsCount > resultsThreshold) {
                             return@il
                         }
                         if (it.title.contains(query, true)) {
@@ -440,7 +410,7 @@ class FilesViewModel(val applicationContext: Application) :
             if (searchFilter.searchFilter.searchFilterVideos) {
                 searchFilter.aggregatedMediaFiles.videosMediaFilesList?.let { mediaInfoList ->
                     mediaInfoList.forEach vl@{
-                        if (currentResultsCount> resultsThreshold) {
+                        if (currentResultsCount > resultsThreshold) {
                             return@vl
                         }
                         if (it.title.contains(query, true)) {
@@ -453,7 +423,7 @@ class FilesViewModel(val applicationContext: Application) :
             if (searchFilter.searchFilter.searchFilterAudios) {
                 searchFilter.aggregatedMediaFiles.audiosMediaFilesList?.let { mediaInfoList ->
                     mediaInfoList.forEach al@{
-                        if (currentResultsCount> resultsThreshold) {
+                        if (currentResultsCount > resultsThreshold) {
                             return@al
                         }
                         if (it.title.contains(query, true)) {
@@ -467,7 +437,7 @@ class FilesViewModel(val applicationContext: Application) :
             if (searchFilter.searchFilter.searchFilterDocuments) {
                 searchFilter.aggregatedMediaFiles.docsMediaFilesList?.let { mediaInfoList ->
                     mediaInfoList.forEach dl@{
-                        if (currentResultsCount> resultsThreshold) {
+                        if (currentResultsCount > resultsThreshold) {
                             return@dl
                         }
                         if (it.title.contains(query, true)) {
@@ -521,8 +491,7 @@ class FilesViewModel(val applicationContext: Application) :
                         // hard limit in a single run
                         return@forEach
                     }
-                    MLUtils.processImageFeatures(it.path) {
-                        features ->
+                    MLUtils.processImageFeatures(it.path) { features ->
                         dao.insert(
                             ImageAnalysis(
                                 it.path,
@@ -563,8 +532,7 @@ class FilesViewModel(val applicationContext: Application) :
             }.forEach {
                 if (isImageBlurAnalysing && dao.findByPath(it.path) == null) {
                     val isBlur = ImgUtils.isImageBlur(it.path)
-                    isBlur?.let {
-                        isBlur ->
+                    isBlur?.let { isBlur ->
                         dao.insert(
                             BlurAnalysis(
                                 it.path, isBlur
@@ -645,8 +613,7 @@ class FilesViewModel(val applicationContext: Application) :
                     val isLowLight = ImgUtils.isImageLowLight(
                         it.path
                     )
-                    isLowLight?.let {
-                        isLowLight ->
+                    isLowLight?.let { isLowLight ->
                         dao.insert(
                             LowLightAnalysis(
                                 it.path, isLowLight
@@ -704,8 +671,7 @@ class FilesViewModel(val applicationContext: Application) :
                 val metadataCount = dao.getAllCount()
                 if (filterList.size != metadataCount) {
                     var imagesProcessed = 0
-                    filterList.forEach {
-                        mediaFileInfo ->
+                    filterList.forEach { mediaFileInfo ->
                         if (isSimilarImagesAnalysing &&
                             dao.findByPath(mediaFileInfo.path) == null
                         ) {
@@ -745,7 +711,7 @@ class FilesViewModel(val applicationContext: Application) :
     private fun analyseHistogramForMatch(
         similarImagesAnalysisDao: SimilarImagesAnalysisDao,
         similarAnalysisMetadataDao:
-            SimilarImagesAnalysisMetadataDao,
+        SimilarImagesAnalysisMetadataDao,
         analysisMetadata: SimilarImagesAnalysisMetadata
     ) {
         val parentFiles = similarAnalysisMetadataDao
@@ -762,21 +728,21 @@ class FilesViewModel(val applicationContext: Application) :
             analysisMetadata.blueChannel.forEach {
                 normalizedBlueMap[
                     it.first /
-                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
                 ] =
                     it.second / ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
             }
             analysisMetadata.greenChannel.forEach {
                 normalizedGreenMap[
                     it.first /
-                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
                 ] =
                     it.second / ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
             }
             analysisMetadata.redChannel.forEach {
                 normalizedRedMap[
                     it.first /
-                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
                 ] =
                     it.second / ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
             }
@@ -800,9 +766,9 @@ class FilesViewModel(val applicationContext: Application) :
                 if (currentFile.filePath != analysisMetadata.filePath && !currentFile.isAnalysed) {
                     currentFile.blueChannel.forEach {
                         if (normalizedBlueMap[
-                            it.first /
-                                ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
-                        ]
+                                it.first /
+                                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ]
                             == it.second /
                             ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
                         ) {
@@ -820,9 +786,9 @@ class FilesViewModel(val applicationContext: Application) :
                     }
                     currentFile.greenChannel.forEach {
                         if (normalizedGreenMap[
-                            it.first /
-                                ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
-                        ]
+                                it.first /
+                                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ]
                             == it.second /
                             ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
                         ) {
@@ -840,9 +806,9 @@ class FilesViewModel(val applicationContext: Application) :
                     }
                     currentFile.redChannel.forEach {
                         if (normalizedRedMap[
-                            it.first /
-                                ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
-                        ]
+                                it.first /
+                                        ImgUtils.PIXEL_POSITION_NORMALIZE_FACTOR
+                            ]
                             == it.second /
                             ImgUtils.PIXEL_INTENSITY_NORMALIZE_FACTOR
                         ) {
@@ -908,15 +874,14 @@ class FilesViewModel(val applicationContext: Application) :
 
     fun analyseMediaStoreFiles(
         aggregatedMediaFiles:
-            AggregatedMediaFileInfoObserver.AggregatedMediaFiles
+        AggregatedMediaFileInfoObserver.AggregatedMediaFiles
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val dao = AppDatabase.getInstance(applicationContext).internalStorageAnalysisDao()
             isMediaStoreAnalysing = true
             aggregatedMediaFiles.imagesMediaFilesList?.let {
                 val imagesList = ArrayList(it)
-                imagesList.forEach {
-                    image ->
+                imagesList.forEach { image ->
                     if (isMediaStoreAnalysing) {
                         getMediaFileChecksumAndWriteToDatabase(dao, File(image.path + ""))
                     }
@@ -924,8 +889,7 @@ class FilesViewModel(val applicationContext: Application) :
             }
             aggregatedMediaFiles.audiosMediaFilesList?.let {
                 val audiosList = ArrayList(it)
-                audiosList.forEach {
-                    audio ->
+                audiosList.forEach { audio ->
                     if (isMediaStoreAnalysing) {
                         getMediaFileChecksumAndWriteToDatabase(dao, File(audio.path + ""))
                     }
@@ -933,8 +897,7 @@ class FilesViewModel(val applicationContext: Application) :
             }
             aggregatedMediaFiles.videosMediaFilesList?.let {
                 val videosList = ArrayList(it)
-                videosList.forEach {
-                    video ->
+                videosList.forEach { video ->
                     if (isMediaStoreAnalysing) {
                         getMediaFileChecksumAndWriteToDatabase(dao, File(video.path + ""))
                     }
@@ -942,8 +905,7 @@ class FilesViewModel(val applicationContext: Application) :
             }
             aggregatedMediaFiles.docsMediaFilesList?.let {
                 val docsList = ArrayList(it)
-                docsList.forEach {
-                    docs ->
+                docsList.forEach { docs ->
                     if (isMediaStoreAnalysing) {
                         getMediaFileChecksumAndWriteToDatabase(dao, File(docs.path + ""))
                     }
@@ -968,10 +930,8 @@ class FilesViewModel(val applicationContext: Application) :
                 val storageData = applicationContext.applicationContext
                     .getExternalStorageDirectory()
                 val prefsList = ArrayList<PathPreferences>()
-                FileUtils.DEFAULT_PATH_PREFS_INCLUSIVE.forEach {
-                    keyValue ->
-                    keyValue.value.forEach {
-                        value ->
+                FileUtils.DEFAULT_PATH_PREFS_INCLUSIVE.forEach { keyValue ->
+                    keyValue.value.forEach { value ->
                         prefsList.add(
                             PathPreferences(
                                 "${storageData?.path}/$value",
@@ -980,10 +940,8 @@ class FilesViewModel(val applicationContext: Application) :
                         )
                     }
                 }
-                FileUtils.DEFAULT_PATH_PREFS_EXCLUSIVE.forEach {
-                    keyValue ->
-                    keyValue.value.forEach {
-                        value ->
+                FileUtils.DEFAULT_PATH_PREFS_EXCLUSIVE.forEach { keyValue ->
+                    keyValue.value.forEach { value ->
                         prefsList.add(
                             PathPreferences(
                                 "${storageData?.path}/$value",
@@ -1026,7 +984,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun getShareMediaFilesAdapter(mediaFileInfoList: List<MediaFileInfo>):
-        LiveData<ShareAdapter?> {
+            LiveData<ShareAdapter?> {
         return getShareMediaFilesAdapterFromUriList(
             mediaFileInfoList.filter { it.getContentUri(applicationContext) != null }
                 .map { it.getContentUri(applicationContext)!! }
@@ -1034,7 +992,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     fun getShareMediaFilesAdapterFromUriList(mediaFileInfoList: List<Uri>):
-        LiveData<ShareAdapter?> {
+            LiveData<ShareAdapter?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.Default) {
             emit(null)
             log.info("Sharing media files $mediaFileInfoList")
@@ -1046,6 +1004,7 @@ class FilesViewModel(val applicationContext: Application) :
             )
         }
     }
+
     fun deleteMediaFiles(mediaFileInfoList: List<MediaFileInfo>): LiveData<Pair<Int, Int>> {
         val deleteMediaFilesLiveData: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
         var successProcessedPair = Pair(0, 0)
@@ -1082,8 +1041,7 @@ class FilesViewModel(val applicationContext: Application) :
                             } catch (e: Exception) {
                                 log.warn("failed to delete media from system database", e)
                             } finally {
-                                mediaFileInfo.getContentUri(applicationContext)?.let {
-                                    uri ->
+                                mediaFileInfo.getContentUri(applicationContext)?.let { uri ->
                                     FileUtils.scanFile(
                                         uri,
                                         mediaFileInfo.path,
@@ -1145,8 +1103,7 @@ class FilesViewModel(val applicationContext: Application) :
                                 runBlocking {
                                     moveToBinLightWeight(arrayListOf(it))
                                 }
-                                it.getContentUri(applicationContext)?.let {
-                                    originalUri ->
+                                it.getContentUri(applicationContext)?.let { originalUri ->
                                     FileUtils.scanFile(
                                         originalUri,
                                         it.path,
@@ -1167,7 +1124,7 @@ class FilesViewModel(val applicationContext: Application) :
                             successProcessedPair = successProcessedPair.copy(
                                 successProcessedPair.first + 1,
                                 successProcessedPair.second + it.longSize -
-                                    newFile.length(),
+                                        newFile.length(),
                                 MediaFileInfo.fromFile(
                                     newFile,
                                     MediaFileInfo.ExtraInfo(
@@ -1271,7 +1228,7 @@ class FilesViewModel(val applicationContext: Application) :
                                         successProcessedPair = successProcessedPair.copy(
                                             successProcessedPair.first + 1,
                                             successProcessedPair.second + it.longSize -
-                                                size,
+                                                    size,
                                             MediaFileInfo.fromFile(
                                                 file,
                                                 MediaFileInfo.ExtraInfo(
@@ -1285,7 +1242,7 @@ class FilesViewModel(val applicationContext: Application) :
                                         successProcessedPair = successProcessedPair.copy(
                                             successProcessedPair.first + 1,
                                             successProcessedPair.second + it.longSize -
-                                                size,
+                                                    size,
                                             null
                                         )
                                     }
@@ -1568,13 +1525,13 @@ class FilesViewModel(val applicationContext: Application) :
                 fetchBillingStatusAndInitTrial(deviceId, dao, isNetworkAvailable, trialResponse)
             } else {
                 if ((
-                    trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_EXPIRED ||
-                        trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_INACTIVE ||
-                        trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_UNOFFICIAL
-                    //     || trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_EXCLUSIVE
-                    // maybe done to force validate for exclusive refunded people, want to convert to custom exclusive
-                    // but downside is this'll always check for valid license for customer exclusive people
-                    ) &&
+                            trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_EXPIRED ||
+                                    trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_INACTIVE ||
+                                    trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_UNOFFICIAL
+                            //     || trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_EXCLUSIVE
+                            // maybe done to force validate for exclusive refunded people, want to convert to custom exclusive
+                            // but downside is this'll always check for valid license for customer exclusive people
+                            ) &&
                     trial.subscriptionStatus == Trial.SUBSCRIPTION_STATUS_DEFAULT
                 ) {
                     // check immediately if there's an update in trial status
@@ -1592,9 +1549,9 @@ class FilesViewModel(val applicationContext: Application) :
                     calWeek.time = trial.fetchTime
                     calWeek.add(Calendar.DAY_OF_YEAR, 7)
                     if ((
-                        cal.time.before(Date()) && trial.trialStatus
-                            != TrialValidationApi.TrialResponse.TRIAL_EXCLUSIVE
-                        ) ||
+                                cal.time.before(Date()) && trial.trialStatus
+                                        != TrialValidationApi.TrialResponse.TRIAL_EXCLUSIVE
+                                ) ||
                         calWeek.time.before(Date()) &&
                         trial.trialStatus == TrialValidationApi.TrialResponse.TRIAL_EXCLUSIVE
                     ) {
@@ -1664,7 +1621,7 @@ class FilesViewModel(val applicationContext: Application) :
                 allApps.get()?.filter {
                     !usageStatsPackages.contains(it.first.packageName)
                 }?.mapNotNull {
-                    MediaFileInfo.fromApplicationInfo(applicationContext, it.first, it.second)
+                    MediaFileInfo.fromApplicationInfo(applicationContext, it.first)
                 }?.sortedByDescending { it.longSize }
             unusedAppsLiveData?.postValue(unusedAppsList?.let { ArrayList(it) })
         }
@@ -1701,8 +1658,7 @@ class FilesViewModel(val applicationContext: Application) :
 
             allApps.get()?.forEach { applicationInfo ->
                 MediaFileInfo.fromApplicationInfo(
-                    applicationContext, applicationInfo.first,
-                    applicationInfo.second
+                    applicationContext, applicationInfo.first
                 )?.let {
                     priorityQueue.add(it)
                 }
@@ -1756,17 +1712,14 @@ class FilesViewModel(val applicationContext: Application) :
                     mostUsedAppsListRaw.add(it.key)
                 }
             val mostUsedApps = arrayListOf<MediaFileInfo>()
-            mostUsedAppsListRaw.forEach {
-                appName ->
+            mostUsedAppsListRaw.forEach { appName ->
                 allApps.get()?.find {
                     it.first.packageName.equals(appName, true)
                 }?.let {
                     MediaFileInfo.fromApplicationInfo(
                         applicationContext,
-                        it.first, it.second,
-                        timeForeground = freqMap[appName] ?: 0L,
-                    )?.let {
-                        mediaFileInfo ->
+                        it.first, timeForeground = freqMap[appName] ?: 0L,
+                    )?.let { mediaFileInfo ->
                         mostUsedApps.add(mediaFileInfo)
                     }
                 }
@@ -1804,8 +1757,8 @@ class FilesViewModel(val applicationContext: Application) :
                         it.totalTimeVisible else it.totalTimeInForeground
                 } else {
                     freqMap[it.packageName] = freqMap[it.packageName]!! +
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                            it.totalTimeVisible else it.totalTimeInForeground
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                                it.totalTimeVisible else it.totalTimeInForeground
                 }
             }
             val leastUsedAppsListRaw = arrayListOf<String>()
@@ -1815,16 +1768,13 @@ class FilesViewModel(val applicationContext: Application) :
                     leastUsedAppsListRaw.add(it.key)
                 }
             val leastUsedApps = arrayListOf<MediaFileInfo>()
-            leastUsedAppsListRaw.forEach {
-                appName ->
+            leastUsedAppsListRaw.forEach { appName ->
                 allApps.get()?.find {
                     it.first.packageName.equals(appName, true)
                 }?.let {
                     MediaFileInfo.fromApplicationInfo(
-                        applicationContext, it.first,
-                        it.second
-                    )?.let {
-                        mediaFileInfo ->
+                        applicationContext, it.first
+                    )?.let { mediaFileInfo ->
                         leastUsedApps.add(mediaFileInfo)
                     }
                 }
@@ -1852,8 +1802,7 @@ class FilesViewModel(val applicationContext: Application) :
 
             allApps.get()?.forEach { applicationInfo ->
                 MediaFileInfo.fromApplicationInfo(
-                    applicationContext, applicationInfo.first,
-                    applicationInfo.second
+                    applicationContext, applicationInfo.first
                 )?.let {
                     priorityQueue.add(it)
                 }
@@ -1898,8 +1847,7 @@ class FilesViewModel(val applicationContext: Application) :
                 installDateTime.isAfter(pastDate.toLocalDate())
             }?.forEach { applicationInfo ->
                 MediaFileInfo.fromApplicationInfo(
-                    applicationContext, applicationInfo.first,
-                    applicationInfo.second
+                    applicationContext, applicationInfo.first
                 )?.let {
                     priorityQueue.add(it)
                 }
@@ -1944,8 +1892,7 @@ class FilesViewModel(val applicationContext: Application) :
                 updateDateTime.isAfter(pastDate.toLocalDate())
             }?.forEach { applicationInfo ->
                 MediaFileInfo.fromApplicationInfo(
-                    applicationContext, applicationInfo.first,
-                    applicationInfo.second
+                    applicationContext, applicationInfo.first
                 )?.let {
                     priorityQueue.add(it)
                 }
@@ -2012,7 +1959,6 @@ class FilesViewModel(val applicationContext: Application) :
                             .fromApplicationInfo(
                                 applicationContext,
                                 applicationInfo,
-                                packageInfo,
                                 sizeDiff
                             )
                             ?.let { priorityQueue.add(it) }
@@ -2049,15 +1995,13 @@ class FilesViewModel(val applicationContext: Application) :
             loadAllInstalledApps(packageManager)
             val dao = AppDatabase.getInstance(applicationContext).installedAppsDao()
             val savedInstalledApps = dao.findAll()
-            allApps.get()?.map { it.first.packageName }?.toSet()?.let {
-                installedAppsPackageNames ->
+            allApps.get()?.map { it.first.packageName }?.toSet()?.let { installedAppsPackageNames ->
                 val difference = savedInstalledApps.filter {
                     it.packageName !in installedAppsPackageNames
                 }
                 log.info("found following apps not installed {}", difference)
                 val result = ArrayList<MediaFileInfo>()
-                difference.forEach {
-                    savedApp ->
+                difference.forEach { savedApp ->
                     savedApp.dataDirs.forEach {
                         result.add(
                             MediaFileInfo.fromFile(
@@ -2254,8 +2198,7 @@ class FilesViewModel(val applicationContext: Application) :
             allMediaFilesPair = CursorUtils.listAll(applicationContext)
         }
         allMediaFilesPair?.filter {
-            paths.isEmpty() || paths.stream().anyMatch {
-                pathPref ->
+            paths.isEmpty() || paths.stream().anyMatch { pathPref ->
                 it.path.contains(pathPref, true)
             }
         }?.forEach {
@@ -2271,7 +2214,6 @@ class FilesViewModel(val applicationContext: Application) :
         return ArrayList(result.reversed())
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun getGamesInstalled(): LiveData<ArrayList<MediaFileInfo>?> {
         if (gamesInstalledLiveData == null) {
             gamesInstalledLiveData = MutableLiveData()
@@ -2355,7 +2297,6 @@ class FilesViewModel(val applicationContext: Application) :
         return trashBinConfig!!
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun processGamesInstalled(packageManager: PackageManager) {
         viewModelScope.launch(Dispatchers.IO) {
             loadAllInstalledApps(packageManager)
@@ -2363,7 +2304,7 @@ class FilesViewModel(val applicationContext: Application) :
             allApps.get()?.filter {
                 Utils.applicationIsGame(it.first)
             }?.mapNotNull {
-                MediaFileInfo.fromApplicationInfo(applicationContext, it.first, it.second)
+                MediaFileInfo.fromApplicationInfo(applicationContext, it.first)
             }?.sortedByDescending { it.longSize }?.let {
                 gamesInstalledLiveData?.postValue(ArrayList(it))
             }
@@ -2419,8 +2360,7 @@ class FilesViewModel(val applicationContext: Application) :
             } catch (e: Exception) {
                 log.warn("failed to load all installed applications", e)
                 null
-            }?.let {
-                apps ->
+            }?.let { apps ->
                 allApps.set(
                     apps.map {
                         val info: PackageInfo? = try {
@@ -2450,13 +2390,16 @@ class FilesViewModel(val applicationContext: Application) :
                                     else PackageManager.GET_SIGNING_CERTIFICATES
                                 )
                             !Utils.isAppInSystemPartition(it.first) && (
-                                it.second == null ||
-                                    (
-                                        !Utils.isSignedBySystem(it.second, androidInfo) &&
-                                            !it.second!!.packageName
-                                                .equals(applicationContext.packageName)
-                                        )
-                                )
+                                    it.second == null ||
+                                            (
+                                                    !Utils.isSignedBySystem(
+                                                        it.second,
+                                                        androidInfo
+                                                    ) &&
+                                                            !it.second!!.packageName
+                                                                .equals(applicationContext.packageName)
+                                                    )
+                                    )
                         } catch (e: PackageManager.NameNotFoundException) {
                             log.warn(
                                 "failed to find package name {} while loading apps list",
@@ -2473,8 +2416,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun insertInstalledApps() {
-        allApps.get()?.let {
-            infoListPair ->
+        allApps.get()?.let { infoListPair ->
             val installedApps = infoListPair.map {
                 InstalledApps(
                     it.first.packageName,
@@ -2531,12 +2473,13 @@ class FilesViewModel(val applicationContext: Application) :
             log.info("updated remote trial state")
             val fetchedTrialResponse = fetchAndSaveTrail(deviceId, dao, trial)
             if (fetchedTrialResponse == null) {
-                if (trial == null) {
-                    return nullTrialResponse
+                return if (trial == null) {
+                    nullTrialResponse
                 } else {
-                    return TrialValidationApi.TrialResponse(
-                        false, false,
-                        TrialValidationApi.TrialResponse
+                    TrialValidationApi.TrialResponse(
+                        isLastDay = false,
+                        isNewSignup = false,
+                        trialStatus = TrialValidationApi.TrialResponse
                             .trialCodeStatusMap[trial.trialStatus]
                             ?: TrialValidationApi.TrialResponse.CODE_TRIAL_ACTIVE,
                         trial.trialDaysLeft,
@@ -2552,7 +2495,7 @@ class FilesViewModel(val applicationContext: Application) :
             if (trial == null) {
                 log.warn(
                     "no network available to check trial, " +
-                        "no local subscription status for {}",
+                            "no local subscription status for {}",
                     deviceId
                 )
                 nullTrialResponse.isNotConnected = true
@@ -2560,8 +2503,9 @@ class FilesViewModel(val applicationContext: Application) :
             } else {
                 log.info("no network available, return database saved trial state")
                 return TrialValidationApi.TrialResponse(
-                    false, false,
-                    TrialValidationApi.TrialResponse
+                    isLastDay = false,
+                    isNewSignup = false,
+                    trialStatus = TrialValidationApi.TrialResponse
                         .trialCodeStatusMap[trial.trialStatus]
                         ?: TrialValidationApi.TrialResponse.CODE_TRIAL_ACTIVE,
                     trial.trialDaysLeft,
@@ -2592,7 +2536,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun getTrialResponse(deviceId: String, trial: Trial?):
-        TrialValidationApi.TrialResponse? {
+            TrialValidationApi.TrialResponse? {
         val retrofit = Retrofit.Builder()
             .baseUrl(TrialValidationApi.CLOUD_FUNCTION_BASE)
             .addConverterFactory(GsonConverterFactory.create())
@@ -2606,7 +2550,7 @@ class FilesViewModel(val applicationContext: Application) :
                 TrialValidationApi.TrialRequest(
                     TrialValidationApi.AUTH_TOKEN, deviceId,
                     applicationContext.packageName +
-                        "_" + BuildConfig.API_REQ_TRIAL_APP_HASH,
+                            "_" + BuildConfig.API_REQ_TRIAL_APP_HASH,
                     subscriptionStatus,
                     purchaseToken
                 )
@@ -2617,7 +2561,7 @@ class FilesViewModel(val applicationContext: Application) :
                 } else {
                     log.warn(
                         "failed to get trial response code: ${response.code()} " +
-                            "error: ${response.message()}"
+                                "error: ${response.message()}"
                     )
                     null
                 }
@@ -2630,12 +2574,6 @@ class FilesViewModel(val applicationContext: Application) :
         return null
     }
 
-    override fun onCleared() {
-//        faceDetector.close()
-//        textRecognizer.close()
-        super.onCleared()
-    }
-
     private fun processInternalStorageAnalysis(
         dao: InternalStorageAnalysisDao,
         file: File,
@@ -2643,9 +2581,9 @@ class FilesViewModel(val applicationContext: Application) :
         currentDepth: Int
     ) {
         if (!isInternalStorageAnalysing || (
-            !deepSearch && currentDepth
-            > PreferencesConstants.DEFAULT_DUPLICATE_SEARCH_DEPTH_INCL
-            )
+                    !deepSearch && currentDepth
+                            > PreferencesConstants.DEFAULT_DUPLICATE_SEARCH_DEPTH_INCL
+                    )
         ) {
             return
         }
@@ -2655,8 +2593,11 @@ class FilesViewModel(val applicationContext: Application) :
                 dao.insert(
                     InternalStorageAnalysis(
                         file.path, listOf(file.path),
-                        true, false, true, false,
-                        currentDepth
+                        isEmpty = true,
+                        isJunk = false,
+                        isDirectory = true,
+                        isMediaStore = false,
+                        depth = currentDepth
                     )
                 )
             } else {
@@ -2677,8 +2618,11 @@ class FilesViewModel(val applicationContext: Application) :
                 dao.insert(
                     InternalStorageAnalysis(
                         file.path, listOf(file.path),
-                        true, false, false, false,
-                        currentDepth
+                        isEmpty = true,
+                        isJunk = false,
+                        isDirectory = false,
+                        isMediaStore = false,
+                        depth = currentDepth
                     )
                 )
             } else {
@@ -2689,7 +2633,10 @@ class FilesViewModel(val applicationContext: Application) :
                         InternalStorageAnalysis(
                             existingChecksum.checksum,
                             existingChecksum.files + file.path,
-                            false, false, false, false,
+                            isEmpty = false,
+                            isJunk = false,
+                            isDirectory = false,
+                            isMediaStore = false,
                             currentDepth
                         )
                     )
@@ -2697,7 +2644,10 @@ class FilesViewModel(val applicationContext: Application) :
                     dao.insert(
                         InternalStorageAnalysis(
                             checksum,
-                            listOf(file.path), false, false, false,
+                            listOf(file.path),
+                            isEmpty = false,
+                            isJunk = false,
+                            isDirectory = false,
                             false,
                             currentDepth
                         )
@@ -2723,14 +2673,21 @@ class FilesViewModel(val applicationContext: Application) :
                     InternalStorageAnalysis(
                         existingChecksum.checksum,
                         existingChecksum.files + file.path,
-                        false, false, false, true, 0
+                        isEmpty = false,
+                        isJunk = false,
+                        isDirectory = false,
+                        isMediaStore = true,
+                        depth = 0
                     )
                 )
             } else {
                 dao.insert(
                     InternalStorageAnalysis(
                         checksum,
-                        listOf(file.path), false, false, false,
+                        listOf(file.path),
+                        isEmpty = false,
+                        isJunk = false,
+                        isDirectory = false,
                         true,
                         0
                     )
@@ -2741,29 +2698,8 @@ class FilesViewModel(val applicationContext: Application) :
         }
     }
 
-    private fun writeTrainedFile(basePath: File, fileName: String) {
-        val trained = File(basePath, fileName)
-        if (!trained.exists()) {
-            basePath.mkdirs()
-            var `in`: InputStream? = null
-            var out: OutputStream? = null
-            try {
-                `in` = applicationContext.assets.open("training/$fileName")
-                out = FileOutputStream(trained)
-                val buffer = ByteArray(4096)
-                var bytesRead: Int
-                while (`in`.read(buffer).also { bytesRead = it } != -1) {
-                    out.write(buffer, 0, bytesRead)
-                }
-            } finally {
-                out!!.close()
-                `in`!!.close()
-            }
-        }
-    }
-
     private fun getImagesSummaryLiveData(storageSummary: StorageSummary?):
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(null)
             if (storageSummary == null) {
@@ -2804,7 +2740,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun getAudiosSummaryLiveData(storageSummary: StorageSummary?):
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(null)
             if (storageSummary == null) {
@@ -2830,11 +2766,9 @@ class FilesViewModel(val applicationContext: Application) :
             )
             setMediaInfoSummary(metaInfoAndSummaryPair.first, storageSummary)
             emit(metaInfoAndSummaryPair)
-            metaInfoAndSummaryPair.second.forEach {
-                mediaFileInfo ->
+            metaInfoAndSummaryPair.second.forEach { mediaFileInfo ->
                 // load album arts lazily
-                mediaFileInfo.extraInfo?.audioMetaData?.albumId?.let {
-                    albumId ->
+                mediaFileInfo.extraInfo?.audioMetaData?.albumId?.let { albumId ->
                     val albumUri = AudioUtils.getMediaStoreAlbumCoverUri(albumId)
                     val albumBitmap = AudioUtils
                         .getAlbumBitmap(applicationContext.applicationContext, albumUri)
@@ -2845,7 +2779,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun getPlaylistsSummaryLiveData(storageSummary: StorageSummary?):
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(null)
             if (storageSummary == null) {
@@ -2862,13 +2796,11 @@ class FilesViewModel(val applicationContext: Application) :
                         .listPlaylists(
                             applicationContext.applicationContext,
                             it.id,
-                            pathPreferences.map {
-                                pathPrefs ->
+                            pathPreferences.map { pathPrefs ->
                                 pathPrefs.path
                             }
                         )
-                    metaInfoAndSummaryPair.second.forEach {
-                        mediaFileInfo ->
+                    metaInfoAndSummaryPair.second.forEach { mediaFileInfo ->
                         mediaFileInfo.extraInfo?.audioMetaData?.playlist = it
                     }
                     playlistFiles.addAll(metaInfoAndSummaryPair.second)
@@ -2889,11 +2821,9 @@ class FilesViewModel(val applicationContext: Application) :
                     playlistFiles, sortingPref
                 )
                 emit(Pair(it, playlistFiles))
-                playlistFiles.forEach {
-                    mediaFileInfo ->
+                playlistFiles.forEach { mediaFileInfo ->
                     // load album arts lazily
-                    mediaFileInfo.extraInfo?.audioMetaData?.albumId?.let {
-                        albumId ->
+                    mediaFileInfo.extraInfo?.audioMetaData?.albumId?.let { albumId ->
                         val albumUri = AudioUtils.getMediaStoreAlbumCoverUri(albumId)
                         val albumBitmap = AudioUtils
                             .getAlbumBitmap(applicationContext.applicationContext, albumUri)
@@ -2905,7 +2835,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun getVideosSummaryLiveData(storageSummary: StorageSummary?):
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(null)
             if (storageSummary == null) {
@@ -2928,7 +2858,7 @@ class FilesViewModel(val applicationContext: Application) :
     }
 
     private fun getDocumentsSummaryLiveData(storageSummary: StorageSummary?):
-        LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
+            LiveData<Pair<StorageSummary, ArrayList<MediaFileInfo>>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(null)
             if (storageSummary == null) {
@@ -2939,20 +2869,17 @@ class FilesViewModel(val applicationContext: Application) :
             if (allMediaFilesPair == null) {
                 allMediaFilesPair = CursorUtils.listAll(applicationContext)
             }
-            allMediaFilesPair?.let {
-                pair ->
+            allMediaFilesPair?.let { pair ->
                 var longSize = 0L
                 var size = 0
                 val mediaFiles = ArrayList<MediaFileInfo>()
-                pair.filter {
-                    mediaFileInfo ->
+                pair.filter { mediaFileInfo ->
                     arrayListOf(
                         ".pdf", ".epub", ".docx", ".xps", ".oxps",
                         ".cbz", ".fb2", ".mobi"
                     ).stream()
                         .anyMatch { mediaFileInfo.path.endsWith(it) }
-                }.forEach {
-                    mediaFileInfo ->
+                }.forEach { mediaFileInfo ->
                     longSize += mediaFileInfo.longSize
                     size++
                     mediaFiles.add(mediaFileInfo)

@@ -1,30 +1,9 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -42,11 +21,10 @@ import com.amaze.trashbin.TrashBinConfig
 import com.amaze.trashbin.TrashBinFile
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import java.io.File
+import java.lang.ref.WeakReference
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.lang.Exception
-import java.lang.ref.WeakReference
 
 data class MediaFileInfo(
     val title: String,
@@ -63,7 +41,7 @@ data class MediaFileInfo(
     companion object {
         var log: Logger = LoggerFactory.getLogger(MediaFileInfo::class.java)
 
-//        private const val DATE_TIME_FORMAT = "%s %s, %s"
+        //        private const val DATE_TIME_FORMAT = "%s %s, %s"
         private const val UNKNOWN = "UNKNOWN"
         const val MEDIA_TYPE_UNKNOWN = 4
         const val MEDIA_TYPE_IMAGE = 3
@@ -81,27 +59,6 @@ data class MediaFileInfo(
         }
 
         fun fromFile(
-            name: String,
-            path: String,
-            modified: Long,
-            size: Long,
-            extraInfo: ExtraInfo
-        ): MediaFileInfo {
-            return MediaFileInfo(
-                name, path, modified, size,
-                extraInfo = extraInfo
-            )
-        }
-
-        fun fromFile(file: File, context: Context, extraInfo: ExtraInfo): MediaFileInfo {
-            return MediaFileInfo(
-                file.name, file.path, file.lastModified(), file.length(),
-                extraInfo = extraInfo,
-                contentUri = FileProvider.getUriForFile(context, context.packageName, file)
-            )
-        }
-
-        fun fromFile(
             mediaType: Int,
             id: Long,
             name: String,
@@ -114,12 +71,7 @@ data class MediaFileInfo(
             return MediaFileInfo(
                 name, path, modified, size,
                 extraInfo = extraInfo,
-                contentUri = /*if (id != -1L && mediaType == MEDIA_TYPE_AUDIO) {
-                    ContentUris.withAppendedId(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        id
-                    )
-                } else*/ if (mediaType == MEDIA_TYPE_AUDIO) {
+                contentUri = if (mediaType == MEDIA_TYPE_AUDIO) {
                     // we want to load uri only for audio files for finding current playing item
                     FileProvider.getUriForFile(context, context.packageName, File(path))
                 } else {
@@ -149,7 +101,6 @@ data class MediaFileInfo(
         fun fromApplicationInfo(
             context: Context,
             applicationInfo: ApplicationInfo,
-            packageInfo: PackageInfo?,
             sizeDiff: Long = -1,
             timeForeground: Long = 0L
         ): MediaFileInfo? {
@@ -195,10 +146,12 @@ data class MediaFileInfo(
                     val toLoadBitmap: Bitmap? = this.extraInfo?.audioMetaData?.albumArt
                     Glide.with(context).load(toLoadBitmap)
                 }
+
                 MEDIA_TYPE_APK -> {
                     val drawable = this.extraInfo?.apkMetaData?.drawable
                     Glide.with(context).load(drawable)
                 }
+
                 else -> {
                     Glide.with(context).load(this.path)
                 }
@@ -223,14 +176,6 @@ data class MediaFileInfo(
             File(path).parentFile?.path ?: UNKNOWN
         } else {
             UNKNOWN
-        }
-    }
-
-    fun getParentFile(): File? {
-        return if (exists()) {
-            File(path).parentFile
-        } else {
-            null
         }
     }
 
@@ -265,14 +210,12 @@ data class MediaFileInfo(
 
     fun triggerMediaFileInfoAction(contextRef: WeakReference<Context>) {
         if (!exists()) {
-            contextRef.get()?.let {
-                context ->
+            contextRef.get()?.let { context ->
                 context.showToastOnBottom(context.resources.getString(R.string.file_not_found))
                 return
             }
         }
-        contextRef.get()?.let {
-            context ->
+        contextRef.get()?.let { context ->
             val castActivity = (context as CastActivity)
             when (this.extraInfo?.mediaType) {
                 MEDIA_TYPE_IMAGE -> {
@@ -283,6 +226,7 @@ data class MediaFileInfo(
                         startImageViewer(this, context)
                     }
                 }
+
                 MEDIA_TYPE_VIDEO -> {
                     castActivity.showCastFileDialog(
                         this,
@@ -291,6 +235,7 @@ data class MediaFileInfo(
                         startVideoViewer(this, context)
                     }
                 }
+
                 MEDIA_TYPE_AUDIO -> {
                     castActivity.showCastFileDialog(
                         this,
@@ -299,6 +244,7 @@ data class MediaFileInfo(
                         startAudioViewer(this, context)
                     }
                 }
+
                 MEDIA_TYPE_DOCUMENT, MEDIA_TYPE_UNKNOWN, MEDIA_TYPE_TRASH_BIN -> {
                     castActivity.showCastFileDialog(
                         this,
@@ -307,9 +253,9 @@ data class MediaFileInfo(
                         startExternalViewAction(this, context)
                     }
                 }
+
                 MEDIA_TYPE_APK -> {
-                    extraInfo?.apkMetaData?.packageName?.let {
-                        packageName ->
+                    extraInfo?.apkMetaData?.packageName?.let { packageName ->
                         if (!Utils.openExternalAppInfoScreen(context, packageName)) {
                             context.showToastOnBottom(
                                 context.resources
@@ -318,6 +264,7 @@ data class MediaFileInfo(
                         }
                     }
                 }
+
                 else -> {
                     startExternalViewAction(this, context)
                 }
@@ -331,18 +278,15 @@ data class MediaFileInfo(
     }
 
     fun startLocateFileAction(context: Context) {
-        File(this.path).let {
-            file ->
+        File(this.path).let { file ->
             if (file.parentFile != null) {
                 val intent = Intent()
                 intent.setDataAndType(
-                    FileProvider.getUriForFile(context, context.packageName, file.parentFile),
+                    FileProvider.getUriForFile(context, context.packageName, file.parentFile!!),
                     "resource/folder"
                 )
                 intent.putExtra("com.amaze.fileutilities.AFM_LOCATE_FILE_NAME", file.name)
                 intent.action = Intent.ACTION_VIEW
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 try {
                     context.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
@@ -404,6 +348,7 @@ data class MediaFileInfo(
         var idInPlaylist: Long?,
         var playlist: Playlist?,
     )
+
     data class VideoMetaData(val duration: Long?, val width: Int?, val height: Int?)
     data class ImageMetaData(val width: Int?, val height: Int?)
     data class ApkMetaData(
@@ -413,6 +358,7 @@ data class MediaFileInfo(
         val sizeDiff: Long = -1,
         val timeForeground: Long = 0
     )
+
     data class ExtraMetaData(val checksum: String)
     data class Playlist(var id: Long, var name: String)
     data class TrashBinData(var originalFilePath: String)

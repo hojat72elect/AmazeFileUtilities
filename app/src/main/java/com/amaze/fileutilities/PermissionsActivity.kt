@@ -1,22 +1,4 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 
 package com.amaze.fileutilities
 
@@ -49,19 +31,15 @@ open class PermissionsActivity :
 
     private var log: Logger = LoggerFactory.getLogger(PermissionsActivity::class.java)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     /**
      * Invokes permission check when we don't show welcome screen.
      */
     fun invokePermissionCheck() {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (VERSION.SDK_INT < Build.VERSION_CODES.R && !checkStoragePermission()) {
+        if (VERSION.SDK_INT >= VERSION_CODES.M) {
+            if (VERSION.SDK_INT < VERSION_CODES.R && !checkStoragePermission()) {
                 requestStoragePermission(onPermissionGranted, true)
             }
-            if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (VERSION.SDK_INT >= VERSION_CODES.R) {
                 requestAllFilesAccess(onPermissionGranted)
             }
 
@@ -80,7 +58,7 @@ open class PermissionsActivity :
     }
 
     fun haveStoragePermissions(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (VERSION.SDK_INT >= VERSION_CODES.M) {
             if (!checkStoragePermission()) {
                 return false
             }
@@ -162,7 +140,7 @@ open class PermissionsActivity :
     private fun checkStoragePermission(): Boolean {
         // Verify that all required contact permissions have been granted.
         var isFound = false
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
             try {
                 isFound = (
                     ActivityCompat.checkSelfPermission(
@@ -228,7 +206,7 @@ open class PermissionsActivity :
     }
 
     fun initLocationResources(onPermissionGranted: OnPermissionGranted) {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkLocationPermission()) {
+        if (VERSION.SDK_INT >= VERSION_CODES.M && !checkLocationPermission()) {
             val builder: AlertDialog.Builder = this.let {
                 AlertDialog.Builder(this, R.style.Custom_Dialog_Dark)
             }
@@ -371,7 +349,7 @@ open class PermissionsActivity :
      * @param onPermissionGranted permission granted callback
      */
     private fun requestAllFilesAccess(onPermissionGranted: OnPermissionGranted) {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+        if (VERSION.SDK_INT >= VERSION_CODES.R &&
             !Environment.isExternalStorageManager()
         ) {
             val builder: AlertDialog.Builder = this.let {

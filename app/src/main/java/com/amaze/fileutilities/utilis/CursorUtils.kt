@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import android.content.ContentResolver
@@ -27,15 +7,14 @@ import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import com.amaze.fileutilities.home_page.ui.files.FilesViewModel
 import com.amaze.fileutilities.home_page.ui.files.MediaFileInfo
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.Calendar
 import java.util.Date
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class CursorUtils {
 
@@ -44,23 +23,14 @@ class CursorUtils {
 
         private const val BASE_SELECTION_AUDIO =
             MediaStore.Audio.AudioColumns.IS_MUSIC + "=1" + " AND " +
-                MediaStore.Audio.AudioColumns.TITLE + " != ''"
+                    MediaStore.Audio.AudioColumns.TITLE + " != ''"
 
         private const val BASE_SELECTION_IMAGES = MediaStore.Images.ImageColumns.TITLE + " != ''"
 
         private const val BASE_SELECTION_VIDEOS = MediaStore.Video.VideoColumns.TITLE + " != ''"
 
-        private val BLACKLIST_PATHS_AUDIO = arrayListOf(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS)
-                .canonicalPath,
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_NOTIFICATIONS)
-                .canonicalPath,
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES)
-                .canonicalPath
-        )
-
         fun listImages(context: Context): Pair<FilesViewModel.StorageSummary,
-            ArrayList<MediaFileInfo>> {
+                ArrayList<MediaFileInfo>> {
             val projection = arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.TITLE,
@@ -80,7 +50,7 @@ class CursorUtils {
         }
 
         fun listVideos(context: Context): Pair<FilesViewModel.StorageSummary,
-            ArrayList<MediaFileInfo>> {
+                ArrayList<MediaFileInfo>> {
             val projection = arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.TITLE,
@@ -102,8 +72,8 @@ class CursorUtils {
         }
 
         fun listAudio(context: Context, blacklistPaths: List<String>):
-            Pair<FilesViewModel.StorageSummary,
-                ArrayList<MediaFileInfo>> {
+                Pair<FilesViewModel.StorageSummary,
+                        ArrayList<MediaFileInfo>> {
             val projection = arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.TITLE,
@@ -130,8 +100,8 @@ class CursorUtils {
             playlistId: Long,
             blacklistPaths: List<String>
         ):
-            Pair<FilesViewModel.StorageSummary,
-                ArrayList<MediaFileInfo>> {
+                Pair<FilesViewModel.StorageSummary,
+                        ArrayList<MediaFileInfo>> {
             val projection = arrayOf(
                 MediaStore.Audio.Playlists.Members.AUDIO_ID,
                 MediaStore.MediaColumns.TITLE,
@@ -143,7 +113,6 @@ class CursorUtils {
                 MediaStore.Audio.AudioColumns.ALBUM,
                 MediaStore.Audio.AudioColumns.ARTIST,
                 MediaStore.Audio.AudioColumns.ALBUM_ID,
-//                MediaStore.Audio.Playlists.Members._ID,
             )
             return listMediaCommon(
                 context,
@@ -168,18 +137,6 @@ class CursorUtils {
             }
         }
 
-        /*fun listDocs(context: Context): Pair<FilesViewModel.StorageSummary,
-            ArrayList<MediaFileInfo>> {
-            return listFilesWithExtension(context, arrayListOf(".pdf", ".epub", ".docx"),
-                emptyList(),
-                MediaFileInfo.MEDIA_TYPE_DOCUMENT)
-        }
-
-        fun listApks(context: Context): Pair<FilesViewModel.StorageSummary,
-            ArrayList<MediaFileInfo>> {
-            return listFilesWithExtension(context, arrayListOf(".apk"), emptyList())
-        }*/
-
         fun listAll(context: Context): ArrayList<MediaFileInfo> {
             return listFilesWithExtension(context)
         }
@@ -194,19 +151,12 @@ class CursorUtils {
             c[Calendar.DAY_OF_YEAR] = c[Calendar.DAY_OF_YEAR] - 2
             val d = c.time
 
-            /*val mimeTypePdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg")
-            val mimeTypeEpub = MimeTypeMap.getSingleton().getMimeTypeFromExtension("epub")
-            val mimeTypeDocx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx")
-            val selectionArgsPdf = arrayOf(mimeTypePdf, mimeTypeEpub, mimeTypeDocx)
-            val selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE +
-                    "=(${mimeTypePdf.toString()})"*/
-
             val selectionArgs: Array<String>? = null // there is no ? in selection so null here
 
             val selection = MediaStore.Files.FileColumns.MEDIA_TYPE +
-                " IN (${MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE}, " +
-                "${MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO}, " +
-                "${MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO})"
+                    " IN (${MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE}, " +
+                    "${MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO}, " +
+                    "${MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO})"
 
             val queryCursor: Cursor?
             if (VERSION.SDK_INT >= VERSION_CODES.Q) {
@@ -241,7 +191,7 @@ class CursorUtils {
             val cursor = queryCursor ?: return recentFiles
             if (cursor.count > 0 && cursor.moveToFirst()) {
                 var dataColumnIdx = -1
-                var mediaTypeRaw = -1
+                var mediaTypeRaw: Int
                 val mediaColumnIdxValues = MediaColumnIdxValues()
                 do {
                     if (dataColumnIdx == -1) {
@@ -283,7 +233,7 @@ class CursorUtils {
             context: Context,
             mediaType: Int = MediaFileInfo.MEDIA_TYPE_UNKNOWN
         ):
-            ArrayList<MediaFileInfo> {
+                ArrayList<MediaFileInfo> {
             val docs: ArrayList<MediaFileInfo> = ArrayList()
             val projection = arrayOf(
                 MediaStore.MediaColumns._ID,
@@ -334,10 +284,7 @@ class CursorUtils {
                 } while (cursor.moveToNext())
             }
             cursor.close()
-            /*docs.sortWith { lhs: MediaFileInfo, rhs: MediaFileInfo ->
-                -1 * java.lang.Long.valueOf(lhs.date).compareTo(rhs.date)
-            }*/
-//            return Pair(FilesViewModel.StorageSummary(docs.size, 0, longSize), docs)
+
             return docs
         }
 
@@ -443,6 +390,7 @@ class CursorUtils {
                             .getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID)
                     }
                 }
+
                 MediaFileInfo.MEDIA_TYPE_VIDEO -> {
                     if (mediaColumnIdxValues.videoWidthIdx == -1) {
                         mediaColumnIdxValues.videoWidthIdx = cursor
@@ -457,6 +405,7 @@ class CursorUtils {
                             .getColumnIndex(MediaStore.Video.VideoColumns.DURATION)
                     }
                 }
+
                 MediaFileInfo.MEDIA_TYPE_IMAGE -> {
                     if (mediaColumnIdxValues.imgWidthIdx == -1) {
                         mediaColumnIdxValues.imgWidthIdx = cursor
@@ -467,6 +416,7 @@ class CursorUtils {
                             .getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT)
                     }
                 }
+
                 else -> {
                     if (mediaColumnIdxValues.mediaTypeIdx == -1) {
                         mediaColumnIdxValues.mediaTypeIdx = cursor
@@ -575,6 +525,7 @@ class CursorUtils {
                 MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaFileInfo.MEDIA_TYPE_VIDEO
                 MediaStore.Files.FileColumns.MEDIA_TYPE_DOCUMENT
                 -> MediaFileInfo.MEDIA_TYPE_DOCUMENT
+
                 else -> MediaFileInfo.MEDIA_TYPE_UNKNOWN
             }
         }
@@ -617,6 +568,7 @@ class CursorUtils {
                                 null, idInPlaylist, null
                             )
                     }
+
                     MediaFileInfo.MEDIA_TYPE_VIDEO -> {
                         // video
                         var videoWidth: Int? = null
@@ -636,6 +588,7 @@ class CursorUtils {
                             videoWidth, videoHeight
                         )
                     }
+
                     MediaFileInfo.MEDIA_TYPE_IMAGE -> {
                         var imageWidth: Int? = null
                         var imageHeight: Int? = null
@@ -651,7 +604,7 @@ class CursorUtils {
             } catch (e: Exception) {
                 log.warn(
                     "Error while fetching metadata for " +
-                        "$mediaType",
+                            "$mediaType",
                     e
                 )
             }

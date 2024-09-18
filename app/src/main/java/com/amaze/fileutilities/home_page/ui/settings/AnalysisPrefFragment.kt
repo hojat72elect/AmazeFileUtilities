@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.settings
 
 import android.os.Bundle
@@ -105,24 +85,28 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     .create()
                 dialog.show()
             }
+
             KEY_BLUR -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment.newInstance(PathPreferences.FEATURE_ANALYSIS_BLUR),
                     R.string.blurred_pics
                 )
             }
+
             KEY_LOW_LIGHT -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment.newInstance(PathPreferences.FEATURE_ANALYSIS_LOW_LIGHT),
                     R.string.low_light
                 )
             }
+
             KEY_MEMES -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment.newInstance(PathPreferences.FEATURE_ANALYSIS_MEME),
                     R.string.memes
                 )
             }
+
             KEY_FEATURES -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -130,6 +114,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.image_features
                 )
             }
+
             KEY_SIMILAR_IMAGES -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -137,6 +122,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.similar_images
                 )
             }
+
             KEY_DOWNLOAD -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -144,6 +130,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.download_paths
                 )
             }
+
             KEY_RECORDING -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -151,6 +138,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.old_recordings
                 )
             }
+
             KEY_SCREENSHOT -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -158,6 +146,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.old_screenshots
                 )
             }
+
             KEY_TELEGRAM -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -165,6 +154,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.telegram_files
                 )
             }
+
             KEY_WHATSAPP_MEDIA -> {
                 (activity as PreferenceActivity).inflatePreferenceFragment(
                     PathPreferencesFragment
@@ -172,6 +162,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     R.string.whatsapp_media
                 )
             }
+
             KEY_UNUSED_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_UNUSED_APPS_DAYS,
@@ -187,6 +178,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     ).apply()
                 }
             }
+
             KEY_MOST_USED_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_MOST_USED_APPS_DAYS,
@@ -204,6 +196,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     ).apply()
                 }
             }
+
             KEY_LEAST_USED_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_LEAST_USED_APPS_DAYS,
@@ -221,6 +214,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     ).apply()
                 }
             }
+
             KEY_NEWLY_INSTALLED_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_NEWLY_INSTALLED_APPS_DAYS,
@@ -238,6 +232,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     ).apply()
                 }
             }
+
             KEY_RECENTLY_UPDATED_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_RECENTLY_UPDATED_APPS_DAYS,
@@ -255,6 +250,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     ).apply()
                 }
             }
+
             KEY_LARGE_SIZE_DIFF_APPS -> {
                 val days = prefs.getInt(
                     PreferencesConstants.KEY_LARGE_SIZE_DIFF_APPS_DAYS,
@@ -264,7 +260,7 @@ class AnalysisPrefFragment : PreferenceFragmentCompat(), Preference.OnPreference
                     requireContext(),
                     getString(R.string.large_size_diff_apps),
                     getString(R.string.large_size_diff_apps_summary) +
-                        " (max. ${PreferencesConstants.MAX_LARGE_SIZE_DIFF_APPS_DAYS} days)",
+                            " (max. ${PreferencesConstants.MAX_LARGE_SIZE_DIFF_APPS_DAYS} days)",
                     days.toLong(),
                     {
                         prefs.edit().putInt(

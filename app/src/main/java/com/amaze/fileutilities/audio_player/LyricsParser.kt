@@ -1,41 +1,21 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.audio_player
 
 import android.os.Parcelable
 import com.amaze.fileutilities.home_page.database.Lyrics
 import com.amaze.fileutilities.home_page.database.LyricsDao
 import com.amaze.fileutilities.home_page.ui.files.AudiosListFragment
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.parcelize.Parcelize
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class LyricsParser {
 
-    var lyricsMap: LinkedHashMap<Long, String>? = null
+    private var lyricsMap: LinkedHashMap<Long, String>? = null
     var lyricsRaw: Lyrics? = null
-    var lastLyrics: String? = null
-    var lyricsStrings: LyricsStrings? = null
+    private var lastLyrics: String? = null
+    private var lyricsStrings: LyricsStrings? = null
 
     @Parcelize
     data class LyricsStrings(
@@ -63,7 +43,7 @@ class LyricsParser {
 
     companion object {
         private var log: Logger = LoggerFactory.getLogger(AudiosListFragment::class.java)
-        var timerPattern: Pattern = Pattern.compile("(\\[)([\\.:\\w]*)?(\\])")
+        var timerPattern: Pattern = Pattern.compile("(\\[)([.:\\w]*)?(])")
     }
 
     fun getLyrics(timestamp: Long): String? {
@@ -152,8 +132,7 @@ class LyricsParser {
         if (lyricsRaw != null && lyricsRaw!!.isSynced) {
             lyricsMap = LinkedHashMap()
             val lyricsLines = lyricsRaw!!.lyricsText.split("\n")
-            lyricsLines.forEach {
-                lyricsLineRaw ->
+            lyricsLines.forEach { lyricsLineRaw ->
                 var matcher: Matcher = timerPattern.matcher(lyricsLineRaw)
                 val output: MutableList<Long> = ArrayList()
                 var lyricsLine: String? = null
@@ -172,9 +151,8 @@ class LyricsParser {
                         lyricsLine = lyricsLineRaw.substring(lastIdxOf)
                     }
                     if (!lyricsLine.isNullOrBlank()) {
-                        output.forEach {
-                            timeStamp ->
-                            if (!lyricsLine.isNullOrBlank()) {
+                        output.forEach { timeStamp ->
+                            if (lyricsLine.isNotBlank()) {
                                 lyricsMap?.put(timeStamp, lyricsLine)
                             } else {
                                 lyricsMap?.put(timeStamp, "♪")

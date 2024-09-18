@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.analyse
 
 import android.graphics.Color
@@ -89,7 +69,6 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
         const val TYPE_OLD_SCREENSHOTS = 6
         const val TYPE_OLD_RECORDINGS = 7
         const val TYPE_EMPTY_FILES = 8
-        const val TYPE_JUNK_FILES = 9
         const val TYPE_SLEEPING = 10
         const val TYPE_DISTRACTED = 11
         const val TYPE_SAD = 12
@@ -185,20 +164,25 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
             TYPE_SELFIE, TYPE_GROUP_PIC, TYPE_SIMILAR_IMAGES -> {
                 MediaFileAdapter.MEDIA_TYPE_IMAGES
             }
+
             TYPE_LARGE_VIDEOS, TYPE_CLUTTERED_VIDEOS -> {
                 MediaFileAdapter.MEDIA_TYPE_VIDEO
             }
+
             TYPE_OLD_RECORDINGS -> {
                 MediaFileAdapter.MEDIA_TYPE_AUDIO
             }
+
             TYPE_LARGE_APPS, TYPE_UNUSED_APPS, TYPE_MOST_USED_APPS, TYPE_LEAST_USED_APPS,
             TYPE_GAMES_INSTALLED, TYPE_APK_FILES, TYPE_NEWLY_INSTALLED_APPS,
             TYPE_RECENTLY_UPDATED_APPS, TYPE_NETWORK_INTENSIVE_APPS, TYPE_LARGE_SIZE_DIFF_APPS -> {
                 MediaFileAdapter.MEDIA_TYPE_APKS
             }
+
             TYPE_TRASH_BIN -> {
                 MediaFileAdapter.MEDIA_TYPE_TRASH_BIN
             }
+
             else -> {
                 MediaFileAdapter.MEDIA_TYPE_UNKNOWN
             }
@@ -206,7 +190,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
     }
 
     override fun getAllOptionsFAB(): List<FloatingActionButton> {
-        var fabOptions = arrayListOf(
+        val fabOptions = arrayListOf(
             binding.selectAllButtonFab,
             binding.optionsButtonFab, binding.deleteButtonFab,
             binding.shareButtonFab, binding.locateFileButtonFab
@@ -242,49 +226,47 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
         )
 
         when (analysisType) {
-            TYPE_BLUR ->
-                {
-                    viewModel.getBlurImages(blurAnalysisDao).observe(viewLifecycleOwner) {
-                        if (it == null) {
-                            invalidateProcessing(
-                                true,
-                                filesViewModel.isImageBlurAnalysing
-                            )
-                        } else {
-                            setMediaInfoList(it, true) {
-                                checkedItems ->
-                                viewModel.cleanBlurAnalysis(blurAnalysisDao, checkedItems)
-                            }
-                            invalidateProcessing(
-                                false,
-                                filesViewModel.isImageBlurAnalysing
-                            )
+            TYPE_BLUR -> {
+                viewModel.getBlurImages(blurAnalysisDao).observe(viewLifecycleOwner) {
+                    if (it == null) {
+                        invalidateProcessing(
+                            true,
+                            filesViewModel.isImageBlurAnalysing
+                        )
+                    } else {
+                        setMediaInfoList(it, true) { checkedItems ->
+                            viewModel.cleanBlurAnalysis(blurAnalysisDao, checkedItems)
                         }
+                        invalidateProcessing(
+                            false,
+                            filesViewModel.isImageBlurAnalysing
+                        )
                     }
                 }
-            TYPE_LOW_LIGHT ->
-                {
-                    viewModel.getLowLightImages(lowLightAnalysisDao).observe(viewLifecycleOwner) {
-                        if (it == null) {
-                            invalidateProcessing(
-                                true,
-                                filesViewModel.isImageLowLightAnalysing
-                            )
-                        } else {
-                            setMediaInfoList(it, true) {
-                                checkedItems ->
-                                viewModel.cleanLowLightAnalysis(
-                                    lowLightAnalysisDao,
-                                    checkedItems
-                                )
-                            }
-                            invalidateProcessing(
-                                false,
-                                filesViewModel.isImageLowLightAnalysing
+            }
+
+            TYPE_LOW_LIGHT -> {
+                viewModel.getLowLightImages(lowLightAnalysisDao).observe(viewLifecycleOwner) {
+                    if (it == null) {
+                        invalidateProcessing(
+                            true,
+                            filesViewModel.isImageLowLightAnalysing
+                        )
+                    } else {
+                        setMediaInfoList(it, true) { checkedItems ->
+                            viewModel.cleanLowLightAnalysis(
+                                lowLightAnalysisDao,
+                                checkedItems
                             )
                         }
+                        invalidateProcessing(
+                            false,
+                            filesViewModel.isImageLowLightAnalysing
+                        )
                     }
                 }
+            }
+
             TYPE_MEME -> {
                 viewModel.getMemeImages(memeAnalysisDao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -293,8 +275,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageMemesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanMemeAnalysis(memeAnalysisDao, checkedItems)
                         }
                         invalidateProcessing(
@@ -304,17 +285,18 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_DUPLICATES -> {
                 viewModel.getDuplicateDirectories(
                     internalStorageDao,
                     duplicatePref
-                        == PreferencesConstants.VAL_SEARCH_DUPLICATES_MEDIA_STORE,
+                            == PreferencesConstants.VAL_SEARCH_DUPLICATES_MEDIA_STORE,
                     duplicatePref
-                        == PreferencesConstants.VAL_SEARCH_DUPLICATES_INTERNAL_DEEP
+                            == PreferencesConstants.VAL_SEARCH_DUPLICATES_INTERNAL_DEEP
                 )
                     .observe(viewLifecycleOwner) {
                         val isMediaFilePref = duplicatePref ==
-                            PreferencesConstants.VAL_SEARCH_DUPLICATES_MEDIA_STORE
+                                PreferencesConstants.VAL_SEARCH_DUPLICATES_MEDIA_STORE
                         val invalidateProgress = if (isMediaFilePref)
                             filesViewModel.isMediaStoreAnalysing
                         else filesViewModel.isInternalStorageAnalysing
@@ -326,17 +308,19 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_LARGE_FILES -> {
                 filesViewModel.getLargeFilesLiveData()
                     .observe(viewLifecycleOwner) {
                         if (it == null) {
-                            invalidateProcessing(true, false)
+                            invalidateProcessing(isProcessing = true, isAnalysing = false)
                         } else {
                             setMediaInfoList(it, false)
-                            invalidateProcessing(false, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
                         }
                     }
             }
+
             TYPE_EMPTY_FILES -> {
                 viewModel.getEmptyFiles(internalStorageDao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -353,6 +337,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_SAD -> {
                 viewModel.getSadImages(dao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -361,8 +346,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageFeaturesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanImageAnalysis(dao, TYPE_SAD, checkedItems)
                         }
                         invalidateProcessing(
@@ -372,6 +356,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_DISTRACTED -> {
                 viewModel.getDistractedImages(dao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -380,8 +365,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageFeaturesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanImageAnalysis(dao, TYPE_DISTRACTED, checkedItems)
                         }
                         invalidateProcessing(
@@ -391,6 +375,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_SLEEPING -> {
                 viewModel.getSleepingImages(dao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -399,8 +384,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageFeaturesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanImageAnalysis(dao, TYPE_SLEEPING, checkedItems)
                         }
                         invalidateProcessing(
@@ -410,6 +394,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_SELFIE -> {
                 viewModel.getSelfieImages(dao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -418,8 +403,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageFeaturesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanImageAnalysis(dao, TYPE_SELFIE, checkedItems)
                         }
                         invalidateProcessing(
@@ -429,6 +413,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_GROUP_PIC -> {
                 viewModel.getGroupPicImages(dao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -437,8 +422,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isImageFeaturesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanImageAnalysis(dao, TYPE_GROUP_PIC, checkedItems)
                         }
                         invalidateProcessing(
@@ -448,6 +432,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_SIMILAR_IMAGES -> {
                 viewModel.getSimilarImages(similarImagesAnalysisDao).observe(viewLifecycleOwner) {
                     if (it == null) {
@@ -456,8 +441,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                             filesViewModel.isSimilarImagesAnalysing
                         )
                     } else {
-                        setMediaInfoList(it, true) {
-                            checkedItems ->
+                        setMediaInfoList(it, true) { checkedItems ->
                             viewModel.cleanSimilarImageAnalysis(
                                 similarImagesAnalysisDao,
                                 checkedItems
@@ -470,91 +454,103 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_CLUTTERED_VIDEOS -> {
                 filesViewModel.usedVideosSummaryTransformations()
                     .observe(viewLifecycleOwner) { mediaFilePair ->
-                        invalidateProcessing(true, false)
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
                         mediaFilePair?.let {
                             viewModel.getClutteredVideos(mediaFilePair.second)
                                 .observe(viewLifecycleOwner) { clutteredVideosInfo ->
                                     clutteredVideosInfo?.let {
                                         setMediaInfoList(it, false)
-                                        invalidateProcessing(false, false)
+                                        invalidateProcessing(
+                                            isProcessing = false,
+                                            isAnalysing = false
+                                        )
                                     }
                                 }
                         }
                     }
             }
+
             TYPE_LARGE_VIDEOS -> {
                 filesViewModel.usedVideosSummaryTransformations()
                     .observe(viewLifecycleOwner) { mediaFilePair ->
-                        invalidateProcessing(true, false)
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
                         mediaFilePair?.let {
                             viewModel.getLargeVideos(mediaFilePair.second)
                                 .observe(viewLifecycleOwner) { largeVideosList ->
                                     largeVideosList?.let {
                                         setMediaInfoList(it, false)
-                                        invalidateProcessing(false, false)
+                                        invalidateProcessing(
+                                            isProcessing = false,
+                                            isAnalysing = false
+                                        )
                                     }
                                 }
                         }
                     }
             }
+
             TYPE_LARGE_DOWNLOADS -> {
-                filesViewModel.getLargeDownloads(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    largeDownloads ->
-                    invalidateProcessing(true, false)
-                    largeDownloads?.let {
-                        setMediaInfoList(it, false)
-                        invalidateProcessing(false, false)
-                    }
-                }
-            }
-            TYPE_OLD_DOWNLOADS -> {
-                filesViewModel.getOldDownloads(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    oldDownloads ->
-                    invalidateProcessing(true, false)
-                    oldDownloads?.let {
-                        setMediaInfoList(it, false)
-                        invalidateProcessing(false, false)
-                    }
-                }
-            }
-            TYPE_OLD_SCREENSHOTS -> {
-                filesViewModel.getOldScreenshots(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    oldScreenshots ->
-                    invalidateProcessing(true, false)
-                    oldScreenshots?.let {
-                        setMediaInfoList(it, false)
-                        invalidateProcessing(false, false)
-                    }
-                }
-            }
-            TYPE_OLD_RECORDINGS -> {
-                filesViewModel.getOldRecordings(pathPreferencesDao).observe(viewLifecycleOwner) {
-                    oldRecordings ->
-                    invalidateProcessing(true, false)
-                    oldRecordings?.let {
-                        setMediaInfoList(it, false)
-                        invalidateProcessing(false, false)
-                    }
-                }
-            }
-            TYPE_WHATSAPP -> {
-                filesViewModel.getWhatsappMediaLiveData(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        whatsappMedia ->
-                        invalidateProcessing(true, false)
-                        whatsappMedia?.let {
+                filesViewModel.getLargeDownloads(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { largeDownloads ->
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
+                        largeDownloads?.let {
                             setMediaInfoList(it, false)
-                            invalidateProcessing(false, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
                         }
                     }
             }
+
+            TYPE_OLD_DOWNLOADS -> {
+                filesViewModel.getOldDownloads(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { oldDownloads ->
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
+                        oldDownloads?.let {
+                            setMediaInfoList(it, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
+                        }
+                    }
+            }
+
+            TYPE_OLD_SCREENSHOTS -> {
+                filesViewModel.getOldScreenshots(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { oldScreenshots ->
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
+                        oldScreenshots?.let {
+                            setMediaInfoList(it, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
+                        }
+                    }
+            }
+
+            TYPE_OLD_RECORDINGS -> {
+                filesViewModel.getOldRecordings(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { oldRecordings ->
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
+                        oldRecordings?.let {
+                            setMediaInfoList(it, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
+                        }
+                    }
+            }
+
+            TYPE_WHATSAPP -> {
+                filesViewModel.getWhatsappMediaLiveData(pathPreferencesDao)
+                    .observe(viewLifecycleOwner) { whatsappMedia ->
+                        invalidateProcessing(isProcessing = true, isAnalysing = false)
+                        whatsappMedia?.let {
+                            setMediaInfoList(it, false)
+                            invalidateProcessing(isProcessing = false, isAnalysing = false)
+                        }
+                    }
+            }
+
             TYPE_TELEGRAM -> {
                 filesViewModel.getTelegramMediaFiles(pathPreferencesDao)
-                    .observe(viewLifecycleOwner) {
-                        telegramMedia ->
+                    .observe(viewLifecycleOwner) { telegramMedia ->
                         invalidateProcessing(true, false)
                         telegramMedia?.let {
                             setMediaInfoList(it, false)
@@ -562,6 +558,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_UNUSED_APPS -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     filesViewModel.getUnusedApps()
@@ -574,16 +571,18 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                 }
             }
+
             TYPE_NETWORK_INTENSIVE_APPS -> {
-                filesViewModel.getNetworkIntensiveApps().observe(viewLifecycleOwner) {
-                    networkIntensiveApps ->
-                    invalidateProcessing(true, false)
-                    networkIntensiveApps?.let {
-                        setMediaInfoList(it, false)
-                        invalidateProcessing(false, false)
+                filesViewModel.getNetworkIntensiveApps()
+                    .observe(viewLifecycleOwner) { networkIntensiveApps ->
+                        invalidateProcessing(true, false)
+                        networkIntensiveApps?.let {
+                            setMediaInfoList(it, false)
+                            invalidateProcessing(false, false)
+                        }
                     }
-                }
             }
+
             TYPE_MOST_USED_APPS -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     filesViewModel.getMostUsedApps()
@@ -596,6 +595,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                 }
             }
+
             TYPE_LEAST_USED_APPS -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     filesViewModel.getLeastUsedApps()
@@ -608,6 +608,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                 }
             }
+
             TYPE_LARGE_APPS -> {
                 filesViewModel.getLargeApps()
                     .observe(viewLifecycleOwner) { largeApps ->
@@ -618,6 +619,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_NEWLY_INSTALLED_APPS -> {
                 filesViewModel.getNewlyInstalledApps()
                     .observe(viewLifecycleOwner) { newApps ->
@@ -628,6 +630,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_RECENTLY_UPDATED_APPS -> {
                 filesViewModel.getRecentlyUpdatedApps()
                     .observe(viewLifecycleOwner) { recentApps ->
@@ -638,6 +641,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_LARGE_SIZE_DIFF_APPS -> {
                 filesViewModel.getLargeSizeDiffApps().observe(viewLifecycleOwner) { largeDiffApps ->
                     invalidateProcessing(true, false)
@@ -647,6 +651,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     }
                 }
             }
+
             TYPE_GAMES_INSTALLED -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     filesViewModel.getGamesInstalled()
@@ -659,6 +664,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                 }
             }
+
             TYPE_APK_FILES -> {
                 filesViewModel.getApksLiveData()
                     .observe(viewLifecycleOwner) { apkFiles ->
@@ -669,6 +675,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_HIDDEN_FILES -> {
                 filesViewModel.getHiddenFilesLiveData()
                     .observe(viewLifecycleOwner) { hiddenFiles ->
@@ -679,6 +686,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                         }
                     }
             }
+
             TYPE_TRASH_BIN -> {
                 filesViewModel.progressTrashBinFilesLiveData()
                     .observe(viewLifecycleOwner) { trashBinFiles ->
@@ -708,7 +716,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
             preloader!!, mediaInfoList
         ) { checkedSize, itemsCount, bytesFormatted ->
             val title = "$checkedSize / $itemsCount" +
-                " ($bytesFormatted)"
+                    " ($bytesFormatted)"
             val countView = getCountView()
             countView?.text = title
             if (checkedSize > 0) {
@@ -758,7 +766,7 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
         setupCommonButtons()
         thumbsDownButton?.setOnClickListener {
             mediaFileAdapter?.let {
-                if (!it.checkItemsList.isNullOrEmpty()) {
+                if (it.checkItemsList.isNotEmpty()) {
                     if (cleanData != null) {
                         cleanData(it.checkItemsList).observe(viewLifecycleOwner) { success ->
                             if (success) {
@@ -794,18 +802,21 @@ class ReviewImagesFragment : ItemsActionBarFragment() {
                     resources.getString(R.string.please_wait)
                 )
             }
+
             isAnalysing -> {
                 binding.processingProgressView.invalidateProcessing(
                     false, false,
                     null
                 )
             }
+
             mediaFileAdapter?.itemCount == 0 -> {
                 binding.processingProgressView.invalidateProcessing(
                     false, true,
                     resources.getString(R.string.its_quiet_here)
                 )
             }
+
             else -> {
                 binding.processingProgressView.invalidateProcessing(
                     false, false,

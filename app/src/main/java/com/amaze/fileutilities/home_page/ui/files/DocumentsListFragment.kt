@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.graphics.Color
@@ -42,7 +22,7 @@ class DocumentsListFragment : AbstractMediaInfoListFragment() {
     private val filesViewModel: FilesViewModel by activityViewModels()
     private var _binding: FragmentDocumentsListBinding? = null
     private lateinit var fileStorageSummaryAndMediaFileInfo:
-        Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>
+            Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -74,7 +54,7 @@ class DocumentsListFragment : AbstractMediaInfoListFragment() {
     }
 
     override fun getFileStorageSummaryAndMediaFileInfoPair(): Pair<FilesViewModel.StorageSummary,
-        List<MediaFileInfo>?>? {
+            List<MediaFileInfo>?>? {
         return if (::fileStorageSummaryAndMediaFileInfo.isInitialized)
             fileStorageSummaryAndMediaFileInfo else null
     }
@@ -135,22 +115,19 @@ class DocumentsListFragment : AbstractMediaInfoListFragment() {
                     }
                     fileStorageSummaryAndMediaFileInfo = it
                     resetAdapter()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        binding.fastscroll.visibility = View.GONE
-                        val popupStyle = Consumer<TextView> { popupView ->
-                            PopupStyles.MD2.accept(popupView)
-                            popupView.setTextColor(Color.BLACK)
-                            popupView.setTextSize(
-                                TypedValue.COMPLEX_UNIT_PX,
-                                resources.getDimension(R.dimen.twenty_four_sp)
-                            )
-                        }
-                        FastScrollerBuilder(binding.documentsListView).useMd2Style()
-                            .setPopupStyle(popupStyle).build()
-                    } else {
-                        binding.fastscroll.visibility = View.VISIBLE
-                        binding.fastscroll.setRecyclerView(binding.documentsListView, 1)
+
+                    binding.fastscroll.visibility = View.GONE
+                    val popupStyle = Consumer<TextView> { popupView ->
+                        PopupStyles.MD2.accept(popupView)
+                        popupView.setTextColor(Color.BLACK)
+                        popupView.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            resources.getDimension(R.dimen.twenty_four_sp)
+                        )
                     }
+                    FastScrollerBuilder(binding.documentsListView).useMd2Style()
+                        .setPopupStyle(popupStyle).build()
+
                 }
             }
         }

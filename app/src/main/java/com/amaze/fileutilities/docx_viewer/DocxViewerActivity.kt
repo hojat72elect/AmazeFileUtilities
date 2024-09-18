@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.docx_viewer
 
 import android.graphics.drawable.ColorDrawable
@@ -38,7 +18,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.zwobble.mammoth.DocumentConverter
 import org.zwobble.mammoth.Result
-import java.lang.Exception
 
 class DocxViewerActivity : PermissionsActivity() {
     var log: Logger = LoggerFactory.getLogger(DocxViewerActivity::class.java)
@@ -67,7 +46,7 @@ class DocxViewerActivity : PermissionsActivity() {
         docxModel = viewModel.getDocxModel(intent)!!
         log.info(
             "Loading docx from path ${docxModel.getUri().path} " +
-                "and mimetype ${docxModel.mimeType}"
+                    "and mimetype ${docxModel.mimeType}"
         )
         try {
             val converter = DocumentConverter()
@@ -75,15 +54,14 @@ class DocxViewerActivity : PermissionsActivity() {
             title = docxModel.getName(this)
             result?.let {
                 val html: String = result.value // The generated HTML
-                val warnings: Set<String> = result.warnings // Any warnings during conversion
                 val base64 = Base64.encodeToString(html.toByteArray(), Base64.NO_PADDING)
                 viewBinding.webview.also {
                     it.loadData(base64, "text/html", "base64")
                     it.settings.setSupportZoom(true)
                     it.settings.builtInZoomControls = true
                     it.settings.displayZoomControls = false
-                    it.setVerticalScrollBarEnabled(true)
-                    it.setHorizontalScrollBarEnabled(true)
+                    it.isVerticalScrollBarEnabled = true
+                    it.isHorizontalScrollBarEnabled = true
                 }
             }
         } catch (e: Exception) {
@@ -116,6 +94,7 @@ class DocxViewerActivity : PermissionsActivity() {
                     viewBinding.webview.reload()
                 }
             }
+
             android.R.id.home -> {
                 finish()
             }

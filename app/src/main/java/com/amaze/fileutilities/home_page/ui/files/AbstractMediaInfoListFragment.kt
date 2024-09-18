@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.home_page.ui.files
 
 import android.view.View
@@ -82,7 +62,7 @@ abstract class AbstractMediaInfoListFragment :
     }
 
     abstract fun getFileStorageSummaryAndMediaFileInfoPair():
-        Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>?
+            Pair<FilesViewModel.StorageSummary, List<MediaFileInfo>?>?
 
     abstract fun getMediaAdapterPreloader(isGrid: Boolean): MediaAdapterPreloader<MediaFileInfo>
 
@@ -141,8 +121,7 @@ abstract class AbstractMediaInfoListFragment :
                     ),
                     ArrayList(mediaFileInfoList),
                     getMediaListType(),
-                    {
-                        mediaTypeHeader ->
+                    { mediaTypeHeader ->
                         (requireContext() as CastActivity)
                             .refactorCastButton(mediaTypeHeader.getMediaRouteButton())
                         mediaTypeHeader.setProgress(
@@ -152,110 +131,116 @@ abstract class AbstractMediaInfoListFragment :
                                 storageSummary.totalItems
                             )
                         )
-                    }, {
-                    mediaFileInfo ->
-                    getItemPressedCallback(mediaFileInfo)
-                }, {
-                    checkedSize, itemsCount, bytesFormatted ->
-                    val title = "$checkedSize / $itemsCount" +
-                        " ($bytesFormatted)"
-                    if (checkedSize > 0) {
-                        setupShowActionBar()
-                        setupCommonButtons()
-                        if (checkedSize == 1) enableLocateFileFab() else disableLocateFileFab()
-                    } else {
-                        hideActionBar()
-                    }
-                    adapterItemSelected(checkedSize)
-                    val countView = getCountView()
-                    countView?.text = title
-                }, {
-                    item, actionItems ->
-                    when (item.itemId) {
-                        R.id.share -> {
-                            performShareAction(actionItems)
+                    }, { mediaFileInfo ->
+                        getItemPressedCallback(mediaFileInfo)
+                    }, { checkedSize, itemsCount, bytesFormatted ->
+                        val title = "$checkedSize / $itemsCount" +
+                                " ($bytesFormatted)"
+                        if (checkedSize > 0) {
+                            setupShowActionBar()
+                            setupCommonButtons()
+                            if (checkedSize == 1) enableLocateFileFab() else disableLocateFileFab()
+                        } else {
+                            hideActionBar()
                         }
-                        R.id.delete -> {
-                            performDeleteAction(actionItems)
-                        }
-                        R.id.shuffle -> {
-                            context?.let {
-                                context ->
-                                performShuffleAction(context, actionItems)
+                        adapterItemSelected(checkedSize)
+                        val countView = getCountView()
+                        countView?.text = title
+                    }, { item, actionItems ->
+                        when (item.itemId) {
+                            R.id.share -> {
+                                performShareAction(actionItems)
                             }
-                        }
-                        R.id.delete_playlist -> {
-                            if (actionItems.isNotEmpty()) {
-                                val playlist = actionItems[0]
-                                    .extraInfo?.audioMetaData?.playlist?.name
-                                playlist?.let {
-                                    Utils.buildDeletePlaylistDialog(requireContext(), playlist) {
-                                        PlaylistsUtil.deletePlaylists(
-                                            requireContext(),
-                                            arrayListOf(
-                                                actionItems[0]
-                                                    .extraInfo?.audioMetaData?.playlist
-                                            )
-                                        )
-                                        // reset the dataset
-                                        getFilesViewModelObj()
-                                            .usedPlaylistsSummaryTransformations = null
-                                        setupAdapter()
-                                    }.show()
+
+                            R.id.delete -> {
+                                performDeleteAction(actionItems)
+                            }
+
+                            R.id.shuffle -> {
+                                context?.let { context ->
+                                    performShuffleAction(context, actionItems)
                                 }
                             }
-                        }
-                        R.id.rename_playlist -> {
-                            if (actionItems.isNotEmpty()) {
-                                val playlist = actionItems[0]
-                                    .extraInfo?.audioMetaData?.playlist?.name
-                                playlist?.let {
-                                    val playlistId = actionItems[0]
-                                        .extraInfo?.audioMetaData?.playlist?.id
-                                    if (playlistId != -1L) {
-                                        Utils.buildRenamePlaylistDialog(
+
+                            R.id.delete_playlist -> {
+                                if (actionItems.isNotEmpty()) {
+                                    val playlist = actionItems[0]
+                                        .extraInfo?.audioMetaData?.playlist?.name
+                                    playlist?.let {
+                                        Utils.buildDeletePlaylistDialog(
                                             requireContext(),
                                             playlist
                                         ) {
-                                            newName ->
-                                            PlaylistsUtil.renamePlaylist(
+                                            PlaylistsUtil.deletePlaylists(
                                                 requireContext(),
-                                                playlistId!!,
-                                                newName
+                                                arrayListOf(
+                                                    actionItems[0]
+                                                        .extraInfo?.audioMetaData?.playlist
+                                                )
                                             )
                                             // reset the dataset
                                             getFilesViewModelObj()
                                                 .usedPlaylistsSummaryTransformations = null
                                             setupAdapter()
+                                        }.show()
+                                    }
+                                }
+                            }
+
+                            R.id.rename_playlist -> {
+                                if (actionItems.isNotEmpty()) {
+                                    val playlist = actionItems[0]
+                                        .extraInfo?.audioMetaData?.playlist?.name
+                                    playlist?.let {
+                                        val playlistId = actionItems[0]
+                                            .extraInfo?.audioMetaData?.playlist?.id
+                                        if (playlistId != -1L) {
+                                            Utils.buildRenamePlaylistDialog(
+                                                requireContext(),
+                                                playlist
+                                            ) { newName ->
+                                                PlaylistsUtil.renamePlaylist(
+                                                    requireContext(),
+                                                    playlistId!!,
+                                                    newName
+                                                )
+                                                // reset the dataset
+                                                getFilesViewModelObj()
+                                                    .usedPlaylistsSummaryTransformations = null
+                                                setupAdapter()
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    }, {
+                        getRecyclerView().clearOnScrollListeners()
+                        setupAdapter()
+                    }, {
+                        when (getMediaListType()) {
+                            MediaFileAdapter.MEDIA_TYPE_IMAGES -> {
+                                getFilesViewModelObj().usedImagesSummaryTransformations = null
+                            }
+
+                            MediaFileAdapter.MEDIA_TYPE_DOCS -> {
+                                getFilesViewModelObj().usedDocsSummaryTransformations = null
+                            }
+
+                            MediaFileAdapter.MEDIA_TYPE_AUDIO -> {
+                                getFilesViewModelObj().usedAudiosSummaryTransformations = null
+                            }
+
+                            MediaFileAdapter.MEDIA_TYPE_VIDEO -> {
+                                getFilesViewModelObj().usedVideosSummaryTransformations = null
+                            }
+
+                            else -> {
+                                log.warn("unsupported operation to reset data on banner action")
+                            }
+                        }
+                        reloadFragment()
                     }
-                }, {
-                    getRecyclerView().clearOnScrollListeners()
-                    setupAdapter()
-                }, {
-                    when (getMediaListType()) {
-                        MediaFileAdapter.MEDIA_TYPE_IMAGES -> {
-                            getFilesViewModelObj().usedImagesSummaryTransformations = null
-                        }
-                        MediaFileAdapter.MEDIA_TYPE_DOCS -> {
-                            getFilesViewModelObj().usedDocsSummaryTransformations = null
-                        }
-                        MediaFileAdapter.MEDIA_TYPE_AUDIO -> {
-                            getFilesViewModelObj().usedAudiosSummaryTransformations = null
-                        }
-                        MediaFileAdapter.MEDIA_TYPE_VIDEO -> {
-                            getFilesViewModelObj().usedVideosSummaryTransformations = null
-                        }
-                        else -> {
-                            log.warn("unsupported operation to reset data on banner action")
-                        }
-                    }
-                    reloadFragment()
-                }
                 )
                 getRecyclerView().addOnScrollListener(recyclerViewPreloader)
                 linearLayoutManager = LinearLayoutManager(context)
@@ -282,6 +267,7 @@ abstract class AbstractMediaInfoListFragment :
             }
         }
     }
+
     private fun reloadFragment() {
         val navController = NavHostFragment.findNavController(this)
         navController.popBackStack()

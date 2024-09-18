@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import android.content.Context
@@ -250,6 +230,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
             filesViewModel.largeAppsLiveData = null
         }
     }
+
     private fun addToFileViewmodelLists(toAdd: List<MediaFileInfo>) {
         if (toAdd.isEmpty()) {
             return
@@ -262,6 +243,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
                     }
                 }
             }
+
             MediaFileInfo.MEDIA_TYPE_VIDEO -> {
                 filesViewModel.usedVideosSummaryTransformations().observe(viewLifecycleOwner) {
                     if (it != null) {
@@ -273,13 +255,13 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
     }
 
     fun setupCommonButtons() {
-        getNonOptionsFab().forEach {
-            fab ->
+        getNonOptionsFab().forEach { fab ->
             fab.setOnClickListener {
                 when (fab.id) {
                     R.id.selectAllButtonFab -> {
                         getMediaFileAdapter()?.checkAll()
                     }
+
                     R.id.deleteButtonFab -> {
                         getMediaFileAdapter()
                             ?.checkItemsList?.filter { it.mediaFileInfo != null }
@@ -294,6 +276,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
                                 }
                             }
                     }
+
                     R.id.restoreTrashButtonFab -> {
                         if (getMediaListType() == MediaFileAdapter.MEDIA_TYPE_TRASH_BIN) {
                             getMediaFileAdapter()?.checkItemsList?.filter {
@@ -304,6 +287,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
                                 }
                         }
                     }
+
                     R.id.compressButtonFab -> {
                         getMediaFileAdapter()?.checkItemsList?.filter {
                             it.mediaFileInfo != null
@@ -312,17 +296,17 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
                                 if (getMediaListType() == MediaFileAdapter.MEDIA_TYPE_IMAGES) {
                                     performCompressImagesAction(toCompress)
                                 } else if (getMediaListType() == MediaFileAdapter
-                                    .MEDIA_TYPE_VIDEO
+                                        .MEDIA_TYPE_VIDEO
                                 ) {
                                     performCompressVideosAction(toCompress)
                                 }
                             }
                     }
+
                     R.id.shareButtonFab -> {
-                        getMediaFileAdapter()?.checkItemsList?.let {
-                            checkedItems ->
+                        getMediaFileAdapter()?.checkItemsList?.let { checkedItems ->
                             val checkedMediaFiles = checkedItems.map { it.mediaFileInfo!! }
-                            if (!checkedMediaFiles.isNullOrEmpty()) {
+                            if (checkedMediaFiles.isNotEmpty()) {
                                 performShareAction(checkedMediaFiles)
                                 getMediaFileAdapter()?.uncheckChecked()
                             } else {
@@ -331,61 +315,63 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
                             }
                         }
                     }
-                    R.id.locateFileButtonFab -> {
-                        getMediaFileAdapter()?.checkItemsList?.map { it.mediaFileInfo!! }?.let {
-                            openFile ->
-                            if (openFile.isNotEmpty()) {
-                                openFile[0].startLocateFileAction(requireContext())
-                                getMediaFileAdapter()?.uncheckChecked()
-                            }
-                        }
-                    }
-                    R.id.addToPlaylistButtonFab -> {
-                        getMediaFileAdapter()?.checkItemsList?.map { it.mediaFileInfo!! }?.let {
-                            checkedItems ->
-                            if (checkedItems.isNotEmpty()) {
-                                Utils.buildAddToPlaylistDialog(requireContext(), {
-                                    playlist ->
-                                    PlaylistsUtil.addToPlaylist(
-                                        requireContext(), checkedItems,
-                                        playlist.id, true
-                                    )
-                                    // reset the dataset
-                                    getFilesViewModelObj()
-                                        .usedPlaylistsSummaryTransformations = null
-                                    (this as AbstractMediaInfoListFragment).setupAdapter()
-                                }, {
-                                    Utils.buildCreateNewPlaylistDialog(requireContext()) {
-                                        val playlistId = PlaylistsUtil
-                                            .createPlaylist(requireContext(), it)
-                                        if (playlistId != -1L) {
-                                            PlaylistsUtil.addToPlaylist(
-                                                requireContext(),
-                                                checkedItems,
-                                                playlistId, true
-                                            )
 
-                                            // reset the dataset
-                                            getFilesViewModelObj()
-                                                .usedPlaylistsSummaryTransformations = null
-                                            (this as AbstractMediaInfoListFragment).setupAdapter()
-                                        }
-                                    }
-                                }, {
-                                    Utils.buildRemoveFromPlaylistDialog(requireContext()) {
-                                        PlaylistsUtil.removeFromPlaylist(
-                                            requireContext(),
-                                            checkedItems
+                    R.id.locateFileButtonFab -> {
+                        getMediaFileAdapter()?.checkItemsList?.map { it.mediaFileInfo!! }
+                            ?.let { openFile ->
+                                if (openFile.isNotEmpty()) {
+                                    openFile[0].startLocateFileAction(requireContext())
+                                    getMediaFileAdapter()?.uncheckChecked()
+                                }
+                            }
+                    }
+
+                    R.id.addToPlaylistButtonFab -> {
+                        getMediaFileAdapter()?.checkItemsList?.map { it.mediaFileInfo!! }
+                            ?.let { checkedItems ->
+                                if (checkedItems.isNotEmpty()) {
+                                    Utils.buildAddToPlaylistDialog(requireContext(), { playlist ->
+                                        PlaylistsUtil.addToPlaylist(
+                                            requireContext(), checkedItems,
+                                            playlist.id, true
                                         )
                                         // reset the dataset
                                         getFilesViewModelObj()
                                             .usedPlaylistsSummaryTransformations = null
                                         (this as AbstractMediaInfoListFragment).setupAdapter()
-                                    }.show()
-                                }).show()
+                                    }, {
+                                        Utils.buildCreateNewPlaylistDialog(requireContext()) {
+                                            val playlistId = PlaylistsUtil
+                                                .createPlaylist(requireContext(), it)
+                                            if (playlistId != -1L) {
+                                                PlaylistsUtil.addToPlaylist(
+                                                    requireContext(),
+                                                    checkedItems,
+                                                    playlistId, true
+                                                )
+
+                                                // reset the dataset
+                                                getFilesViewModelObj()
+                                                    .usedPlaylistsSummaryTransformations = null
+                                                (this as AbstractMediaInfoListFragment).setupAdapter()
+                                            }
+                                        }
+                                    }, {
+                                        Utils.buildRemoveFromPlaylistDialog(requireContext()) {
+                                            PlaylistsUtil.removeFromPlaylist(
+                                                requireContext(),
+                                                checkedItems
+                                            )
+                                            // reset the dataset
+                                            getFilesViewModelObj()
+                                                .usedPlaylistsSummaryTransformations = null
+                                            (this as AbstractMediaInfoListFragment).setupAdapter()
+                                        }.show()
+                                    }).show()
+                                }
                             }
-                        }
                     }
+
                     else -> {
                         // do nothing
                     }
@@ -395,7 +381,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
         }
     }
 
-    fun performDeletePermanentlyAction(toDelete: List<MediaFileInfo>) {
+    private fun performDeletePermanentlyAction(toDelete: List<MediaFileInfo>) {
         setupDeletePermanentlyButton(toDelete) {
             refreshListAfterTrashCallback(toDelete, emptyList())
             getMediaFileAdapter()?.invalidateList(toDelete)
@@ -417,7 +403,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
         }
     }
 
-    fun performRestoreAction(toRestore: List<MediaFileInfo>) {
+    private fun performRestoreAction(toRestore: List<MediaFileInfo>) {
         setupRestoreButton(toRestore) {
             refreshListAfterTrashCallback(toRestore, emptyList())
             getMediaFileAdapter()?.invalidateList(toRestore)
@@ -428,9 +414,8 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
         }
     }
 
-    fun performCompressImagesAction(toCompress: List<MediaFileInfo>) {
-        setupCompressImagesButton(toCompress, layoutInflater) {
-            toDelete, toAdd ->
+    private fun performCompressImagesAction(toCompress: List<MediaFileInfo>) {
+        setupCompressImagesButton(toCompress, layoutInflater) { toDelete, toAdd ->
             refreshListAfterTrashCallback(toDelete, toAdd)
             getMediaFileAdapter()?.notifyDataSetChanged()
             requireContext().showToastOnBottom(
@@ -440,9 +425,8 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
         }
     }
 
-    fun performCompressVideosAction(toCompress: List<MediaFileInfo>) {
-        setupCompressVideosButton(toCompress, layoutInflater) {
-            toDelete, toAdd ->
+    private fun performCompressVideosAction(toCompress: List<MediaFileInfo>) {
+        setupCompressVideosButton(toCompress, layoutInflater) { toDelete, toAdd ->
             refreshListAfterTrashCallback(toDelete, toAdd)
             getMediaFileAdapter()?.notifyDataSetChanged()
             requireContext().showToastOnBottom(
@@ -455,8 +439,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
     fun performShareAction(toShare: List<MediaFileInfo>) {
         var processed = false
         filesViewModel.getShareMediaFilesAdapter(toShare)
-            .observe(viewLifecycleOwner) {
-                shareAdapter ->
+            .observe(viewLifecycleOwner) { shareAdapter ->
                 if (shareAdapter == null) {
                     if (processed) {
                         requireActivity().showToastInCenter(
@@ -482,8 +465,7 @@ abstract class ItemsActionBarFragment : AbstractMediaFileInfoOperationsFragment(
     fun performShuffleAction(context: Context, toShuffle: List<MediaFileInfo>) {
         if (toShuffle.isNotEmpty()) {
             val randomId = (toShuffle.indices).random()
-            toShuffle[randomId].getContentUri(context)?.let {
-                uri ->
+            toShuffle[randomId].getContentUri(context)?.let { uri ->
                 lifecycleScope.executeAsyncTask<Unit, List<Uri>>({}, {
                     toShuffle.mapNotNull {
                         it.getContentUri(context)

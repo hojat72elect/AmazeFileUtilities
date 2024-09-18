@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
@@ -34,10 +15,11 @@ import com.amaze.fileutilities.home_page.ui.files.MediaAdapterPreloader
 import com.amaze.fileutilities.home_page.ui.files.MediaFileInfo
 import com.amaze.fileutilities.home_page.ui.files.MediaInfoRecyclerViewHolder
 import com.bumptech.glide.Glide
-import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.lang.ref.WeakReference
 import java.util.Collections
+import me.zhanghai.android.fastscroll.PopupTextProvider
 
+@SuppressLint("NotifyDataSetChanged", "UseCompatLoadingForDrawables")
 abstract class AbstractMediaFilesAdapter(
     private val superContext: Context,
     private val superPreloader: MediaAdapterPreloader<MediaFileInfo>,
@@ -45,7 +27,7 @@ abstract class AbstractMediaFilesAdapter(
     private val listItemPressedCallback: ((mediaFileInfo: MediaFileInfo) -> Unit)?,
     private val toggleCheckCallback: (
         (checkedSize: Int, itemsCount: Int, bytesFormatted: String)
-        -> Unit
+    -> Unit
     )?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PopupTextProvider {
 
@@ -135,6 +117,7 @@ abstract class AbstractMediaFilesAdapter(
         return true
     }
 
+
     open fun checkAll(): Boolean {
         getMediaFilesListItems().filter { it.listItemType == TYPE_ITEM }.forEach {
             toggleChecked(it)
@@ -143,7 +126,7 @@ abstract class AbstractMediaFilesAdapter(
         return true
     }
 
-    fun checkedItemBytes(): String {
+    private fun checkedItemBytes(): String {
         var size = 0L
         checkItemsList.forEach {
             size += it.mediaFileInfo?.longSize ?: 0L
@@ -166,8 +149,8 @@ abstract class AbstractMediaFilesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-        RecyclerView.ViewHolder {
-        var view = View(superContext)
+            RecyclerView.ViewHolder {
+        val view: View
         when (viewType) {
             TYPE_BANNER -> {
                 view = mInflater.inflate(
@@ -176,6 +159,7 @@ abstract class AbstractMediaFilesAdapter(
                 )
                 return ListBannerViewHolder(view)
             }
+
             TYPE_ITEM -> {
                 view = mInflater.inflate(
                     if (isGrid) R.layout.media_info_grid_layout
@@ -185,6 +169,7 @@ abstract class AbstractMediaFilesAdapter(
                 )
                 return MediaInfoRecyclerViewHolder(view)
             }
+
             TYPE_HEADER -> {
                 view = mInflater.inflate(
                     R.layout.list_header, parent,
@@ -192,6 +177,7 @@ abstract class AbstractMediaFilesAdapter(
                 )
                 return HeaderViewHolder(view)
             }
+
             EMPTY_LAST_ITEM -> {
                 view = mInflater.inflate(
                     R.layout.empty_viewholder_layout, parent,
@@ -199,18 +185,19 @@ abstract class AbstractMediaFilesAdapter(
                 )
                 return EmptyViewHolder(view)
             }
+
             else -> {
                 throw IllegalStateException("Illegal $viewType in apps adapter")
             }
         }
     }
 
+
     @CallSuper
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MediaInfoRecyclerViewHolder) {
             getMediaFilesListItems()[position].run {
-                mediaFileInfo?.let {
-                    mediaFileInfo ->
+                mediaFileInfo?.let { mediaFileInfo ->
                     holder.infoTitle.text = mediaFileInfo.title
                     Utils.marqueeAfterDelay(3000, holder.infoTitle)
                     Utils.marqueeAfterDelay(3000, holder.infoSummary)
@@ -252,25 +239,39 @@ abstract class AbstractMediaFilesAdapter(
                                     formattedSize
                                 )
                             }
+
                             MediaFileInfo.MEDIA_TYPE_VIDEO -> {
                                 processVideoMediaInfo(
                                     holder, mediaFileInfo, formattedDate,
                                     formattedSize
                                 )
                             }
+
                             MediaFileInfo.MEDIA_TYPE_AUDIO -> {
                                 processAudioMediaInfo(
                                     holder, mediaFileInfo, formattedDate,
                                     formattedSize
                                 )
                             }
+
                             MediaFileInfo.MEDIA_TYPE_DOCUMENT -> {
-                                holder.infoSummary.text = "$formattedDate | $formattedSize"
-                                holder.extraInfo.text = ""
+                                holder.infoSummary.text = buildString {
+                                    append(formattedDate)
+                                    append(" | ")
+                                    append(formattedSize)
+                                }
+                                holder.extraInfo.text = buildString {
+                                }
                             }
+
                             MediaFileInfo.MEDIA_TYPE_UNKNOWN -> {
-                                holder.infoSummary.text = "$formattedDate | $formattedSize"
-                                holder.extraInfo.text = ""
+                                holder.infoSummary.text = buildString {
+                                    append(formattedDate)
+                                    append(" | ")
+                                    append(formattedSize)
+                                }
+                                holder.extraInfo.text = buildString {
+                                }
                             }
                         }
                     }
@@ -311,10 +312,16 @@ abstract class AbstractMediaFilesAdapter(
     ) {
         if (mediaFileInfo.extraInfo?.imageMetaData?.width != null) {
             holder.infoSummary.visibility = View.GONE
-            holder.extraInfo.text = "${mediaFileInfo.extraInfo!!.imageMetaData?.width}" +
-                "x${mediaFileInfo.extraInfo!!.imageMetaData?.height}"
+            holder.extraInfo.text = buildString {
+                append(mediaFileInfo.extraInfo!!.imageMetaData?.width)
+                append("x${mediaFileInfo.extraInfo!!.imageMetaData?.height}")
+            }
         } else {
-            holder.infoSummary.text = "$formattedDate | $formattedSize"
+            holder.infoSummary.text = buildString {
+                append(formattedDate)
+                append(" | ")
+                append(formattedSize)
+            }
             holder.extraInfo.visibility = View.GONE
         }
     }
@@ -326,13 +333,19 @@ abstract class AbstractMediaFilesAdapter(
         formattedSize: String
     ) {
         if (mediaFileInfo.extraInfo?.audioMetaData != null) {
-            holder.infoSummary.text = "${mediaFileInfo.extraInfo!!.audioMetaData?.albumName} " +
-                "| ${mediaFileInfo.extraInfo!!.audioMetaData?.artistName}"
+            holder.infoSummary.text = buildString {
+                append("${mediaFileInfo.extraInfo!!.audioMetaData?.albumName} ")
+                append("| ${mediaFileInfo.extraInfo!!.audioMetaData?.artistName}")
+            }
             mediaFileInfo.extraInfo!!.audioMetaData?.duration?.let {
-                holder.extraInfo.text = AudioUtils.getReadableDurationString(it) ?: ""
+                holder.extraInfo.text = AudioUtils.getReadableDurationString(it)
             }
         } else {
-            holder.infoSummary.text = "$formattedDate | $formattedSize"
+            holder.infoSummary.text = buildString {
+                append(formattedDate)
+                append(" | ")
+                append(formattedSize)
+            }
             holder.extraInfo.visibility = View.GONE
         }
     }
@@ -345,13 +358,19 @@ abstract class AbstractMediaFilesAdapter(
     ) {
         if (mediaFileInfo.extraInfo?.videoMetaData != null) {
             holder.infoSummary.text =
-                "${mediaFileInfo.extraInfo!!.videoMetaData?.width}" +
-                "x${mediaFileInfo.extraInfo!!.videoMetaData?.height}"
+                buildString {
+                    append(mediaFileInfo.extraInfo!!.videoMetaData?.width)
+                    append("x${mediaFileInfo.extraInfo!!.videoMetaData?.height}")
+                }
             mediaFileInfo.extraInfo!!.videoMetaData?.duration?.let {
-                holder.extraInfo.text = AudioUtils.getReadableDurationString(it) ?: ""
+                holder.extraInfo.text = AudioUtils.getReadableDurationString(it)
             }
         } else {
-            holder.infoSummary.text = "$formattedDate | $formattedSize"
+            holder.infoSummary.text = buildString {
+                append(formattedDate)
+                append(" | ")
+                append(formattedSize)
+            }
             holder.extraInfo.visibility = View.GONE
         }
     }
@@ -376,6 +395,7 @@ abstract class AbstractMediaFilesAdapter(
             null,
             listItemType
         )
+
         constructor(listItemType: @ListItemType Int, header: String) : this(
             null,
             listItemType, header

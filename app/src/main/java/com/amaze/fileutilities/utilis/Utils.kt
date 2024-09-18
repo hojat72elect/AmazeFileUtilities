@@ -1,23 +1,3 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis
 
 import android.app.Activity
@@ -45,7 +25,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.TrafficStats
 import android.net.Uri
@@ -79,7 +58,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
@@ -95,11 +73,6 @@ import com.amaze.fileutilities.home_page.ui.analyse.ReviewAnalysisAdapter
 import com.amaze.fileutilities.home_page.ui.files.MediaFileAdapter
 import com.amaze.fileutilities.home_page.ui.files.MediaFileInfo
 import com.google.android.material.slider.Slider
-import okhttp3.ConnectionPool
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.InputStream
 import java.lang.reflect.Method
@@ -114,8 +87,12 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Collections
 import java.util.concurrent.TimeUnit
-import kotlin.math.ln
 import kotlin.math.pow
+import okhttp3.ConnectionPool
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class Utils {
 
@@ -137,8 +114,7 @@ class Utils {
         private const val URL_TELEGRAM = "https://t.me/AmazeFileManager"
         private const val URL_TRANSLATE = "https://crwd.in/amaze-file-utilities"
 
-        const val EMAIL_NOREPLY_REPORTS = "no-reply@teamamaze.xyz"
-        const val EMAIL_SUPPORT = "support@teamamaze.xyz"
+        const val EMAIL_NO_REPLY_REPORTS = "no-reply@teamamaze.xyz"
 
         /**
          * Open url in browser
@@ -220,7 +196,7 @@ class Utils {
             }
         }
 
-        fun copyToClipboard(context: Context, text: String?, message: String): Boolean {
+        fun copyToClipboard(context: Context, text: String?): Boolean {
             return try {
                 val clipboard =
                     context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -278,27 +254,13 @@ class Utils {
          * Copies logs file to internal storage and returns the written file path
          */
         fun copyLogsFileToInternalStorage(context: Context): String? {
-            context.getExternalStorageDirectory()?.let {
-                internalStoragePath ->
+            context.getExternalStorageDirectory()?.let { _ ->
                 val inputFile = File("/data/data/${context.packageName}/cache/logs.txt")
                 if (!inputFile.exists()) {
                     log.warn("Log file not found at path ${inputFile.path}")
                     return null
                 }
-                /*FileInputStream(inputFile).use {
-                    inputStream ->
-                    val file = File(
-                        internalStoragePath.path +
-                            "/${TransferFragment.RECEIVER_BASE_PATH}/cache"
-                    )
-                    file.mkdirs()
-                    val logFile = File(file, "logs.txt")
-                    FileOutputStream(logFile).use {
-                        outputStream ->
-                        ByteStreams.copy(inputStream, outputStream)
-                    }
-                    return logFile.path
-                }*/
+
                 return inputFile.path
             }
             return null
@@ -325,7 +287,7 @@ class Utils {
         }
 
         fun isNullOrEmpty(string: String?): Boolean {
-            return string == null || string.isEmpty()
+            return string.isNullOrEmpty()
         }
 
         fun setGridLayoutManagerSpan(
@@ -337,6 +299,7 @@ class Utils {
                     return when (adapter.getItemViewType(position)) {
                         AbstractMediaFilesAdapter.TYPE_ITEM ->
                             1
+
                         else -> gridLayoutManager.spanCount
                     }
                 }
@@ -352,6 +315,7 @@ class Utils {
                     return when (adapter.getItemViewType(position)) {
                         AbstractMediaFilesAdapter.TYPE_ITEM ->
                             1
+
                         else -> gridLayoutManager.spanCount
                     }
                 }
@@ -371,10 +335,6 @@ class Utils {
             }
         }
 
-        fun enableScreenRotation(activity: Activity) {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-        }
-
         fun setScreenRotationSensor(activity: Activity) {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
         }
@@ -391,7 +351,7 @@ class Utils {
             pathPreferences: List<PathPreferences>,
             inclusive: Boolean
         ):
-            Boolean {
+                Boolean {
             pathPreferences.forEach {
                 if (path.contains(it.path, true)) {
                     return !it.excludes
@@ -494,7 +454,7 @@ class Utils {
             } else {
                 compressionData.add("WEBP")
             }
-            val compressionSlider = dialogView.findViewById(R.id.compression_slider) as Slider
+            val compressionSlider: Slider = dialogView.findViewById(R.id.compression_slider)
             val compressionValue = dialogView.findViewById<TextView>(R.id.compression_slider_value)
             val checkBox = dialogView.findViewById<CheckBox>(R.id.delete_original_checkbox)
             val spinner = dialogView.findViewById<Spinner>(R.id.quality_selection_spinner)
@@ -525,9 +485,11 @@ class Utils {
                         "JPEG" -> {
                             qualitySelected = Bitmap.CompressFormat.JPEG
                         }
+
                         "PNG" -> {
                             qualitySelected = Bitmap.CompressFormat.PNG
                         }
+
                         "WEBP (lossy)" -> {
                             qualitySelected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                 Bitmap.CompressFormat.WEBP_LOSSY
@@ -535,6 +497,7 @@ class Utils {
                                 Bitmap.CompressFormat.WEBP
                             }
                         }
+
                         "WEBP (lossless)" -> {
                             qualitySelected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                 Bitmap.CompressFormat.WEBP_LOSSLESS
@@ -542,6 +505,7 @@ class Utils {
                                 Bitmap.CompressFormat.WEBP
                             }
                         }
+
                         "WEBP" -> {
                             qualitySelected = Bitmap.CompressFormat.WEBP
                         }
@@ -605,15 +569,19 @@ class Utils {
                         0 -> {
                             qualitySelected = VideoQuality.VERY_HIGH
                         }
+
                         1 -> {
                             qualitySelected = VideoQuality.HIGH
                         }
+
                         2 -> {
                             qualitySelected = VideoQuality.MEDIUM
                         }
+
                         3 -> {
                             qualitySelected = VideoQuality.LOW
                         }
+
                         4 -> {
                             qualitySelected = VideoQuality.VERY_LOW
                         }
@@ -720,35 +688,6 @@ class Utils {
             return builder
         }
 
-        fun buildPurchaseFdroidDialog(
-            context: Context,
-            paypalCallback: () -> Unit,
-            liberaPayCallback: () -> Unit
-        ): AlertDialog.Builder {
-            val builder = AlertDialog.Builder(context, R.style.Custom_Dialog_Dark)
-            builder
-                .setTitle(R.string.purchase_fdroid_title)
-                .setMessage(R.string.purchase_fdroid_message)
-                .setPositiveButton(
-                    context.resources.getString(R.string.purchase_fdroid_paypal)
-                ) { dialog, _ ->
-                    paypalCallback.invoke()
-                    dialog.dismiss()
-                }
-                .setNeutralButton(
-                    context.resources.getString(R.string.purchase_fdroid_liberapay)
-                ) { dialog, _ ->
-                    liberaPayCallback.invoke()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(
-                    context.resources.getString(R.string.terms_and_conditions)
-                ) { _, _ ->
-                    openURL(URL_SUBSCRIPTION_TERMS, context)
-                }
-            return builder
-        }
-
         fun buildTrialExclusiveInactiveDialog(
             context: Context,
             positiveCallback: () -> Unit
@@ -779,28 +718,6 @@ class Utils {
                 .setTitle(R.string.subscription_purchased_title)
                 .setMessage(R.string.subscription_purchased_message)
                 .setPositiveButton(
-                    context.resources.getString(R.string.close)
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-            return builder
-        }
-
-        fun buildSubscriptionExpiredDialog(
-            context: Context,
-            positiveCallback: () -> Unit
-        ): AlertDialog.Builder {
-            val builder = AlertDialog.Builder(context, R.style.Custom_Dialog_Dark)
-            builder
-                .setTitle(R.string.subscription_expired_title)
-                .setMessage(R.string.subscription_expired_message)
-                .setPositiveButton(
-                    context.resources.getString(R.string.subscribe)
-                ) { dialog, _ ->
-                    positiveCallback.invoke()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(
                     context.resources.getString(R.string.close)
                 ) { dialog, _ ->
                     dialog.dismiss()
@@ -882,7 +799,7 @@ class Utils {
             val dialogView: View = layoutInflater
                 .inflate(R.layout.playback_speed_pitch_dialog, null)
             dialogBuilder.setView(dialogView)
-            val playbackSlider = dialogView.findViewById(R.id.playback_speed_slider) as Slider
+            val playbackSlider: Slider = dialogView.findViewById(R.id.playback_speed_slider)
             val playbackValue = dialogView.findViewById<TextView>(R.id.playback_speed_value)
             playbackSlider.valueFrom = 0.25f
             playbackSlider.valueTo = 2.0f
@@ -896,7 +813,7 @@ class Utils {
                     }
                 }
             )
-            val pitchSlider = dialogView.findViewById(R.id.pitch_slider) as Slider
+            val pitchSlider: Slider = dialogView.findViewById(R.id.pitch_slider)
             val pitchValue = dialogView.findViewById<TextView>(R.id.pitch_value)
             val pitchHintImageView = dialogView.findViewById<ImageView>(R.id.pitch_hint)
             val pitchHintTextView = dialogView.findViewById<TextView>(R.id.pitch_hint_text_view)
@@ -914,7 +831,7 @@ class Utils {
             pitchSlider.value = defaultPitch
             pitchValue.text = roundOffDecimal(pitchSlider.value)
             pitchSlider.addOnChangeListener(
-                Slider.OnChangeListener { _, value, fromUser ->
+                Slider.OnChangeListener { _, _, fromUser ->
                     if (fromUser) {
                         pitchValue.text = pitchSlider.value.toString()
                     }
@@ -950,13 +867,8 @@ class Utils {
             return 2.0.pow((semitone / 12).toDouble()).toFloat()
         }
 
-        private fun fromPitchToSemitone(pitch: Float): Float {
-            return (ln(pitch.toDouble()) * 12).toFloat()
-        }
-
         private fun roundOffDecimal(number: Float): String {
             val df = DecimalFormat("#.#")
-//            df.roundingMode = RoundingMode.CEILING
             return df.format(number)
         }
 
@@ -964,8 +876,8 @@ class Utils {
             return if (bitmap == null) null else Palette.from(bitmap).generate()
         }
 
-        const val PALETTE_DARKEN_INTENSITY_HIGH = 0.2f
-        const val PALETTE_DARKEN_INTENSITY_MEDIUM = 0.4f
+        private const val PALETTE_DARKEN_INTENSITY_HIGH = 0.2f
+        private const val PALETTE_DARKEN_INTENSITY_MEDIUM = 0.4f
 
         @ColorInt
         fun getColorDark(palette: Palette?, fallback: Int): Int {
@@ -1008,9 +920,9 @@ class Utils {
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
         fun getAppsUsageStats(context: Context, days: Int): List<UsageStats> {
             val usm: UsageStatsManager = (
-                context.getSystemService(Context.USAGE_STATS_SERVICE)
-                    as UsageStatsManager
-                )
+                    context.getSystemService(Context.USAGE_STATS_SERVICE)
+                            as UsageStatsManager
+                    )
             val endTime = LocalDateTime.now()
             val startTime = LocalDateTime.now().minusDays(days.toLong())
             return usm.queryUsageStats(
@@ -1059,12 +971,12 @@ class Utils {
          */
         fun isAppInSystemPartition(applicationInfo: ApplicationInfo): Boolean {
             return (
-                (
-                    applicationInfo.flags
-                        and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)
+                    (
+                            applicationInfo.flags
+                                    and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)
+                            )
+                            != 0
                     )
-                    != 0
-                )
         }
 
         /** Check if an App is signed by system or not.  */
@@ -1077,17 +989,6 @@ class Utils {
             } else {
                 piApp.signatures != null && piSys.signatures[0] == piApp.signatures[0]
             }
-        }
-
-        fun openExternalApp(context: Context, packageName: String): Boolean {
-            try {
-                val it = context.packageManager.getLaunchIntentForPackage(packageName)
-                if (null != it) context.startActivity(it)
-            } catch (e: ActivityNotFoundException) {
-                com.amaze.fileutilities.utilis.log.warn("app not found to open", e)
-                return false
-            }
-            return true
         }
 
         fun openExternalAppInfoScreen(context: Context, packageName: String): Boolean {
@@ -1114,8 +1015,7 @@ class Utils {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val storageStatsManager =
                     context.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
-                /*val storageManager =
-                    context.getSystemService(Context.STORAGE_SERVICE) as StorageManager*/
+
                 try {
                     val ai = context.packageManager.getApplicationInfo(
                         applicationInfo.packageName,
@@ -1135,8 +1035,8 @@ class Utils {
                     }
                     log.info(
                         "found size for package ${applicationInfo.packageName}" +
-                            " cacheSize $cacheSize , dataSize $dataSize" +
-                            " , apkSize $apkSize , externalCacheSize $externalSize"
+                                " cacheSize $cacheSize , dataSize $dataSize" +
+                                " , apkSize $apkSize , externalCacheSize $externalSize"
                     )
                     return cacheSize + dataSize + apkSize + externalSize
                 } catch (e: Exception) {
@@ -1166,9 +1066,9 @@ class Utils {
                                     "found size for package ${applicationInfo.packageName} $pStats"
                                 )
                                 size = pStats.codeSize + pStats.dataSize +
-                                    pStats.cacheSize + pStats.externalDataSize +
-                                    pStats.externalCacheSize +
-                                    pStats.externalObbSize + pStats.externalMediaSize
+                                        pStats.cacheSize + pStats.externalDataSize +
+                                        pStats.externalCacheSize +
+                                        pStats.externalObbSize + pStats.externalMediaSize
                             }
                         }
                     )
@@ -1189,9 +1089,9 @@ class Utils {
                 val service: NetworkStatsManager =
                     context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
                 getPackageRxBytesMobile(context, info.uid, service) +
-                    getPackageTxBytesMobile(context, info.uid, service) +
-                    getPackageRxBytesWifi(info.uid, service) +
-                    getPackageTxBytesWifi(info.uid, service)
+                        getPackageTxBytesMobile(context, info.uid, service) +
+                        getPackageRxBytesWifi(info.uid, service) +
+                        getPackageTxBytesWifi(info.uid, service)
             }
         }
 
@@ -1356,10 +1256,6 @@ class Utils {
                     context.showToastInCenter(context.getString(R.string.grantfailed))
                 }
             }
-        }
-
-        fun convertDrawableToBitmap(drawable: Drawable): Bitmap {
-            return drawable.toBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, null)
         }
 
         /**
@@ -1613,9 +1509,9 @@ class Utils {
 
         private fun isColorLight(@ColorInt color: Int): Boolean {
             val darkness = 1.0 - (
-                0.299 * Color.red(color).toDouble() + 0.587 * Color.green(color)
-                    .toDouble() + 0.114 * Color.blue(color).toDouble()
-                ) / 255.0
+                    0.299 * Color.red(color).toDouble() + 0.587 * Color.green(color)
+                        .toDouble() + 0.114 * Color.blue(color).toDouble()
+                    ) / 255.0
             return darkness < 0.7
         }
 

@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2021-2024 Arpit Khurana <arpitkh96@gmail.com>, Vishal Nehra <vishalmeham2@gmail.com>,
- * Emmanuel Messulam<emmanuelbendavid@gmail.com>, Raymond Lai <airwave209gt at gmail.com> and Contributors.
- *
- * This file is part of Amaze File Utilities.
- *
- * Amaze File Utilities is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.amaze.fileutilities.utilis.dialog_picker
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -38,15 +19,17 @@ import com.afollestad.materialdialogs.list.getItemSelector
 import com.afollestad.materialdialogs.utils.MDUtil.isColorDark
 import com.afollestad.materialdialogs.utils.MDUtil.maybeSetTextColor
 import com.afollestad.materialdialogs.utils.MDUtil.resolveColor
+import java.io.File
+import java.util.Locale
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.util.Locale
 
+@SuppressLint("RestrictedApi")
 internal class FileChooserViewHolder(
     itemView: View,
     private val adapter: FileChooserAdapter
@@ -62,7 +45,7 @@ internal class FileChooserViewHolder(
     override fun onClick(view: View) = adapter.itemClicked(adapterPosition)
 }
 
-/** @author Aidan Follestad (afollestad */
+@SuppressLint("RestrictedApi", "PrivateResource")
 internal class FileChooserAdapter(
     private val dialog: MaterialDialog,
     initialFolder: File,
@@ -80,6 +63,7 @@ internal class FileChooserAdapter(
     private var currentFolder = initialFolder
     private var listingJob: Job? = null
     private var contents: List<File>? = null
+
 
     private val isLightTheme =
         resolveColor(dialog.windowContext, attr = android.R.attr.textColorPrimary).isColorDark()
@@ -128,6 +112,8 @@ internal class FileChooserAdapter(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @OptIn(DelicateCoroutinesApi::class)
     private fun switchDirectory(directory: File) {
         listingJob?.cancel()
         listingJob = GlobalScope.launch(Main) {
@@ -144,13 +130,13 @@ internal class FileChooserAdapter(
                 if (onlyFolders) {
                     rawContents
                         .filter { it.isDirectory && filter?.invoke(it) ?: true }
-                        .sortedBy { it.name.toLowerCase(Locale.getDefault()) }
+                        .sortedBy { it.name.lowercase(Locale.getDefault()) }
                 } else {
                     rawContents
                         .filter { filter?.invoke(it) ?: true }
                         .sortedWith(
                             compareBy({ !it.isDirectory }, {
-                                it.nameWithoutExtension.toLowerCase(Locale.getDefault())
+                                it.nameWithoutExtension.lowercase(Locale.getDefault())
                             })
                         )
                 }
@@ -174,6 +160,7 @@ internal class FileChooserAdapter(
         return count
     }
 
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -187,6 +174,7 @@ internal class FileChooserAdapter(
         return viewHolder
     }
 
+    @SuppressLint("PrivateResource")
     override fun onBindViewHolder(
         holder: FileChooserViewHolder,
         position: Int
@@ -220,7 +208,7 @@ internal class FileChooserAdapter(
         val item = contents!![actualIndex]
         holder.iconView.setImageResource(item.iconRes())
         holder.nameView.text = item.name
-        holder.itemView.isActivated = selectedFile?.absolutePath == item.absolutePath ?: false
+        holder.itemView.isActivated = selectedFile?.absolutePath == (item.absolutePath ?: false)
     }
 
     private fun goUpIndex() = if (currentFolder.hasParent(
