@@ -39,9 +39,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.amaze.fileutilities.PermissionsActivity
 import com.amaze.fileutilities.R
+import com.amaze.fileutilities.home_page.welcome_helper.WelcomeActivity
+import com.amaze.fileutilities.home_page.welcome_helper.WelcomeUtils
 import com.amaze.fileutilities.utilis.showToastInCenter
-import com.stephentuso.welcome.WelcomeActivity
-import com.stephentuso.welcome.WelcomeUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -151,29 +151,29 @@ abstract class WelcomePermissionScreen :
         if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 isFound = (
-                    ActivityCompat.checkSelfPermission(
-                        this, Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-                    )
-                        == PackageManager.PERMISSION_GRANTED
-                    ) || (
-                    ActivityCompat.checkSelfPermission(
-                        this, Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                    )
+                        ActivityCompat.checkSelfPermission(
+                            this, Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                        )
+                                == PackageManager.PERMISSION_GRANTED
+                        ) || (
+                        ActivityCompat.checkSelfPermission(
+                            this, Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                        )
 
-                        == PackageManager.PERMISSION_GRANTED
-                    ) || Environment.isExternalStorageManager()
+                                == PackageManager.PERMISSION_GRANTED
+                        ) || Environment.isExternalStorageManager()
             } catch (anfe: ActivityNotFoundException) {
                 log.warn("all files access permission activity missing, fallback to default", anfe)
             }
         }
         if (!isFound) {
             isFound = (
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-                    == PackageManager.PERMISSION_GRANTED
-                )
+                    ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                            == PackageManager.PERMISSION_GRANTED
+                    )
         }
         return isFound
     }
@@ -238,12 +238,12 @@ abstract class WelcomePermissionScreen :
     private fun checkLocationPermission(): Boolean {
         // Verify that all required contact permissions have been granted.
         return (
-            ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-                == PackageManager.PERMISSION_GRANTED
-            )/* && (
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                        == PackageManager.PERMISSION_GRANTED
+                )/* && (
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_COARSE_LOCATION

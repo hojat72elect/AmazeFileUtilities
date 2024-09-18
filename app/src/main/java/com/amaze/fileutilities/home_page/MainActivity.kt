@@ -55,6 +55,7 @@ import com.amaze.fileutilities.home_page.ui.files.TrialValidationApi
 import com.amaze.fileutilities.home_page.ui.options.Billing
 import com.amaze.fileutilities.home_page.ui.settings.PreferenceActivity
 import com.amaze.fileutilities.home_page.ui.transfer.TransferFragment
+import com.amaze.fileutilities.home_page.welcome_helper.WelcomeHelper
 import com.amaze.fileutilities.utilis.ItemsActionBarFragment
 import com.amaze.fileutilities.utilis.PreferencesConstants
 import com.amaze.fileutilities.utilis.UpdateChecker
@@ -67,10 +68,9 @@ import com.amaze.fileutilities.utilis.showToastInCenter
 import com.amaze.fileutilities.utilis.showToastOnBottom
 import com.amaze.fileutilities.utilis.showTranslateY
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.stephentuso.welcome.WelcomeHelper
+import java.util.Date
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.Date
 
 class MainActivity :
     WifiP2PActivity(),
@@ -82,11 +82,13 @@ class MainActivity :
     private lateinit var actionBarBinding: ActivityMainActionbarBinding
     private lateinit var searchActionBarBinding: ActivityMainActionbarSearchBinding
     private lateinit var selectedItemActionBarBinding: ActivityMainActionbarItemSelectedBinding
-//    var showSearchFragment = false
+
+    //    var showSearchFragment = false
     private lateinit var viewModel: FilesViewModel
     private var isOptionsVisible = false
     private var welcomeScreen: WelcomeHelper? = null
     private var didShowWelcomeScreen = true
+
     // refers to com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
     val RESULT_IN_APP_UPDATE_FAILED = 1
 
@@ -143,8 +145,10 @@ class MainActivity :
             when (destination.id) {
                 R.id.navigation_analyse ->
                     actionBarBinding.title.text = resources.getString(R.string.title_analyse)
+
                 R.id.navigation_files ->
                     actionBarBinding.title.text = resources.getString(R.string.title_utilities)
+
                 R.id.navigation_transfer ->
                     actionBarBinding.title.text = resources.getString(R.string.title_transfer)
             }
@@ -176,8 +180,7 @@ class MainActivity :
         viewModel.initAndFetchPathPreferences().observe(this) { pathPreferences ->
             viewModel.usedImagesSummaryTransformations().observe(
                 this
-            ) {
-                mediaInfoStorageSummaryPair ->
+            ) { mediaInfoStorageSummaryPair ->
                 viewModel.initAnalysisMigrations.observe(this) {
                     if (it) {
                         mediaInfoStorageSummaryPair?.second.let { list ->
@@ -220,7 +223,7 @@ class MainActivity :
             if (searchIdx != PreferencesConstants.DEFAULT_SEARCH_DUPLICATES_IN) {
                 viewModel.analyseInternalStorage(
                     searchIdx ==
-                        PreferencesConstants.VAL_SEARCH_DUPLICATES_INTERNAL_DEEP
+                            PreferencesConstants.VAL_SEARCH_DUPLICATES_INTERNAL_DEEP
                 )
             } else {
                 observeMediaInfoLists { isLoading, aggregatedFiles ->
@@ -233,12 +236,10 @@ class MainActivity :
 
         if (!didShowWelcomeScreen) {
             UpdateChecker.checkForAppUpdates(this)
-            viewModel.getUniqueId().observe(this) {
-                deviceId ->
+            viewModel.getUniqueId().observe(this) { deviceId ->
                 if (deviceId != null) {
                     viewModel.checkInternetConnection(30000).observe(this) {
-                        viewModel.validateTrial(deviceId, it) {
-                            trialResponse ->
+                        viewModel.validateTrial(deviceId, it) { trialResponse ->
                             handleValidateTrial(trialResponse)
                         }
                     }
@@ -348,11 +349,13 @@ class MainActivity :
                     //  handle user's approval
                     showToastOnBottom(getString(R.string.app_updated))
                 }
+
                 RESULT_CANCELED -> {
                     //  handle user's rejection
                     log.info("user rejected the update")
                     showToastOnBottom(getString(R.string.update_cancelled))
                 }
+
                 RESULT_IN_APP_UPDATE_FAILED -> {
                     // if you want to request the update again just call checkUpdate()
                     //  handle update failure
@@ -503,10 +506,12 @@ class MainActivity :
                                 }.create().show()
                             }
                         }
+
                         TrialValidationApi.TrialResponse.TRIAL_EXPIRED,
                         TrialValidationApi.TrialResponse.TRIAL_UNOFFICIAL -> {
                             showAboutActivity(true, false, false)
                         }
+
                         TrialValidationApi.TrialResponse.TRIAL_INACTIVE -> {
                             showAboutActivity(false, true, false)
                         }
@@ -523,7 +528,7 @@ class MainActivity :
                             notConnectedCount + 1
                         ).apply()
                     if (notConnectedCount > PreferencesConstants
-                        .VAL_THRES_NOT_CONNECTED_SUBSCRIBED
+                            .VAL_THRES_NOT_CONNECTED_SUBSCRIBED
                     ) {
                         showAboutActivity(false, false, true)
                     }
@@ -561,10 +566,10 @@ class MainActivity :
                     actionBarEditText.setOnTouchListener { _, event ->
                         if (event.action == MotionEvent.ACTION_UP) {
                             if (event.rawX >= (
-                                actionBarEditText.right -
-                                    actionBarEditText.compoundDrawables[2]
-                                        .bounds.width()
-                                )
+                                        actionBarEditText.right -
+                                                actionBarEditText.compoundDrawables[2]
+                                                    .bounds.width()
+                                        )
                             ) {
                                 actionBarEditText.setText("")
                                 true

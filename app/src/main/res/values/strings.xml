@@ -1049,4 +1049,9 @@
     <string name="confirm_before_exit">Confirm before exit</string>
     <!-- general app settings summary -->
     <string name="general_summary">Control general app behaviour</string>
+
+    <string name="wel_skip">Skip</string>
+    <string name="wel_done">Done</string>
+    <string name="wel_log_in">Log In</string>
+    <string name="wel_sign_up">Sign Up</string>
 </resources>

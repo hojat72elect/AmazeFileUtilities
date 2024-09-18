@@ -25,9 +25,9 @@ import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.amaze.fileutilities.R
-import com.stephentuso.welcome.BasicPage
-import com.stephentuso.welcome.FragmentWelcomePage
-import com.stephentuso.welcome.WelcomeConfiguration
+import com.amaze.fileutilities.home_page.welcome_helper.BasicPage
+import com.amaze.fileutilities.home_page.welcome_helper.FragmentWelcomePage
+import com.amaze.fileutilities.home_page.welcome_helper.WelcomeConfiguration
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

@@ -39,9 +39,10 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.amaze.fileutilities.R
 import com.amaze.fileutilities.databinding.WelcomePermissionPrivacyLayoutBinding
+import com.amaze.fileutilities.home_page.welcome_helper.WelcomeFinisher
 import com.amaze.fileutilities.utilis.Utils
 import com.amaze.fileutilities.utilis.showToastInCenter
-import com.stephentuso.welcome.WelcomeFinisher
+
 
 class PermissionFragmentWelcome : Fragment() {
     private var _binding: WelcomePermissionPrivacyLayoutBinding? = null
@@ -131,11 +132,11 @@ class PermissionFragmentWelcome : Fragment() {
     @RequiresApi(VERSION_CODES.TIRAMISU)
     fun checkNotificationPermission(): Boolean {
         return (
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-                == PackageManager.PERMISSION_GRANTED
-            )
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                        == PackageManager.PERMISSION_GRANTED
+                )
     }
 }

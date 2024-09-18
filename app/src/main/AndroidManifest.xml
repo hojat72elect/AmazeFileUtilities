@@ -6,7 +6,8 @@
         org.opencv, com.mikepenz.aboutlibraries, com.abedelazizshe.lightcompressorlibrary" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -21,11 +22,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
-    <uses-permission  android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -39,25 +41,23 @@
     <application
         android:name=".AppConfig"
         android:banner="@drawable/banner_app"
+        android:extractNativeLibs="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher_normal"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="${app_display_name}"
         android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
-        android:theme="@style/Theme.AmazeFileUtilities"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:extractNativeLibs="false"
-        tools:replace="android:label, android:theme"
-        >
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.AmazeFileUtilities"
+        tools:replace="android:label, android:theme">
         <activity
             android:name=".home_page.MainActivity"
             android:exported="true"
             android:label="${app_display_name}"
-            android:theme="@style/Theme.AmazeFileUtilities"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            >
+            android:theme="@style/Theme.AmazeFileUtilities"
+            tools:ignore="LockedOrientationActivity">
             <nav-graph android:value="@navigation/mobile_navigation" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,21 +65,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".home_page.WelcomeScreen"
-            android:theme="@style/CustomWelcomeScreenTheme"
+        <activity
+            android:name=".home_page.WelcomeScreen"
             android:exported="true"
-            />
+            android:theme="@style/CustomWelcomeScreenTheme" />
         <activity
             android:name=".image_viewer.ImageViewerDialogActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:label="@string/image_viewer"
-            android:excludeFromRecents="true"
-            android:theme="@style/Custom.Dialog.Dark.NoStretch"
             android:launchMode="singleInstance"
-            >
+            android:theme="@style/Custom.Dialog.Dark.NoStretch">
             <intent-filter
                 android:label="@string/intent_image_viewer_dialog"
                 tools:ignore="AppLinkUrlError">
@@ -93,10 +93,9 @@
         </activity>
         <activity
             android:name=".image_viewer.ImageViewerActivity"
-            android:label="@string/image_viewer"
-            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback"
             android:exported="true"
-            >
+            android:label="@string/image_viewer"
+            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback">
             <intent-filter
                 android:label="@string/intent_image_viewer_full_screen"
                 tools:ignore="AppLinkUrlError">
@@ -110,15 +109,15 @@
         </activity>
         <activity
             android:name=".image_viewer.editor.EditImageActivity"
-            android:label="@string/image_editor"
-            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback"
             android:exported="true"
-            >
+            android:label="@string/image_editor"
+            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback">
             <intent-filter
                 android:label="@string/image_editor"
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <data android:mimeType="image/*" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
@@ -135,13 +134,12 @@
         </activity>
         <activity
             android:name=".video_player.VideoPlayerDialogActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:label="@string/video_player"
-            android:supportsPictureInPicture="true"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:theme="@style/Custom.Dialog.Dark.NoStretch"
-            >
+            android:supportsPictureInPicture="true"
+            android:theme="@style/Custom.Dialog.Dark.NoStretch">
             <intent-filter
                 android:label="@string/video_player_dialog"
                 tools:ignore="AppLinkUrlError">
@@ -155,12 +153,12 @@
         </activity>
         <activity
             android:name=".video_player.VideoPlayerActivity"
+            android:exported="true"
             android:label="@string/video_player"
-            android:supportsPictureInPicture="true"
             android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
             android:taskAffinity="com.amaze.fileutilitiespip"
-            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback"
-            android:exported="true">
+            android:theme="@style/Theme.AmazeFileUtilities.FullScreen.Dark.Fallback">
             <intent-filter
                 android:label="@string/video_player_full_screen"
                 tools:ignore="AppLinkUrlError">
@@ -174,10 +172,10 @@
         </activity>
         <activity
             android:name=".audio_player.AudioPlayerDialogActivity"
-            android:exported="true"
             android:excludeFromRecents="true"
-            android:theme="@style/Custom.Dialog.Dark"
-            android:launchMode="singleInstance">
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Custom.Dialog.Dark">
             <intent-filter
                 android:label="@string/amaze_audio_player"
                 tools:ignore="AppLinkUrlError">
@@ -193,8 +191,7 @@
             android:name=".docx_viewer.DocxViewerActivity"
             android:exported="true"
             android:label="@string/docx_viewer"
-            android:theme="@style/Theme.AmazeFileUtilities"
-            >
+            android:theme="@style/Theme.AmazeFileUtilities">
             <intent-filter
                 android:label="@string/docx_viewer"
                 tools:ignore="AppLinkUrlError">
@@ -209,24 +206,22 @@
         <activity
             android:name=".home_page.ui.options.AboutActivity"
             android:exported="true"
-            android:theme="@style/Custom.Dialog.Dark"
-            >
-        </activity>
+            android:theme="@style/Custom.Dialog.Dark"></activity>
 
-        <activity android:name="com.amaze.fileutilities.crash_report.ErrorActivity"
-            android:theme="@style/Theme.AmazeFileUtilities"
+        <activity
+            android:name="com.amaze.fileutilities.crash_report.ErrorActivity"
             android:configChanges=""
+            android:exported="true"
             android:label="Error"
             android:launchMode="singleInstance"
-            android:exported="true"
-            />
+            android:theme="@style/Theme.AmazeFileUtilities" />
 
-        <activity android:name=".home_page.ui.settings.PreferenceActivity"
-            android:theme="@style/Theme.AmazeFileUtilities.Dark"
+        <activity
+            android:name=".home_page.ui.settings.PreferenceActivity"
             android:configChanges=""
-            android:label="@string/settings"
             android:exported="true"
-            />
+            android:label="@string/settings"
+            android:theme="@style/Theme.AmazeFileUtilities.Dark" />
         <activity
             android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"
             android:theme="@style/CustomAboutLibrariesStyle" />
@@ -251,7 +246,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <receiver android:name=".audio_player.MediaButtonIntentReceiver"
+        <receiver
+            android:name=".audio_player.MediaButtonIntentReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
