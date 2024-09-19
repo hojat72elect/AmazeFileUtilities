@@ -1,9 +1,6 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import android.graphics.Outline
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -25,24 +22,15 @@ class VideoPlayerDialogActivity : BaseVideoPlayerActivity() {
             16.px.toInt(), 16.px.toInt(),
             16.px.toInt(), 16.px.toInt()
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val playerView = findViewById<PlayerView>(R.id.video_view)
-            playerView.outlineProvider = object : ViewOutlineProvider() {
-                override fun getOutline(view: View?, outline: Outline?) {
-                    view?.let {
-                        view ->
-                        outline?.setRoundRect(0, 0, view.width, view.height, 24.px)
-                    }
+
+        val playerView = findViewById<PlayerView>(R.id.video_view)
+        playerView.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View?, outline: Outline?) {
+                view?.let { view ->
+                    outline?.setRoundRect(0, 0, view.width, view.height, 24.px)
                 }
             }
-            playerView.clipToOutline = true
         }
+        playerView.clipToOutline = true
     }
-
-    /*override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let {
-            initLocalVideoModel(it)
-        }
-    }*/
 }

@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import android.content.res.Configuration
@@ -39,8 +37,8 @@ class VideoPlayerActivity : BaseVideoPlayerActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // Set the system UI visibility flags
                 window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
                 // Get the WindowInsetsController
                 val controller = window.insetsController

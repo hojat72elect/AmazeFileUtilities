@@ -1,5 +1,6 @@
 package com.amaze.fileutilities.video_player
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
 import android.app.RemoteAction
@@ -109,8 +110,8 @@ abstract class BaseVideoPlayerActivity :
     private var rotationDisableView: ImageView? = null
     private var originalPlayerX = 0f
     private var originalPlayerY = 0f
-    private val verticalFinishActivityThreshold = 300
-    private val videoPlayerSwipeThresold = 100
+
+
     private var lockUiVisibilityCounter: CountDownTimer? = null
     private var touchDownTime = System.currentTimeMillis()
     private var touchDownThresholdMillis = 100
@@ -497,6 +498,7 @@ abstract class BaseVideoPlayerActivity :
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     fun handleVideoPlayerActivityResources() {
         viewBinding.run {
             videoView.updateLayoutParams {
@@ -719,6 +721,7 @@ abstract class BaseVideoPlayerActivity :
         initializePlayer()
     }
 
+
     private fun getToolbarRotationDrawable(): Drawable {
         return if (videoPlayerViewModel?.isRotationLocked == true) {
             resources.getDrawable(R.drawable.ic_round_screen_rotation_24)
@@ -758,12 +761,11 @@ abstract class BaseVideoPlayerActivity :
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
         popupMenu.menu.findItem(R.id.sync_subtitles).let { item ->
-            item.isVisible =
-                videoPlayerViewModel?.isSubtitleAvailable == true && false
+            item.isVisible = false
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
         popupMenu.menu.findItem(R.id.search_subtitles).let { item ->
-            item.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            item.isVisible = true
             item.setChecked(videoPlayerViewModel?.isSubtitleEnabled == true)
         }
         popupMenu.show()

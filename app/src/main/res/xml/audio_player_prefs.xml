@@ -2,23 +2,19 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <Preference
         app:key="exclusion_audio_player"
-        app:title="@string/exclusions"
         app:summary="@string/exclusions_summary"
-        />
+        app:title="@string/exclusions" />
     <CheckBoxPreference
+        app:defaultValue="true"
         app:key="pref_enable_waveform"
-        app:title="@string/enable_waveform"
-        app:defaultValue="true"
-        />
+        app:title="@string/enable_waveform" />
     <CheckBoxPreference
-        app:key="pref_audio_enable_palette"
-        app:title="@string/audio_player_enable_palette"
-        app:summary="@string/audio_player_enable_palette_summary"
         app:defaultValue="true"
-        />
+        app:key="pref_audio_enable_palette"
+        app:summary="@string/audio_player_enable_palette_summary"
+        app:title="@string/audio_player_enable_palette" />
     <Preference
         app:key="remove_battery_optimizations"
-        app:title="@string/remove_battery_optimizations"
         app:summary="@string/remove_battery_optimizations_hint"
-        />
+        app:title="@string/remove_battery_optimizations" />
 </PreferenceScreen>

@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.cast.cloud
 
 import android.content.ComponentName
@@ -11,15 +9,14 @@ import java.lang.ref.WeakReference
 
 class CloudStreamerServiceConnection(
     private val activityRef:
-        WeakReference<CastActivity>
+    WeakReference<CastActivity>
 ) : ServiceConnection {
     private var specificService: CloudStreamerService? = null
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder: ObtainableServiceBinder<out CloudStreamerService?> =
             service as ObtainableServiceBinder<out CloudStreamerService?>
         specificService = binder.service
-        specificService?.let {
-            service ->
+        specificService?.let { service ->
             activityRef.get()?.apply {
                 this.cloudStreamerService = service
             }

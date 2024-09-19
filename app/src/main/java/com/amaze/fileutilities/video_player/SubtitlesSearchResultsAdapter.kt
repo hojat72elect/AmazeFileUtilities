@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import android.app.Activity
@@ -14,8 +12,8 @@ import com.amaze.fileutilities.R
 import com.amaze.fileutilities.utilis.showToastInCenter
 
 class SubtitlesSearchResultsAdapter(
-    val appContext: Context,
-    val listState: List<SubtitleResult>,
+    private val appContext: Context,
+    private val listState: List<SubtitleResult>,
     private val downloadFileCallback: (String?, String?) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -33,18 +31,20 @@ class SubtitlesSearchResultsAdapter(
             val subtitleResult = listState[position]
             holder.movieName.text = subtitleResult.title
             holder.info.text =
-                "${appContext.resources.getString(R.string.cd)}: " +
-                "${subtitleResult.cdNumber ?: ""} | " +
-                "${appContext.resources.getString(R.string.upload_date)}: " +
-                "${subtitleResult.uploadDate?.replace("\n", "")} | " +
-                "${appContext.resources.getString(R.string.rating)}: " +
-                "${subtitleResult.subtitleRating ?: ""} | " +
-                "${appContext.resources.getString(R.string.language)}: " +
-                "${subtitleResult.language ?: ""} | " +
-                "${appContext.resources.getString(R.string.uploader)}:" +
-                " ${subtitleResult.uploader ?: ""} | " +
-                "${appContext.resources.getString(R.string.downloads)}: " +
-                "${subtitleResult.downloads ?: ""}"
+                buildString {
+                    append("${appContext.resources.getString(R.string.cd)}: ")
+                    append("${subtitleResult.cdNumber ?: ""} | ")
+                    append("${appContext.resources.getString(R.string.upload_date)}: ")
+                    append("${subtitleResult.uploadDate?.replace("\n", "")} | ")
+                    append("${appContext.resources.getString(R.string.rating)}: ")
+                    append("${subtitleResult.subtitleRating ?: ""} | ")
+                    append("${appContext.resources.getString(R.string.language)}: ")
+                    append("${subtitleResult.language ?: ""} | ")
+                    append("${appContext.resources.getString(R.string.uploader)}:")
+                    append(" ${subtitleResult.uploader ?: ""} | ")
+                    append("${appContext.resources.getString(R.string.downloads)}: ")
+                    append(subtitleResult.downloads ?: "")
+                }
             holder.parentLayout.setOnClickListener {
                 if (subtitleResult.downloadId == null) {
                     appContext.showToastInCenter(

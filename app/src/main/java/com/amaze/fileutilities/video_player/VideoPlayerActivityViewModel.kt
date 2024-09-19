@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import android.content.SharedPreferences
@@ -33,7 +31,6 @@ class VideoPlayerActivityViewModel : ViewModel() {
     var playbackPosition = 0L
     var videoModel: LocalVideoModel? = null
     var currentlyPlaying = true
-    var fullscreen = false
     var fitToScreen = 0
     var isInPictureInPicture = false
     var playbackSpeed = 1f
@@ -48,7 +45,7 @@ class VideoPlayerActivityViewModel : ViewModel() {
     var volumeLevel = 0.3f
 
     fun getPlaybackSavedState(videoPlayerStateDao: VideoPlayerStateDao):
-        LiveData<VideoPlayerState?> {
+            LiveData<VideoPlayerState?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             videoModel?.uri?.path?.let {
                 emit(videoPlayerStateDao.getStateByUriPath(it))
@@ -63,8 +60,8 @@ class VideoPlayerActivityViewModel : ViewModel() {
     }
 
     fun getSubtitlesAvailableLanguages(sharedPreferences: SharedPreferences):
-        LiveData<List<LanguageSelectionAdapter
-                .SubtitleLanguageAndCode>?> {
+            LiveData<List<LanguageSelectionAdapter
+            .SubtitleLanguageAndCode>?> {
         return liveData(context = viewModelScope.coroutineContext + Dispatchers.Default) {
             emit(null)
             val retrofit = Retrofit.Builder()
@@ -73,19 +70,18 @@ class VideoPlayerActivityViewModel : ViewModel() {
                 .client(Utils.getOkHttpClient())
                 .build()
             val service = retrofit.create(SubtitlesApi::class.java)
-            service.getLanguageList(SubtitlesApi.HEADER_API_KEY_MAP)?.execute()?.let {
-                response ->
+            service.getLanguageList(SubtitlesApi.HEADER_API_KEY_MAP)?.execute()?.let { response ->
                 if (response.isSuccessful && response.body() != null) {
                     val languageResponse = response.body()!!
                     var languageCodes = languageResponse.data.map { it.language_code }
                     var languageValues = languageResponse.data.map { it.language_name }
-                    if (languageCodes.isEmpty() || languageCodes.isEmpty()) {
+                    if (languageCodes.isEmpty()) {
                         languageCodes = Collections.singletonList("all")
                         languageValues = Collections.singletonList("ALL")
                     }
                     try {
                         val languageAndCodeList = ArrayList<LanguageSelectionAdapter
-                            .SubtitleLanguageAndCode>()
+                        .SubtitleLanguageAndCode>()
                         languageAndCodeList.add(
                             LanguageSelectionAdapter
                                 .SubtitleLanguageAndCode("Languages", "")
@@ -160,15 +156,13 @@ class VideoPlayerActivityViewModel : ViewModel() {
             service.getSearchResults(
                 SubtitlesApi.HEADER_API_KEY_MAP, movieName,
                 languageListRequestString
-            )?.execute()?.let {
-                response ->
+            )?.execute()?.let { response ->
                 if (response.isSuccessful && response.body() != null) {
                     val searchResultsResponse = response.body()!!
                     val subtitleResultList =
                         ArrayList<SubtitlesSearchResultsAdapter.SubtitleResult>()
                     for (data in searchResultsResponse.data) {
-                        data.attributes?.let {
-                            attributes ->
+                        data.attributes?.let { attributes ->
                             val subtitleResult = SubtitlesSearchResultsAdapter.SubtitleResult()
                             subtitleResult.downloads = attributes.download_count
                             subtitleResult.language = attributes.language
@@ -177,19 +171,16 @@ class VideoPlayerActivityViewModel : ViewModel() {
                             if (!attributes.files.isNullOrEmpty()) {
                                 subtitleResult.title = attributes.files[0].file_name
                                 subtitleResult.cdNumber = attributes.files[0].cd_number
-                                attributes.files[0].file_id?.let {
-                                    fileId ->
+                                attributes.files[0].file_id?.let { fileId ->
                                     log.info("found subtitle download id {}", fileId)
-                                    getSubtitleDownloadLink(fileId)?.let {
-                                        linkResponse ->
+                                    getSubtitleDownloadLink(fileId)?.let { linkResponse ->
                                         log.info("found subtitle download link {}", linkResponse)
                                         subtitleResult.downloadId = linkResponse.link
                                         subtitleResult.downloadFileName = linkResponse.file_name
                                     }
                                 }
                             }
-                            attributes.uploader?.let {
-                                uploader ->
+                            attributes.uploader?.let { uploader ->
                                 subtitleResult.uploader = "${uploader.name} (${uploader.rank})"
                             }
                             subtitleResultList.add(subtitleResult)
@@ -252,11 +243,10 @@ class VideoPlayerActivityViewModel : ViewModel() {
     ): String {
         return try {
             val filePath = folderPath + File.separator + fileName
-            BufferedOutputStream(FileOutputStream(filePath)).use {
-                bos ->
+            BufferedOutputStream(FileOutputStream(filePath)).use { bos ->
                 val bytesIn = ByteArray(1024)
                 log.debug("Extract subtitle zip entry at $filePath")
-                var read = 0
+                var read: Int
                 while (inputStream.read(bytesIn).also { read = it } != -1) {
                     bos.write(bytesIn, 0, read)
                 }
@@ -268,7 +258,7 @@ class VideoPlayerActivityViewModel : ViewModel() {
             }
             log.warn(
                 "Failed to write subtitle file, " +
-                    "probably due to video file being in sd card",
+                        "probably due to video file being in sd card",
                 e
             )
             if (!isRetry) {

@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
-        android:minHeight="24dp"
         android:minWidth="36dp"
-        app:srcCompat="@drawable/ic_round_edit_32"
+        android:minHeight="24dp"
         android:visibility="gone"
-        />
+        app:srcCompat="@drawable/ic_round_edit_32" />
 
     <ImageView
         android:id="@+id/delete"
@@ -24,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
-        android:minHeight="24dp"
         android:minWidth="36dp"
-        app:srcCompat="@drawable/ic_round_delete_outline_32"/>
+        android:minHeight="24dp"
+        app:srcCompat="@drawable/ic_round_delete_outline_32" />
 </LinearLayout>

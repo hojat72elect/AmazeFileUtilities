@@ -6,8 +6,8 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_outline_image_32"
         android:bottom="@dimen/eight_dp"
+        android:drawable="@drawable/ic_outline_image_32"
         android:left="@dimen/eight_dp"
         android:right="@dimen/eight_dp"
         android:top="@dimen/eight_dp" />

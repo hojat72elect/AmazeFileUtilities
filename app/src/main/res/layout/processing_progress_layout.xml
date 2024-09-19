@@ -3,33 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ProgressBar
         android:id="@+id/loadingProgress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:gravity="center_horizontal"
-        android:visibility="gone"
         android:layout_marginTop="@dimen/material_generic_medium"
-        />
+        android:gravity="center_horizontal"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/empty_result_image"
-        app:srcCompat="@drawable/ic_baseline_forest_32"
         android:layout_width="match_parent"
         android:layout_height="@dimen/sixty_four_dp"
-        android:visibility="gone"
-        android:gravity="center_horizontal"
         android:layout_marginTop="@dimen/material_generic_medium"
-        />
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_baseline_forest_32" />
+
     <TextView
         android:id="@+id/infoText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/material_generic"
-        android:textSize="@dimen/eighteen_sp"
         android:gravity="center_horizontal"
         android:text="@string/loading"
-        android:visibility="gone"
         android:textColor="@color/white"
-        />
+        android:textSize="@dimen/eighteen_sp"
+        android:visibility="gone" />
 </merge>

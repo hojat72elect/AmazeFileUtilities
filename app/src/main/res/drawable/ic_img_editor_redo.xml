@@ -6,8 +6,8 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_redo"
         android:bottom="@dimen/eight_dp"
+        android:drawable="@drawable/ic_redo"
         android:left="@dimen/eight_dp"
         android:right="@dimen/eight_dp"
         android:top="@dimen/eight_dp" />

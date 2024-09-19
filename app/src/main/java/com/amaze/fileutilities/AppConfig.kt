@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities
 
 import android.content.Context

@@ -5,13 +5,12 @@
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
             <solid android:color="@color/highlight_yellow_trans" />
-<!--            <corners android:radius="@dimen/round_corner" />-->
+            <!--            <corners android:radius="@dimen/round_corner" />-->
             <corners
-                android:topLeftRadius="@dimen/material_generic"
-                android:topRightRadius="@dimen/material_generic"
                 android:bottomLeftRadius="@dimen/material_generic"
                 android:bottomRightRadius="@dimen/material_generic"
-                />
+                android:topLeftRadius="@dimen/material_generic"
+                android:topRightRadius="@dimen/material_generic" />
         </shape>
     </item>
 </ripple>

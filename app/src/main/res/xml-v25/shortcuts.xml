@@ -1,33 +1,28 @@
-<shortcuts
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
-        android:shortcutId="AnalyseFragment"
         android:enabled="true"
-        android:shortcutShortLabel="@string/title_analyse"
+        android:icon="@drawable/ic_outline_analytics_32"
+        android:shortcutDisabledMessage="@string/title_analyse"
+        android:shortcutId="AnalyseFragment"
         android:shortcutLongLabel="@string/title_analyse"
-        android:shortcutDisabledMessage=
-            "@string/title_analyse"
-        android:icon="@drawable/ic_outline_analytics_32">
+        android:shortcutShortLabel="@string/title_analyse">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="amaze://teamamaze.xyz/analyse"
             android:targetClass="com.amaze.fileutilities.home_page.MainActivity"
-            android:targetPackage="com.amaze.fileutilities"
-            />
+            android:targetPackage="com.amaze.fileutilities" />
     </shortcut>
     <shortcut
-        android:shortcutId="TransferFragment"
         android:enabled="true"
-        android:shortcutShortLabel="@string/title_transfer"
+        android:icon="@drawable/ic_outline_connect_without_contact_32"
+        android:shortcutDisabledMessage="@string/title_transfer"
+        android:shortcutId="TransferFragment"
         android:shortcutLongLabel="@string/title_transfer"
-        android:shortcutDisabledMessage=
-            "@string/title_transfer"
-        android:icon="@drawable/ic_outline_connect_without_contact_32">
+        android:shortcutShortLabel="@string/title_transfer">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="amaze://teamamaze.xyz/transfer"
             android:targetClass="com.amaze.fileutilities.home_page.MainActivity"
-            android:targetPackage="com.amaze.fileutilities"
-            />
+            android:targetPackage="com.amaze.fileutilities" />
     </shortcut>
 </shortcuts>

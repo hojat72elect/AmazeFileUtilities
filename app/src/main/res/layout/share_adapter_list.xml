@@ -20,13 +20,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/second"
     android:layout_width="match_parent"
-    android:minHeight="@dimen/minimal_row_size"
     android:layout_height="wrap_content"
-    android:background="@drawable/ripple"
     android:layout_gravity="center_vertical"
+    android:background="@drawable/ripple"
     android:gravity="center_vertical"
-    android:padding="@dimen/material_generic"
-    >
+    android:minHeight="@dimen/minimal_row_size"
+    android:padding="@dimen/material_generic">
 
     <ImageView
         android:id="@+id/icon"
@@ -37,13 +36,12 @@
     <TextView
         android:id="@+id/firstline"
         android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/icon"
         android:layout_height="match_parent"
-        android:clickable="false"
-        android:layout_marginLeft="@dimen/material_generic"
         android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/material_generic"
+        android:layout_toRightOf="@id/icon"
+        android:clickable="false"
         android:singleLine="true"
-        android:textSize="@dimen/eighteen_sp"
         android:textColor="@color/white"
-        />
+        android:textSize="@dimen/eighteen_sp" />
 </RelativeLayout>

@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.utilis
 
 import com.amaze.fileutilities.home_page.MainActivity
@@ -30,8 +28,8 @@ object UpdateChecker {
         // Checks that the platform will allow the specified type of update.
         appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // This example applies an immediate update. To apply a flexible update
-                // instead, pass in AppUpdateType.FLEXIBLE
+            // This example applies an immediate update. To apply a flexible update
+            // instead, pass in AppUpdateType.FLEXIBLE
             ) {
                 /**
                  * check for app updates - flexible update dialog is showing till 7 days for any

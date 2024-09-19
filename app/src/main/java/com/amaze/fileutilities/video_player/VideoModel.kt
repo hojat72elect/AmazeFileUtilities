@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import android.net.Uri

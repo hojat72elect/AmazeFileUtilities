@@ -4,28 +4,25 @@
     android:id="@+id/parent_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/navy_blue"
-    >
+    android:background="@color/navy_blue">
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        >
+        android:layout_marginTop="?attr/actionBarSize">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:descendantFocusability="afterDescendants"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:descendantFocusability="afterDescendants"
-            >
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
             <TextView
                 android:id="@+id/errorSorryView"
@@ -43,8 +40,8 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:text="@string/what_happened_headline"
-                android:textColor="@color/white"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/errorMessageView"
@@ -59,8 +56,8 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:text="@string/what_device_headline"
-                android:textColor="@color/white"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:id="@+id/errorInfoLayout"
@@ -84,7 +81,7 @@
                         android:id="@+id/errorInfosView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                 </HorizontalScrollView>
 
@@ -96,16 +93,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/your_comment"
-                android:textColor="@color/white"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/errorCommentBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType=""
-                android:textColor="@color/white"
-                />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/errorDetailView"
@@ -114,8 +110,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/error_details_headline"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white"
-                />
+                android:textColor="@color/white" />
 
             <HorizontalScrollView
                 android:id="@+id/horizontalScrollView"
@@ -127,39 +122,38 @@
                     android:id="@+id/errorView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:textIsSelectable="true"
-                    android:typeface="monospace"
-                    android:textColor="@color/white" />
+                    android:typeface="monospace" />
             </HorizontalScrollView>
 
             <Button
                 android:id="@+id/errorReportCopyButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cornerRadius="@dimen/material_generic"
-                app:backgroundTint="@color/white"
-                android:textColor="@color/navy_blue"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/copy_for_github"
-                />
+                android:textColor="@color/navy_blue"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="@dimen/material_generic" />
 
             <Button
                 android:id="@+id/errorReportTelegramButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cornerRadius="@dimen/material_generic"
-                app:backgroundTint="@color/white"
+                android:text="@string/error_report_button_telegram"
                 android:textColor="@color/navy_blue"
-                android:text="@string/error_report_button_telegram" />
+                app:backgroundTint="@color/white"
+                app:cornerRadius="@dimen/material_generic" />
 
             <Button
                 android:id="@+id/errorReportEmailButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cornerRadius="@dimen/material_generic"
-                app:backgroundTint="@color/white"
+                android:text="@string/error_report_button_text"
                 android:textColor="@color/navy_blue"
-                android:text="@string/error_report_button_text" />
+                app:backgroundTint="@color/white"
+                app:cornerRadius="@dimen/material_generic" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -167,17 +161,17 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
                 android:text="@string/error_report_open_github_notice"
-                android:textStyle="bold"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/errorReportGitHubButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cornerRadius="@dimen/material_generic"
-                app:backgroundTint="@color/white"
+                android:text="@string/error_report_open_issue_button_text"
                 android:textColor="@color/navy_blue"
-                android:text="@string/error_report_open_issue_button_text" />
+                app:backgroundTint="@color/white"
+                app:cornerRadius="@dimen/material_generic" />
 
         </LinearLayout>
     </ScrollView>

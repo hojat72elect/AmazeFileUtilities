@@ -6,18 +6,14 @@
         />-->
     <item
         android:id="@+id/playback_properties"
-        android:title="@string/playback_properties"
-        />
+        android:title="@string/playback_properties" />
     <item
         android:id="@+id/subtitles"
-        android:title="@string/subtitles"
-        />
+        android:title="@string/subtitles" />
     <item
         android:id="@+id/info"
-        android:title="@string/information"
-        />
+        android:title="@string/information" />
     <item
         android:id="@+id/share"
-        android:title="@string/share"
-        />
+        android:title="@string/share" />
 </menu>

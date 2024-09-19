@@ -63,17 +63,17 @@ android {
         if (abiFilterList.size() == 1) {
             switch (abiFilterList[0]) {
                 case "x86":
-                    minorVersion = 1;
-                    break;
+                    minorVersion = 1
+                    break
                 case "x86_64":
-                    minorVersion = 2;
-                    break;
+                    minorVersion = 2
+                    break
                 case "armeabi-v7a":
-                    minorVersion = 3;
-                    break;
+                    minorVersion = 3
+                    break
                 case "arm64-v8a":
-                    minorVersion = 4;
-                    break;
+                    minorVersion = 4
+                    break
                 default:
                     minorVersion = 0
             }
@@ -91,12 +91,13 @@ android {
                 abi {
                     enable true
                     reset()
-                    include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a' //select ABIs to build APKs for
+                    include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+                    //select ABIs to build APKs for
                     universalApk false //generate an additional APK that contains all the ABIs
                 }
             }
         }
-        Integer sudoVersionCodeFinal = (sudoVersionCode*4)+minorVersion
+        Integer sudoVersionCodeFinal = (sudoVersionCode * 4) + minorVersion
         versionCode sudoVersionCodeFinal
         versionName versionNameText
 
@@ -136,7 +137,7 @@ android {
             androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
         }
 
-        manifestPlaceholders = [ app_display_name:"@string/app_name_launcher"]
+        manifestPlaceholders = [app_display_name: "@string/app_name_launcher"]
     }
 
     signingConfigs {
@@ -153,7 +154,7 @@ android {
             buildConfigField "String", "OPENSUBTITLES_API_KEY", "\"${OPENSUBTITLES_API_KEY_DEBUG}\""
             debuggable true //For "debug" banner on icon
 
-            manifestPlaceholders = [ app_display_name:"AFU Debug"]
+            manifestPlaceholders = [app_display_name: "AFU Debug"]
         }
 
         release {
@@ -237,7 +238,7 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     //Glide: loads icons seemlessly
     implementation "com.github.bumptech.glide:glide:$glideVersion"
-    implementation ("com.github.bumptech.glide:recyclerview-integration:$glideVersion") {
+    implementation("com.github.bumptech.glide:recyclerview-integration:$glideVersion") {
         // Excludes the support library because it's already included by Glide.
         transitive = false
     }

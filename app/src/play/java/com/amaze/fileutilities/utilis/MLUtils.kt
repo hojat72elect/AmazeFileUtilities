@@ -1,13 +1,9 @@
-
-
 package com.amaze.fileutilities.utilis
 
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.google.mlkit.vision.text.Text
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import org.slf4j.Logger
@@ -20,7 +16,7 @@ object MLUtils {
         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
         .build()
     private val faceDetector = FaceDetection.getClient(highAccuracyOpts)
-    private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
     private var log: Logger = LoggerFactory.getLogger(MLUtils::class.java)
 
     fun processImageFeatures(path: String, successCallback: (ImgUtils.ImageFeatures) -> Unit) {
@@ -88,22 +84,7 @@ object MLUtils {
                     callback?.invoke(true, null)
                     return
                 }
-                val result = textRecognizer.process(bitmap, 0)
-                    .addOnSuccessListener { visionText ->
-                        // Task completed successfully
-                        log.debug(visionText.text)
-                        mat.release()
-                        resizeimage.release()
-                        callback?.invoke(true, visionText)
-                    }
-                    .addOnFailureListener { e ->
-                        // Task failed with an exception
-                        // ...
-                        log.warn("extract text from img failure", e)
-                        mat.release()
-                        resizeimage.release()
-                        callback?.invoke(false, null)
-                    }
+
             } else {
                 log.warn("Failed to extract text from empty bitmap")
                 callback?.invoke(false, null)
@@ -142,8 +123,7 @@ object MLUtils {
                         var isDistracted = false
                         var leftEyeOpen = false
                         var rightEyeOpen = false
-                        faces.forEach {
-                            face ->
+                        faces.forEach { face ->
                             face.smilingProbability?.let {
                                 if (it < 0.7) {
                                     isSad = true

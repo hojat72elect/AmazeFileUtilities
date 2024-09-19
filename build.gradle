@@ -40,9 +40,9 @@ spotless {
     kotlin {
         licenseHeaderFile 'spotless.license-java'
         target 'app/src/**/*.kt'
-        ktlint("0.43.2").userData(['disabled_rules': 'no-wildcard-imports',
+        ktlint("0.43.2").userData(['disabled_rules'       : 'no-wildcard-imports',
                                    'kotlin_imports_layout': 'idea', 'indent_size': '4',
-                                   'max_line_length': '100'])
+                                   'max_line_length'      : '100'])
         trimTrailingWhitespace()
         indentWithSpaces()
         endWithNewline()

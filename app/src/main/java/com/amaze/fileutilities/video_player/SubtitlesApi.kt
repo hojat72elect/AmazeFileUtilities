@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities.video_player
 
 import androidx.annotation.Keep
@@ -21,7 +19,7 @@ interface SubtitlesApi {
         const val API_SEARCH_SUBTITLES = "subtitles"
         const val API_DOWNLOAD_SUBTITLES = "download"
         const val API_LANGUAGE = "infos/languages"
-        private val API_KEY = BuildConfig.OPENSUBTITLES_API_KEY
+        private const val API_KEY = BuildConfig.OPENSUBTITLES_API_KEY
         private const val USER_AGENT = "AmazeFileUtils"
         val HEADER_API_KEY_MAP = mapOf(
             Pair("Api-Key", API_KEY),
@@ -60,10 +58,13 @@ interface SubtitlesApi {
             val uploader: Uploader?,
             val files: List<Files>?
         )
+
         @Keep
         data class Uploader(val name: String?, val rank: String?)
+
         @Keep
         data class Files(val file_id: String?, val file_name: String?, val cd_number: String?)
+
         @Keep
         data class Data(val attributes: Attributes?)
     }

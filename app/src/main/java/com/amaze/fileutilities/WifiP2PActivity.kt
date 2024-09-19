@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities
 
 import android.content.BroadcastReceiver
@@ -9,8 +7,10 @@ import android.content.IntentFilter
 import android.net.NetworkInfo
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import com.amaze.fileutilities.home_page.ui.options.CastActivity
 import com.amaze.fileutilities.home_page.ui.transfer.TransferFragment
@@ -19,6 +19,7 @@ import com.amaze.fileutilities.utilis.showToastInCenter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 abstract class WifiP2PActivity : CastActivity(), WifiP2pManager.ChannelListener {
 
     private var log: Logger = LoggerFactory.getLogger(WifiP2PActivity::class.java)
@@ -43,9 +44,9 @@ abstract class WifiP2PActivity : CastActivity(), WifiP2pManager.ChannelListener 
         transferViewModel = ViewModelProvider(this).get(TransferViewModel::class.java)
     }
 
+
     override fun onDestroy() {
-        getTransferFragment()?.let {
-            fragment ->
+        getTransferFragment()?.let { fragment ->
             fragment.getTransferViewModel().clientHandshakeSocket?.close()
             fragment.getTransferViewModel().serverHandshakeSocket?.close()
             fragment.getTransferViewModel().clientTransferSocket?.close()
@@ -59,8 +60,7 @@ abstract class WifiP2PActivity : CastActivity(), WifiP2pManager.ChannelListener 
     }
 
     override fun onChannelDisconnected() {
-        getTransferFragment()?.let {
-            fragment ->
+        getTransferFragment()?.let { fragment ->
             fragment.resetViewsOnDisconnect()
             fragment.resetNetworkGroup()
             showToastInCenter(resources.getString(R.string.disconnected))
@@ -121,8 +121,7 @@ abstract class WifiP2PActivity : CastActivity(), WifiP2pManager.ChannelListener 
             val action: String? = intent.action
 
             action.let {
-                getTransferFragment()?.let {
-                    transferFragment ->
+                getTransferFragment()?.let { transferFragment ->
                     if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION == action) {
 
                         // UI update to indicate wifi p2p status.
@@ -153,7 +152,7 @@ abstract class WifiP2PActivity : CastActivity(), WifiP2pManager.ChannelListener 
                         }
                         val networkInfo = intent
                             .getParcelableExtra<Parcelable>(WifiP2pManager.EXTRA_NETWORK_INFO)
-                            as NetworkInfo?
+                                as NetworkInfo?
                         if (networkInfo!!.isConnected) {
 
                             // we are connected with the other device, request connection

@@ -1,5 +1,3 @@
-
-
 package com.amaze.fileutilities
 
 import android.Manifest
@@ -9,10 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.widget.Toast
@@ -52,9 +48,9 @@ open class PermissionsActivity :
     @RequiresApi(VERSION_CODES.TIRAMISU)
     open fun checkNotificationPermission(): Boolean {
         return (
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED
-            )
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        == PackageManager.PERMISSION_GRANTED
+                )
     }
 
     fun haveStoragePermissions(): Boolean {
@@ -143,29 +139,29 @@ open class PermissionsActivity :
         if (VERSION.SDK_INT >= VERSION_CODES.R) {
             try {
                 isFound = (
-                    ActivityCompat.checkSelfPermission(
-                        this, Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-                    )
-                        == PackageManager.PERMISSION_GRANTED
-                    ) || (
-                    ActivityCompat.checkSelfPermission(
-                        this, Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                    )
+                        ActivityCompat.checkSelfPermission(
+                            this, Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                        )
+                                == PackageManager.PERMISSION_GRANTED
+                        ) || (
+                        ActivityCompat.checkSelfPermission(
+                            this, Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                        )
 
-                        == PackageManager.PERMISSION_GRANTED
-                    ) || Environment.isExternalStorageManager()
+                                == PackageManager.PERMISSION_GRANTED
+                        ) || Environment.isExternalStorageManager()
             } catch (anfe: ActivityNotFoundException) {
                 log.warn("all files access permission activity missing, fallback to default", anfe)
             }
         }
         if (!isFound) {
             isFound = (
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-                    == PackageManager.PERMISSION_GRANTED
-                )
+                    ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                            == PackageManager.PERMISSION_GRANTED
+                    )
         }
         return isFound
     }
@@ -212,7 +208,7 @@ open class PermissionsActivity :
             }
             builder.setMessage(R.string.grant_location_permission)
                 .setTitle(R.string.grant_permission)
-                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                .setNegativeButton(R.string.cancel) { _, _ ->
                 }.setCancelable(false)
             requestPermission(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -230,12 +226,12 @@ open class PermissionsActivity :
     private fun checkLocationPermission(): Boolean {
         // Verify that all required contact permissions have been granted.
         return (
-            ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-                == PackageManager.PERMISSION_GRANTED
-            )/* && (
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                        == PackageManager.PERMISSION_GRANTED
+                )/* && (
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -254,7 +250,7 @@ open class PermissionsActivity :
         }
         builder.setMessage(R.string.grant_storage_read_permission)
             .setTitle(R.string.grant_permission)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 finish()
             }.setCancelable(false)
         requestPermission(
@@ -271,13 +267,12 @@ open class PermissionsActivity :
         onPermissionGranted: OnPermissionGranted,
         isInitialStart: Boolean
     ) {
-//        Utils.disableScreenRotation(this)
         val builder: AlertDialog.Builder = this.let {
             AlertDialog.Builder(it, R.style.Custom_Dialog_Dark)
         }
         builder.setMessage(R.string.grant_notification_permission)
             .setTitle(R.string.grant_permission)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 finish()
             }.setCancelable(false)
         requestPermission(
@@ -357,14 +352,13 @@ open class PermissionsActivity :
             }
             builder.setMessage(R.string.grant_all_files_permission)
                 .setTitle(R.string.grant_permission)
-                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                .setNegativeButton(R.string.cancel) { _, _ ->
                     run {
                         finish()
                     }
                 }
                 .setPositiveButton(R.string.grant) { dialog, _ ->
                     run {
-//                        Utils.disableScreenRotation(this)
                         permissionCallbacks[ALL_FILES_PERMISSION] = onPermissionGranted
                         try {
                             val intent =
